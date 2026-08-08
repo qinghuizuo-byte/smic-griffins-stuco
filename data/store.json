@@ -373,19 +373,22 @@
         {
           "task": "Draft facility request form for Gymnasium",
           "assignee": "Jordan K.",
-          "done": false
+          "done": false,
+          "id": 1
         },
         {
           "task": "Confirm Griffin Mascot performer schedule",
           "assignee": "Taylor S.",
-          "done": false
+          "done": false,
+          "id": 2
         },
         {
           "task": "hu",
           "assignee": "",
           "event_id": 1,
           "event_title": "Homecoming Dance 2026",
-          "done": false
+          "done": false,
+          "id": 3
         }
       ]
     },
@@ -404,12 +407,14 @@
         {
           "task": "Set up Python Stuco Web Portal",
           "assignee": "Tech Lead",
-          "done": true
+          "done": true,
+          "id": 1
         },
         {
           "task": "Distribute committee signup forms",
           "assignee": "Alex M.",
-          "done": true
+          "done": true,
+          "id": 2
         }
       ]
     }

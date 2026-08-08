@@ -664,7 +664,13 @@ def load_data():
                 if "STUCO_MEMBERS" in store: STUCO_MEMBERS = store["STUCO_MEMBERS"]
                 if "EVENTS" in store:
                     EVENTS = {int(k): v for k, v in store["EVENTS"].items()}
-                if "MEETINGS" in store: MEETINGS = store["MEETINGS"]
+                if "MEETINGS" in store:
+                    MEETINGS = store["MEETINGS"]
+                    for m in MEETINGS:
+                        items = m.get("action_items", [])
+                        for idx, it in enumerate(items, start=1):
+                            if "id" not in it or not it["id"]:
+                                it["id"] = idx
                 if "ANNOUNCEMENTS" in store: ANNOUNCEMENTS = store["ANNOUNCEMENTS"]
                 if "BUDGET_REQUESTS" in store: BUDGET_REQUESTS = store["BUDGET_REQUESTS"]
                 if "VENDING_ITEMS" in store: VENDING_ITEMS = store["VENDING_ITEMS"]
@@ -677,6 +683,7 @@ def load_data():
             print(f"Error loading data: {e}")
 
 load_data()
+save_data()
 
 
 # ==========================================
