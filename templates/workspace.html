@@ -54,8 +54,8 @@
         /* Initial Landing View: Huge Feature Block Cards */
         .hub-blocks-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
             margin-top: 10px;
             margin-bottom: 30px;
         }
@@ -63,7 +63,7 @@
         .hub-block-card {
             background: var(--card-bg);
             border-radius: 16px;
-            padding: 32px;
+            padding: 28px;
             border: 2px solid #e2e8f0;
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
             cursor: pointer;
@@ -81,10 +81,10 @@
             border-color: var(--primary);
         }
 
-        .hub-block-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
-        .hub-block-icon { font-size: 2.5rem; }
-        .hub-block-title { font-size: 1.4rem; font-weight: 800; color: var(--primary-dark); }
-        .hub-block-desc { font-size: 0.92rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; }
+        .hub-block-header { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+        .hub-block-icon { font-size: 2.2rem; }
+        .hub-block-title { font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); }
+        .hub-block-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 16px; }
         .hub-block-btn { align-self: flex-start; }
 
         /* Subnav Header for Nested Subgroups */
@@ -167,6 +167,17 @@
         .btn-danger { background-color: var(--danger); }
         .btn-success { background-color: var(--success); }
 
+        /* Meeting Cards & Schedule Panels */
+        .meeting-card {
+            background: var(--card-bg); border-radius: 12px; padding: 22px; margin-bottom: 20px;
+            border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+        .meeting-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+        .meeting-title { font-size: 1.2rem; font-weight: 800; color: var(--primary-dark); }
+        .meeting-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; background: #f8fafc; padding: 10px 14px; border-radius: 8px; }
+        .section-box { margin-bottom: 16px; }
+        .section-title { font-size: 0.88rem; font-weight: 800; color: var(--primary); margin-bottom: 6px; text-transform: uppercase; }
+
         /* Spreadsheet Table */
         .table-responsive { width: 100%; overflow-x: auto; border-radius: 8px; border: 1px solid var(--border-color); }
         .sheet-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; background: white; }
@@ -243,7 +254,6 @@
         <div class="nav-links">
             <a href="/" class="nav-link">Home</a>
             <a href="/workspace/1" class="nav-link active">Stuco Workspace</a>
-            <a href="/meetings" class="nav-link">Meeting Notes</a>
             <a href="/vending" class="nav-link">Vending Machine</a>
             <a href="/updates" class="nav-link">Stuco Updates</a>
             <a href="/volunteers" class="nav-link">CSH (Volunteer)</a>
@@ -269,7 +279,7 @@
     {% endwith %}
 
     <!-- ========================================== -->
-    <!-- INITIAL LANDING VIEW: 4 HUGE FEATURE BLOCKS -->
+    <!-- INITIAL LANDING VIEW: HUGE FEATURE BLOCKS -->
     <!-- ========================================== -->
     <div id="hub-landing-view">
         <div style="margin-bottom: 20px;">
@@ -325,6 +335,18 @@
                     <p class="hub-block-desc">Master list of all action items and tasks arranged chronologically by due date.</p>
                 </div>
                 <button class="btn hub-block-btn">Open Master Task List →</button>
+            </div>
+
+            <!-- Block 5: Meeting Notes & Agendas (NEW!) -->
+            <div class="hub-block-card" onclick="openSubgroup('meetings-subdiv')">
+                <div>
+                    <div class="hub-block-header">
+                        <span class="hub-block-icon">📝</span>
+                        <div class="hub-block-title">Meeting Notes & Agendas</div>
+                    </div>
+                    <p class="hub-block-desc">View published meeting agendas, executive notes, action items, and schedule briefings.</p>
+                </div>
+                <button class="btn hub-block-btn">Open Meeting Notes →</button>
             </div>
 
         </div>
@@ -838,6 +860,123 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- NESTED SUBGROUP 5: MEETING NOTES & AGENDAS (NEW!) -->
+    <!-- ========================================== -->
+    <div id="meetings-subdiv" class="subdiv-content">
+        
+        <div class="subgroup-header">
+            <button class="back-btn" onclick="backToHubLanding()">⬅️ Back to Workspace Hub</button>
+            <div style="font-weight: 800; color: var(--primary-dark); font-size: 1.1rem;">📝 Meeting Notes & Agendas</div>
+        </div>
+
+        <!-- Schedule Meeting Panel for Officers -->
+        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary'] %}
+        <div class="card" style="border-left: 5px solid var(--primary);">
+            <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 12px;">➕ Schedule New Meeting & Upload Agenda</h3>
+            <form action="{{ url_for('add_meeting') }}" method="POST" enctype="multipart/form-data">
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 14px;">
+                    <div class="form-group">
+                        <label>Meeting Title</label>
+                        <input type="text" name="title" placeholder="e.g. Weekly Executive Officers Briefing" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Meeting Date</label>
+                        <input type="date" name="date" required>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;">
+                    <div class="form-group">
+                        <label>Time Slot</label>
+                        <input type="text" name="time" placeholder="e.g. 3:30 PM - 4:30 PM">
+                    </div>
+                    <div class="form-group">
+                        <label>Location / Room</label>
+                        <input type="text" name="location" placeholder="e.g. Room 204 (Stuco HQ)">
+                    </div>
+                    <div class="form-group">
+                        <label>Meeting Leader</label>
+                        <input type="text" name="leader" value="{{ current_user.name }}" placeholder="e.g. Cellestine (President)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Agenda Outline / Key Topics</label>
+                    <textarea name="agenda_summary" rows="3" placeholder="Summary of agenda items to discuss..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Attach Agenda File (PDF / Word Document)</label>
+                    <input type="file" name="agenda_file">
+                </div>
+                <button type="submit" class="btn" style="margin-top: 6px;">Publish Meeting Agenda</button>
+            </form>
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">📝 Meeting Agendas, Minutes & Action Deliverables</span>
+            </div>
+
+            {% for meeting in meetings %}
+            <div class="meeting-card">
+                <div class="meeting-card-header">
+                    <h3 class="meeting-title">{{ meeting.title }}</h3>
+                    <span class="status-badge status-{{ meeting.status }}">{{ meeting.status }}</span>
+                </div>
+
+                <div class="meeting-meta">
+                    <span>📅 <strong>Date:</strong> {{ meeting.date }}</span>
+                    <span>⏰ <strong>Time:</strong> {{ meeting.time }}</span>
+                    <span>📍 <strong>Location:</strong> {{ meeting.location }}</span>
+                    <span>👤 <strong>Leader:</strong> {{ meeting.leader }}</span>
+                </div>
+
+                <!-- Agenda Overview -->
+                <div class="section-box">
+                    <div class="section-title">📋 Agenda Outline</div>
+                    <p style="font-size: 0.9rem; color: var(--text-dark); line-height: 1.5;">{{ meeting.agenda_summary }}</p>
+                    {% if meeting.agenda_file %}
+                    <a href="{{ url_for('static', filename='uploads/' + meeting.agenda_file) }}" style="display:inline-block; font-weight:700; color:var(--primary); margin-top:6px;" target="_blank">
+                        📄 View Attached Agenda File (PDF/Doc) →
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- Action Items Table -->
+                <div class="section-box">
+                    <div class="section-title">✅ Action Items & Deliverables</div>
+                    <div class="table-responsive">
+                        <table class="sheet-table">
+                            <thead>
+                                <tr>
+                                    <th>Task Deliverable</th>
+                                    <th>Assigned Lead</th>
+                                    <th style="width: 110px;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in meeting.action_items %}
+                                <tr>
+                                    <td>{{ item.task }}</td>
+                                    <td style="font-weight: 600;">{{ item.assignee }}</td>
+                                    <td>
+                                        {% if item.done %}
+                                        <span class="status-badge status-Completed">Completed</span>
+                                        {% else %}
+                                        <span class="status-badge status-To-Do">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
     </div>
 

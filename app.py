@@ -803,7 +803,8 @@ def event_workspace(event_id=1):
         stuco_debit=STUCO_DEBT,
         stuco_balance=STUCO_BALANCE,
         all_tasks_sorted=all_tasks_sorted,
-        inventory=INVENTORY
+        inventory=INVENTORY,
+        meetings=MEETINGS
     )
 
 
