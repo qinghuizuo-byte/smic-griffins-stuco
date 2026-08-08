@@ -247,6 +247,15 @@
           "details": "Create Canva assets and share with PR team",
           "notes": "Flyers printed!",
           "status": "Completed"
+        },
+        {
+          "id": 104,
+          "date": "2026-08-12",
+          "task": "hu",
+          "assignee": "",
+          "details": "From Meeting: Main Campus Venue Logistics & Transition",
+          "notes": "Action item created in meeting on 2026-08-12",
+          "status": "To Do"
         }
       ],
       "photos": [],
@@ -359,7 +368,7 @@
       "leader": "Cellestine (President)",
       "agenda_summary": "Review main campus venue booking rules, budget allocation for Homecoming, and Spirit Rally scheduling.",
       "agenda_file": "",
-      "notes": "",
+      "notes": "bla",
       "action_items": [
         {
           "task": "Draft facility request form for Gymnasium",
@@ -369,6 +378,13 @@
         {
           "task": "Confirm Griffin Mascot performer schedule",
           "assignee": "Taylor S.",
+          "done": false
+        },
+        {
+          "task": "hu",
+          "assignee": "",
+          "event_id": 1,
+          "event_title": "Homecoming Dance 2026",
           "done": false
         }
       ]
@@ -554,5 +570,5 @@
     }
   ],
   "STUCO_DEBT": "¥0.00",
-  "STUCO_BALANCE": "¥15,000.00"
+  "STUCO_BALANCE": "¥15000.00"
 }

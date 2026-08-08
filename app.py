@@ -591,6 +591,36 @@ VENDING_SUGGESTIONS = [
 STUCO_DEBT = "¥0.00"
 STUCO_BALANCE = "¥15,000.00"
 
+INVENTORY = [
+    {
+        "id": 1,
+        "name": "Portable Megaphone & Speakers",
+        "quantity": 2,
+        "location": "Shelf A - Box 3",
+        "condition": "Good",
+        "notes": "Used for pep rallies and courtyard events.",
+        "picture": ""
+    },
+    {
+        "id": 2,
+        "name": "Griffin Mascot Costume",
+        "quantity": 1,
+        "location": "Main Closet",
+        "condition": "Excellent",
+        "notes": "Dry cleaned after Homecoming 2025.",
+        "picture": ""
+    },
+    {
+        "id": 3,
+        "name": "Blue & Gold Drape Fabrics",
+        "quantity": 15,
+        "location": "Shelf B - Box 1",
+        "condition": "Good",
+        "notes": "For stage background decoration.",
+        "picture": ""
+    }
+]
+
 
 # ==========================================
 # DATA PERSISTENCE (JSON BACKING STORE)
@@ -616,7 +646,8 @@ def save_data():
             "VENDING_SUGGESTIONS": VENDING_SUGGESTIONS,
             "VOLUNTEER_OPPORTUNITIES": VOLUNTEER_OPPORTUNITIES,
             "STUCO_DEBT": STUCO_DEBT,
-            "STUCO_BALANCE": STUCO_BALANCE
+            "STUCO_BALANCE": STUCO_BALANCE,
+            "INVENTORY": INVENTORY
         }
         with open(DATA_FILE, 'w', encoding='utf-8') as f:
             json.dump(store, f, ensure_ascii=False, indent=2)
@@ -624,7 +655,7 @@ def save_data():
         print(f"Error saving data: {e}")
 
 def load_data():
-    global ACCOUNTS, STUCO_MEMBERS, EVENTS, MEETINGS, ANNOUNCEMENTS, BUDGET_REQUESTS, VENDING_ITEMS, VENDING_SUGGESTIONS, VOLUNTEER_OPPORTUNITIES, STUCO_DEBT, STUCO_BALANCE
+    global ACCOUNTS, STUCO_MEMBERS, EVENTS, MEETINGS, ANNOUNCEMENTS, BUDGET_REQUESTS, VENDING_ITEMS, VENDING_SUGGESTIONS, VOLUNTEER_OPPORTUNITIES, STUCO_DEBT, STUCO_BALANCE, INVENTORY
     if os.path.exists(DATA_FILE):
         try:
             with open(DATA_FILE, 'r', encoding='utf-8') as f:
@@ -641,6 +672,7 @@ def load_data():
                 if "VOLUNTEER_OPPORTUNITIES" in store: VOLUNTEER_OPPORTUNITIES = store["VOLUNTEER_OPPORTUNITIES"]
                 if "STUCO_DEBT" in store: STUCO_DEBT = store["STUCO_DEBT"]
                 if "STUCO_BALANCE" in store: STUCO_BALANCE = store["STUCO_BALANCE"]
+                if "INVENTORY" in store: INVENTORY = store["INVENTORY"]
         except Exception as e:
             print(f"Error loading data: {e}")
 
@@ -770,8 +802,55 @@ def event_workspace(event_id=1):
         grand_remaining=grand_total_allocated - grand_total_spent,
         stuco_debit=STUCO_DEBT,
         stuco_balance=STUCO_BALANCE,
-        all_tasks_sorted=all_tasks_sorted
+        all_tasks_sorted=all_tasks_sorted,
+        inventory=INVENTORY
     )
+
+
+@app.route('/inventory/add', methods=['POST'])
+@login_required
+@require_role(['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'])
+def add_inventory_item():
+    name = request.form.get('name', '').strip()
+    quantity = _safe_int(request.form.get('quantity'), 1)
+    location = request.form.get('location', '').strip()
+    condition = request.form.get('condition', 'Good').strip()
+    notes = request.form.get('notes', '').strip()
+    
+    file = request.files.get('picture_file')
+    picture_url = request.form.get('picture_url', '').strip()
+    picture_src = ""
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        picture_src = url_for('static', filename='uploads/' + filename)
+    elif picture_url:
+        picture_src = picture_url
+
+    new_id = max([i['id'] for i in INVENTORY], default=0) + 1
+    INVENTORY.append({
+        "id": new_id,
+        "name": name,
+        "quantity": quantity,
+        "location": location,
+        "condition": condition,
+        "notes": notes,
+        "picture": picture_src
+    })
+    save_data()
+    flash(f"Storage item '{name}' logged into inventory!", "success")
+    return redirect(url_for('event_workspace', event_id=1))
+
+
+@app.route('/inventory/delete/<int:item_id>', methods=['POST'])
+@login_required
+@require_role(['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'])
+def delete_inventory_item(item_id):
+    global INVENTORY
+    INVENTORY = [i for i in INVENTORY if i['id'] != item_id]
+    save_data()
+    flash("Storage item removed from inventory.", "success")
+    return redirect(url_for('event_workspace', event_id=1))
 
 
 @app.route('/workspace/<int:event_id>/edit_budget', methods=['POST'])

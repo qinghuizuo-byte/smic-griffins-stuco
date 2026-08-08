@@ -53,13 +53,13 @@
 
         /* Workspace Sub-nav / Sub-tabs */
         .workspace-subnav {
-            display: flex; gap: 10px; background: white; padding: 8px; border-radius: 12px;
+            display: flex; gap: 8px; background: white; padding: 8px; border-radius: 12px;
             border: 1px solid #e2e8f0; margin-bottom: 24px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); flex-wrap: wrap;
         }
         .subtab-btn {
-            flex: 1; min-width: 180px; padding: 12px 18px; border: none; background: transparent;
-            font-size: 0.92rem; font-weight: 700; color: var(--text-muted); border-radius: 8px; cursor: pointer;
-            transition: all 0.2s; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;
+            flex: 1; min-width: 160px; padding: 12px 14px; border: none; background: transparent;
+            font-size: 0.88rem; font-weight: 700; color: var(--text-muted); border-radius: 8px; cursor: pointer;
+            transition: all 0.2s; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;
         }
         .subtab-btn:hover { background: var(--primary-light); color: var(--primary); }
         .subtab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 6px rgba(0,102,204,0.2); }
@@ -127,6 +127,18 @@
         .status-In-Progress, .status-Confirmed { background: var(--status-progress); color: var(--status-progress-text); }
         .status-Completed, .status-Paid { background: var(--status-done); color: var(--status-done-text); }
 
+        /* Inventory Cards */
+        .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .inventory-card {
+            background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .inventory-img { width: 100%; height: 160px; object-fit: cover; background: var(--primary-light); display: block; }
+        .inventory-body { padding: 16px; }
+        .inventory-title { font-size: 1.1rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 4px; }
+        .inventory-meta { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 10px; display: flex; justify-content: space-between; }
+        .inventory-notes { font-size: 0.85rem; color: var(--text-dark); background: #f8fafc; padding: 8px 10px; border-radius: 6px; font-style: italic; }
+
         /* Modals */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -142,16 +154,9 @@
             width: 100%; padding: 8px 10px; border: 1.5px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 0.88rem;
         }
 
-        .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-top: 14px; }
-        .photo-card { border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: #fff; }
-        .photo-card img { width: 100%; height: 120px; object-fit: cover; display: block; }
-        .photo-info { padding: 8px; font-size: 0.8rem; }
-
         .alert { padding: 12px 16px; background: #d1e7dd; color: #0f5132; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; }
 
-        @media (max-width: 900px) {
-            .summary-grid { grid-template-columns: repeat(2, 1fr); }
-        }
+        @media (max-width: 900px) { .summary-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 600px) {
             body { padding: 14px; }
             .navbar { flex-direction: column; align-items: flex-start; gap: 14px; padding: 14px 18px; }
@@ -200,7 +205,10 @@
     <!-- Workspace Sub-tabs Navigation -->
     <div class="workspace-subnav">
         <button class="subtab-btn active" onclick="switchSubdiv('event-workspace-subdiv', this)">
-            📁 Event Workspace & Timelines
+            📁 Event Workspace & Expenses
+        </button>
+        <button class="subtab-btn" onclick="switchSubdiv('storage-inventory-subdiv', this)">
+            📦 Storage Room Inventory
         </button>
         <button class="subtab-btn" onclick="switchSubdiv('budget-plan-subdiv', this)">
             💳 Budget Plan & Treasury
@@ -209,12 +217,12 @@
             📅 All Tasks (By Due Date)
         </button>
         <a href="/meetings" class="subtab-btn" style="text-decoration:none;">
-            📝 Meeting Notes & Agendas
+            📝 Meeting Notes
         </a>
     </div>
 
     <!-- ========================================== -->
-    <!-- SUBDIV 1: EVENT WORKSPACE & TIMELINES -->
+    <!-- SUBDIV 1: EVENT WORKSPACE & EXPENSE TRACKER -->
     <!-- ========================================== -->
     <div id="event-workspace-subdiv" class="subdiv-content active">
         <!-- Event Switcher Bar -->
@@ -291,6 +299,71 @@
                                     {% endif %}
                                 </tr>
                                 {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Event Budget & Expense Ledger Card (Purchased Items Tracker) -->
+                <div class="card" style="border-left: 5px solid var(--success);">
+                    <div class="card-header">
+                        <span class="card-title">💰 Event Budget & Purchased Items (Expense Tracker)</span>
+                        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
+                        <button class="btn btn-success" onclick="openAddPurchaseModal()">🛒 Log New Purchased Item</button>
+                        {% endif %}
+                    </div>
+
+                    <div class="summary-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 16px;">
+                        <div class="summary-card">
+                            <div class="summary-label">Allocated Budget</div>
+                            <div class="summary-value">¥{{ "%.2f"|format(total_budget) }}</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-label">Total Spent</div>
+                            <div class="summary-value" style="color: var(--danger);">¥{{ "%.2f"|format(total_spent) }}</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-label">Remaining Event Budget</div>
+                            <div class="summary-value" style="color: var(--success);">¥{{ "%.2f"|format(remaining_budget) }}</div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="sheet-table">
+                            <thead>
+                                <tr>
+                                    <th>Item Purchased</th>
+                                    <th style="width: 110px;">Cost (RMB ¥)</th>
+                                    <th style="width: 120px;">Purchaser</th>
+                                    <th style="width: 110px;">Date</th>
+                                    <th>Notes / Receipt Info</th>
+                                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
+                                    <th style="width: 80px; text-align: center;">Action</th>
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for p in event.purchases %}
+                                <tr>
+                                    <td style="font-weight: 700; color: var(--primary-dark);">🛒 {{ p.item }}</td>
+                                    <td style="font-weight: 800; color: var(--danger);">¥{{ "%.2f"|format(p.cost) }}</td>
+                                    <td>{{ p.buyer }}</td>
+                                    <td>{{ p.date }}</td>
+                                    <td style="font-style: italic; color: var(--text-muted);">{{ p.notes }}</td>
+                                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
+                                    <td style="text-align: center;">
+                                        <form action="{{ url_for('delete_purchase', event_id=event.id, purchase_id=p.id) }}" method="POST" onsubmit="return confirm('Remove purchase record?');">
+                                            <button type="submit" class="btn btn-danger" style="padding: 4px 6px; font-size: 0.72rem; color: white;">Del</button>
+                                        </form>
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                                {% if not event.purchases %}
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">No purchased items logged for this event yet. Click "Log New Purchased Item" above to add items!</td>
+                                </tr>
+                                {% endif %}
                             </tbody>
                         </table>
                     </div>
@@ -378,7 +451,52 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- SUBDIV 2: BUDGET PLAN & TREASURY -->
+    <!-- SUBDIV 2: STORAGE ROOM INVENTORY (NEW!) -->
+    <!-- ========================================== -->
+    <div id="storage-inventory-subdiv" class="subdiv-content">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">📦 Storage Room Inventory Notes & Equipment Tracker</span>
+                {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
+                <button class="btn" onclick="openAddInventoryModal()">➕ Log Storage Room Item</button>
+                {% endif %}
+            </div>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 20px;">
+                All Stuco members have access to record notes, quantities, locations, and photos of equipment stored in the Stuco storage room.
+            </p>
+
+            <div class="inventory-grid">
+                {% for item in inventory %}
+                <div class="inventory-card">
+                    {% if item.picture %}
+                    <img src="{{ item.picture }}" alt="{{ item.name }}" class="inventory-img">
+                    {% else %}
+                    <div class="inventory-img" style="display:flex; align-items:center; justify-content:center; font-size:2.5rem; color:var(--primary);">📦</div>
+                    {% endif %}
+                    <div class="inventory-body">
+                        <div class="inventory-title">{{ item.name }}</div>
+                        <div class="inventory-meta">
+                            <span>📍 {{ item.location }}</span>
+                            <span style="font-weight:800; color:var(--primary);">Qty: {{ item.quantity }}</span>
+                        </div>
+                        <div style="font-size:0.78rem; font-weight:700; color:var(--success); margin-bottom:6px;">Condition: {{ item.condition }}</div>
+                        <div class="inventory-notes">"{{ item.notes }}"</div>
+                    </div>
+                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
+                    <div style="padding: 10px 16px; border-top: 1px solid #f1f5f9; text-align: right;">
+                        <form action="{{ url_for('delete_inventory_item', item_id=item.id) }}" method="POST" onsubmit="return confirm('Delete storage item?');">
+                            <button type="submit" class="btn btn-danger" style="padding: 4px 10px; font-size: 0.75rem;">Delete</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SUBDIV 3: BUDGET PLAN & TREASURY -->
     <!-- ========================================== -->
     <div id="budget-plan-subdiv" class="subdiv-content">
         <div class="summary-grid">
@@ -436,7 +554,7 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- SUBDIV 3: ALL TASKS (ARRANGED BY DUE DATE) -->
+    <!-- SUBDIV 4: ALL TASKS (ARRANGED BY DUE DATE) -->
     <!-- ========================================== -->
     <div id="all-tasks-subdiv" class="subdiv-content">
         <div class="card">
@@ -478,14 +596,48 @@
 </div>
 
 <!-- MODALS -->
+<div class="modal" id="addInventoryModal">
+    <div class="modal-content">
+        <h3 style="font-weight:800; color:var(--primary-dark); margin-bottom:14px;">Log Storage Room Item</h3>
+        <form action="{{ url_for('add_inventory_item') }}" method="POST" enctype="multipart/form-data">
+            <div class="form-group"><label>Item Name</label><input type="text" name="name" placeholder="e.g. Griffin Mascot Props" required></div>
+            <div class="form-group"><label>Quantity</label><input type="number" name="quantity" value="1" min="1" required></div>
+            <div class="form-group"><label>Storage Location / Box</label><input type="text" name="location" placeholder="e.g. Shelf C - Box 2" required></div>
+            <div class="form-group">
+                <label>Condition</label>
+                <select name="condition">
+                    <option value="Excellent">Excellent</option>
+                    <option value="Good">Good</option>
+                    <option value="Fair">Fair / Needs Repair</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Notes</label><textarea name="notes" rows="2" placeholder="e.g. 5 blue balloons included in box"></textarea></div>
+            <div class="form-group"><label>Item Photo File</label><input type="file" name="picture_file" accept="image/*"></div>
+            <div class="form-group"><label>Or Item Photo Image URL</label><input type="url" name="picture_url" placeholder="https://example.com/photo.jpg"></div>
+            <button type="submit" class="btn" style="width:100%; margin-top:8px;">Save Storage Item</button>
+        </form>
+    </div>
+</div>
+
+<div class="modal" id="addPurchaseModal">
+    <div class="modal-content">
+        <h3 style="font-weight:800; color:var(--primary-dark); margin-bottom:14px;">Log New Purchased Item</h3>
+        <form action="{{ url_for('add_purchase', event_id=event.id) }}" method="POST">
+            <div class="form-group"><label>Item Description</label><input type="text" name="item" placeholder="e.g. Sound Speakers" required></div>
+            <div class="form-group"><label>Cost Amount (RMB ¥)</label><input type="number" step="0.01" name="cost" placeholder="e.g. 150.00" required></div>
+            <div class="form-group"><label>Purchaser Name</label><input type="text" name="buyer" value="{{ current_user.name }}"></div>
+            <div class="form-group"><label>Date of Purchase</label><input type="date" name="date" required></div>
+            <div class="form-group"><label>Notes / Receipt Info</label><input type="text" name="notes" placeholder="e.g. Walmart receipt attached"></div>
+            <button type="submit" class="btn btn-success" style="width:100%; margin-top:8px;">Save Purchase Record</button>
+        </form>
+    </div>
+</div>
+
 <div class="modal" id="editBudgetModal">
     <div class="modal-content">
         <h3 style="font-weight:800; color:var(--primary-dark); margin-bottom:14px;">Edit Event Budget Limit</h3>
         <form action="{{ url_for('edit_event_budget', event_id=event.id) }}" method="POST">
-            <div class="form-group">
-                <label>Allocated Budget Amount (RMB ¥)</label>
-                <input type="text" name="budget_allocated" value="{{ event.budget_allocated }}" required>
-            </div>
+            <div class="form-group"><label>Allocated Budget Amount (RMB ¥)</label><input type="text" name="budget_allocated" value="{{ event.budget_allocated }}" required></div>
             <button type="submit" class="btn" style="width:100%; margin-top:8px;">Save Budget Limit</button>
         </form>
     </div>
@@ -495,20 +647,13 @@
     <div class="modal-content">
         <h3 style="font-weight:800; color:var(--primary-dark); margin-bottom:14px;">Edit Stuco Treasury Balance & Debit</h3>
         <form action="{{ url_for('edit_stuco_balance') }}" method="POST">
-            <div class="form-group">
-                <label>Total Stuco Treasury Balance (RMB ¥)</label>
-                <input type="text" name="balance" value="{{ stuco_balance }}" required>
-            </div>
-            <div class="form-group">
-                <label>Stuco Active Debit (RMB ¥)</label>
-                <input type="text" name="debt" value="{{ stuco_debit }}" required>
-            </div>
+            <div class="form-group"><label>Total Stuco Treasury Balance (RMB ¥)</label><input type="text" name="balance" value="{{ stuco_balance }}" required></div>
+            <div class="form-group"><label>Stuco Active Debit (RMB ¥)</label><input type="text" name="debt" value="{{ stuco_debit }}" required></div>
             <button type="submit" class="btn" style="width:100%; margin-top:8px;">Save Treasury Info</button>
         </form>
     </div>
 </div>
 
-<!-- Add/Edit Row Modals -->
 <div class="modal" id="addRowModal">
     <div class="modal-content">
         <h3 style="font-weight:800; color:var(--primary-dark); margin-bottom:14px;">Add Timeline Row</h3>
@@ -559,10 +704,14 @@
         btn.classList.add('active');
     }
 
+    function openAddInventoryModal() { document.getElementById('addInventoryModal').classList.add('active'); }
+    function closeAddInventoryModal() { document.getElementById('addInventoryModal').classList.remove('active'); }
     function openEditBudgetModal() { document.getElementById('editBudgetModal').classList.add('active'); }
     function closeEditBudgetModal() { document.getElementById('editBudgetModal').classList.remove('active'); }
     function openBalanceModal() { document.getElementById('balanceModal').classList.add('active'); }
     function closeBalanceModal() { document.getElementById('balanceModal').classList.remove('active'); }
+    function openAddPurchaseModal() { document.getElementById('addPurchaseModal').classList.add('active'); }
+    function closeAddPurchaseModal() { document.getElementById('addPurchaseModal').classList.remove('active'); }
     function openAddRowModal() { document.getElementById('addRowModal').classList.add('active'); }
     function closeAddRowModal() { document.getElementById('addRowModal').classList.remove('active'); }
     function openAddParticipantModal() { document.getElementById('addParticipantModal').classList.add('active'); }
