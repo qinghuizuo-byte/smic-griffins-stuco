@@ -193,6 +193,9 @@
         .status-In-Progress, .status-Confirmed { background: var(--status-progress); color: var(--status-progress-text); }
         .status-Completed, .status-Paid { background: var(--status-done); color: var(--status-done-text); }
 
+        .badge-before { background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; font-weight:700; padding:3px 8px; border-radius:12px; font-size:0.75rem; }
+        .badge-after { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; font-weight:700; padding:3px 8px; border-radius:12px; font-size:0.75rem; }
+
         /* Inventory Cards */
         .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .inventory-card {
@@ -212,7 +215,7 @@
         }
         .modal.active { display: flex; }
         .modal-content {
-            background: white; border-radius: 14px; padding: 24px; width: 100%; max-width: 520px;
+            background: white; border-radius: 14px; padding: 24px; width: 100%; max-width: 540px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; max-height: 90vh; overflow-y: auto;
         }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 2px solid var(--primary-light); padding-bottom: 10px; }
@@ -344,7 +347,7 @@
                         <span class="hub-block-icon">📝</span>
                         <div class="hub-block-title">Meeting Notes & Agendas</div>
                     </div>
-                    <p class="hub-block-desc">View published meeting agendas, executive notes, action items, and schedule briefings.</p>
+                    <p class="hub-block-desc">View published meeting agendas, executive notes, action items (before/after meeting), and due dates.</p>
                 </div>
                 <button class="btn hub-block-btn">Open Meeting Notes →</button>
             </div>
@@ -354,7 +357,7 @@
 
 
     <!-- ========================================== -->
-    <!-- NESTED SUBGROUP 1: EVENT WORKSPACES (DIVIDED BY HUGE EVENT BUTTONS) -->
+    <!-- NESTED SUBGROUP 1: EVENT WORKSPACES -->
     <!-- ========================================== -->
     <div id="event-workspace-subdiv" class="subdiv-content">
         
@@ -388,7 +391,7 @@
             </div>
         </div>
 
-        <!-- Detailed Event Workspace View (Shown when an event block is clicked) -->
+        <!-- Detailed Event Workspace View -->
         <div id="event-details-view" style="display: none;">
             <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <button class="back-btn" onclick="showEventSelection()">⬅️ Back to All Event Workspaces</button>
@@ -926,7 +929,7 @@
                 </div>
                 {% endif %}
 
-                <!-- Action Items Table -->
+                <!-- Action Items Table (With Timing Category & Due Date Display) -->
                 <div class="section-box" style="margin-top: 14px;">
                     <div class="section-title">✅ Action Items & Deliverables</div>
                     <div class="table-responsive">
@@ -934,14 +937,24 @@
                             <thead>
                                 <tr>
                                     <th>Task Deliverable</th>
+                                    <th style="width: 140px;">Timing Category</th>
+                                    <th style="width: 110px;">Due Date</th>
                                     <th>Assigned Lead</th>
-                                    <th style="width: 110px;">Status</th>
+                                    <th style="width: 100px;">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for item in meeting.action_items %}
                                 <tr>
-                                    <td>{{ item.task }}</td>
+                                    <td style="font-weight: 700; color: var(--primary-dark);">{{ item.task }}</td>
+                                    <td>
+                                        {% if item.timing_category == 'Before Meeting' %}
+                                        <span class="badge-before">⏳ Before Meeting</span>
+                                        {% else %}
+                                        <span class="badge-after">🚀 After Meeting</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><strong>{{ item.due_date or meeting.date }}</strong></td>
                                     <td style="font-weight: 600;">{{ item.assignee }}</td>
                                     <td>
                                         {% if item.done %}
@@ -954,7 +967,7 @@
                                 {% endfor %}
                                 {% if not meeting.action_items %}
                                 <tr>
-                                    <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 14px;">No action items logged yet for this meeting. Click "Edit Notes & Minutes" above to add action items!</td>
+                                    <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 14px;">No action items logged yet for this meeting. Click "Edit Notes & Minutes" above to add action items!</td>
                                 </tr>
                                 {% endif %}
                             </tbody>
@@ -993,11 +1006,11 @@
     </div>
 </div>
 
-<!-- MODAL: EDIT MEETING NOTES & MINUTES -->
+<!-- MODAL: EDIT MEETING NOTES & MINUTES (WITH TIMING CATEGORY & DUE DATE) -->
 <div class="modal" id="editMeetingModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3 style="font-weight:800; color:var(--primary-dark);">Edit Meeting Notes & Minutes</h3>
+            <h3 style="font-weight:800; color:var(--primary-dark);">Edit Meeting Notes & Add Deliverable</h3>
             <button onclick="closeModal('editMeetingModal')" class="close-btn">&times;</button>
         </div>
         <form id="editMeetingForm" method="POST" enctype="multipart/form-data">
@@ -1016,25 +1029,41 @@
             </div>
             <div class="form-group"><label>Agenda Outline</label><textarea name="agenda_summary" id="edit_meet_agenda" rows="2"></textarea></div>
             <div class="form-group"><label>Meeting Minutes & Detailed Notes</label><textarea name="notes" id="edit_meet_notes" rows="4" placeholder="Write meeting notes, discussion points, and deliverables here..."></textarea></div>
-            <div class="form-group">
-                <label>Add New Action Item / Task</label>
-                <input type="text" name="new_task" placeholder="e.g. Finalize DJ contract">
+            
+            <div style="background: #f1f5f9; padding: 14px; border-radius: 8px; border: 1px solid #cbd5e1; margin-top: 14px; margin-bottom: 14px;">
+                <h4 style="font-size: 0.92rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 10px;">➕ Add Meeting Task / Deliverable</h4>
+                <div class="form-group">
+                    <label>Task Description</label>
+                    <input type="text" name="new_task" placeholder="e.g. Prepare presentation slides">
+                </div>
+                <div class="form-group">
+                    <label>Task Timing Category</label>
+                    <select name="timing_category">
+                        <option value="Before Meeting">⏳ Before Meeting (Pre-Meeting Preparation)</option>
+                        <option value="After Meeting" selected>🚀 After Meeting (Post-Meeting Follow-up)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Task Due Date</label>
+                    <input type="date" name="due_date">
+                </div>
+                <div class="form-group">
+                    <label>Assign Lead</label>
+                    <input type="text" name="task_assignee" placeholder="e.g. Jordan K.">
+                </div>
+                <div class="form-group">
+                    <label>Sync Task to Event Workspace</label>
+                    <select name="target_event_id">
+                        <option value="">None (Meeting Task Only)</option>
+                        {% for ev in events %}
+                        <option value="{{ ev.id }}">{{ ev.title }} Workspace</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Assign Action Item To</label>
-                <input type="text" name="task_assignee" placeholder="e.g. Sam (Senior)">
-            </div>
-            <div class="form-group">
-                <label>Sync Task to Event Workspace</label>
-                <select name="target_event_id">
-                    <option value="">None (Meeting Task Only)</option>
-                    {% for ev in events %}
-                    <option value="{{ ev.id }}">{{ ev.title }} Workspace</option>
-                    {% endfor %}
-                </select>
-            </div>
+
             <div class="form-group"><label>Update Agenda File (Optional)</label><input type="file" name="agenda_file"></div>
-            <button type="submit" class="btn" style="width:100%; margin-top:8px;">Save Meeting Notes</button>
+            <button type="submit" class="btn" style="width:100%; margin-top:8px;">Save Meeting Notes & Tasks</button>
         </form>
     </div>
 </div>

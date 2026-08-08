@@ -484,10 +484,10 @@ MEETINGS = [
         "leader": "Cellestine (President)",
         "agenda_summary": "Review main campus venue booking rules, budget allocation for Homecoming, and Spirit Rally scheduling.",
         "agenda_file": "",
-        "notes": "",
+        "notes": "Discussed main campus gym usage guidelines and mascot costumes.",
         "action_items": [
-            {"task": "Draft facility request form for Gymnasium", "assignee": "Jordan K.", "done": False},
-            {"task": "Confirm Griffin Mascot performer schedule", "assignee": "Taylor S.", "done": False}
+            {"task": "Draft facility request form for Gymnasium", "assignee": "Jordan K.", "timing_category": "Before Meeting", "due_date": "2026-08-11", "done": False},
+            {"task": "Confirm Griffin Mascot performer schedule", "assignee": "Taylor S.", "timing_category": "After Meeting", "due_date": "2026-08-15", "done": False}
         ]
     },
     {
@@ -1138,6 +1138,8 @@ def update_meeting_notes(meeting_id):
         new_task = request.form.get('new_task', '').strip()
         if new_task:
             assignee = request.form.get('task_assignee', 'Unassigned').strip()
+            timing_category = request.form.get('timing_category', 'After Meeting').strip()
+            due_date = request.form.get('due_date', meeting.get('date', '')).strip()
             target_event_id_str = request.form.get('target_event_id', '').strip()
             
             event_id = None
@@ -1153,11 +1155,11 @@ def update_meeting_notes(meeting_id):
                         target_event["tasks"] = []
                     target_event["tasks"].append({
                         "id": new_row_id,
-                        "date": meeting.get("date", "Pre-event"),
+                        "date": due_date or meeting.get("date", "Pre-event"),
                         "task": new_task,
                         "assignee": assignee,
-                        "details": f"From Meeting: {meeting['title']}",
-                        "notes": f"Action item created in meeting on {meeting.get('date')}",
+                        "details": f"[{timing_category}] From Meeting: {meeting['title']}",
+                        "notes": f"Meeting task due {due_date}",
                         "status": "To Do"
                     })
                     flash(f"Action item '{new_task}' synced to workspace for '{event_title}'!", "success")
@@ -1165,6 +1167,8 @@ def update_meeting_notes(meeting_id):
             meeting['action_items'].append({
                 "task": new_task,
                 "assignee": assignee,
+                "timing_category": timing_category,
+                "due_date": due_date,
                 "event_id": event_id,
                 "event_title": event_title,
                 "done": False

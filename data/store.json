@@ -570,5 +570,34 @@
     }
   ],
   "STUCO_DEBT": "¥0.00",
-  "STUCO_BALANCE": "¥15000.00"
+  "STUCO_BALANCE": "¥15000.00",
+  "INVENTORY": [
+    {
+      "id": 1,
+      "name": "Portable Megaphone & Speakers",
+      "quantity": 2,
+      "location": "Shelf A - Box 3",
+      "condition": "Good",
+      "notes": "Used for pep rallies and courtyard events.",
+      "picture": ""
+    },
+    {
+      "id": 2,
+      "name": "Griffin Mascot Costume",
+      "quantity": 1,
+      "location": "Main Closet",
+      "condition": "Excellent",
+      "notes": "Dry cleaned after Homecoming 2025.",
+      "picture": ""
+    },
+    {
+      "id": 3,
+      "name": "Blue & Gold Drape Fabrics",
+      "quantity": 15,
+      "location": "Shelf B - Box 1",
+      "condition": "Good",
+      "notes": "For stage background decoration.",
+      "picture": ""
+    }
+  ]
 }
