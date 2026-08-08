@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stuco Meetings & Agendas Hub</title>
+    <title>Stuco Meeting Notes & Agendas</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -15,16 +15,19 @@
             --text-muted: #64748b;
             --card-bg: #ffffff;
             --border-color: #cbd5e1;
-            --badge-upcoming: #dbeafe;
-            --badge-upcoming-text: #1e40af;
-            --badge-archived: #e2e8f0;
-            --badge-archived-text: #475569;
+            --status-todo: #fef3c7;
+            --status-todo-text: #92400e;
+            --status-progress: #dbeafe;
+            --status-progress-text: #1e40af;
+            --status-done: #dcfce7;
+            --status-done-text: #166534;
             --danger: #ef4444;
+            --success: #10b981;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
         body { background-color: var(--bg-main); color: var(--text-dark); padding: 24px; }
-        .container { max-width: 1100px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; }
 
         /* Navbar */
         .navbar {
@@ -39,43 +42,19 @@
             border-left: 6px solid var(--primary);
         }
         .brand-title { font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); }
-        .nav-links { display: flex; gap: 14px; align-items: center; }
+        .nav-links { display: flex; gap: 12px; align-items: center; }
         .nav-link {
             text-decoration: none; color: var(--text-dark); font-weight: 600; font-size: 0.88rem;
-            padding: 7px 14px; border-radius: 8px; transition: background 0.15s;
+            padding: 7px 12px; border-radius: 8px; transition: background 0.15s;
         }
         .nav-link:hover { background: var(--primary-light); color: var(--primary); }
         .nav-link.active { background: var(--primary); color: white; }
 
-        /* Collapsible Executive Form */
-        details.schedule-panel {
-            background: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            overflow: hidden;
+        .page-header {
+            display: flex; justify-content: space-between; align-items: center; background: white;
+            padding: 24px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03); flex-wrap: wrap; gap: 14px;
         }
-        details.schedule-panel summary {
-            font-size: 1.05rem;
-            font-weight: 800;
-            color: var(--primary-dark);
-            cursor: pointer;
-            padding: 18px 24px;
-            list-style: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #ffffff;
-            transition: background 0.15s;
-        }
-        details.schedule-panel summary:hover { background: var(--primary-light); }
-        details.schedule-panel summary::after {
-            content: "▼"; font-size: 0.85rem; color: var(--primary); transition: transform 0.2s;
-        }
-        details.schedule-panel[open] summary::after { transform: rotate(180deg); }
-
-        .form-content { padding: 24px; border-top: 1px solid #e2e8f0; background: #fafcff; }
 
         .card {
             background: var(--card-bg); border-radius: 12px; padding: 24px; margin-bottom: 24px;
@@ -85,69 +64,77 @@
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
             border-bottom: 2px solid var(--primary-light); padding-bottom: 10px;
         }
-        .card-title { font-size: 1.25rem; color: var(--primary-dark); font-weight: 800; }
+        .card-title { font-size: 1.2rem; color: var(--primary-dark); font-weight: 800; }
 
-        .form-group { margin-bottom: 14px; }
-        .form-group label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 4px; color: var(--text-dark); }
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%; padding: 10px; border: 1.5px solid var(--border-color); border-radius: 6px; font-size: 0.9rem;
-            font-family: inherit; outline: none;
+        /* Meeting Card Formatting */
+        .meeting-card {
+            background: var(--card-bg); border-radius: 12px; padding: 22px; margin-bottom: 20px;
+            border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.03);
         }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); }
+        .meeting-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+        .meeting-title { font-size: 1.2rem; font-weight: 800; color: var(--primary-dark); }
+        .meeting-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; background: #f8fafc; padding: 10px 14px; border-radius: 8px; }
+        .section-box { margin-bottom: 16px; }
+        .section-title { font-size: 0.88rem; font-weight: 800; color: var(--primary); margin-bottom: 6px; text-transform: uppercase; }
 
+        /* Table */
+        .table-responsive { width: 100%; overflow-x: auto; border-radius: 8px; border: 1px solid var(--border-color); }
+        .sheet-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; background: white; }
+        .sheet-table th {
+            background-color: #f1f5f9; color: #475569; font-weight: 700; padding: 12px;
+            font-size: 0.82rem; text-transform: uppercase; border-bottom: 2px solid var(--border-color);
+        }
+        .sheet-table td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+        .sheet-table tr:hover td { background-color: #f8fafc; }
+
+        .status-badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; }
+        .status-To-Do, .status-Upcoming { background: var(--status-todo); color: var(--status-todo-text); }
+        .status-In-Progress, .status-Confirmed { background: var(--status-progress); color: var(--status-progress-text); }
+        .status-Completed, .status-Paid, .status-Archived { background: var(--status-done); color: var(--status-done-text); }
+
+        .badge-before { background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; font-weight:700; padding:3px 8px; border-radius:12px; font-size:0.75rem; }
+        .badge-after { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; font-weight:700; padding:3px 8px; border-radius:12px; font-size:0.75rem; }
+
+        /* Buttons */
         .btn {
-            background-color: var(--primary); color: white; border: none; padding: 10px 18px;
-            border-radius: 6px; font-weight: 700; cursor: pointer; transition: background 0.2s ease;
-            font-size: 0.88rem; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none;
+            background-color: var(--primary); color: white; border: none; padding: 8px 16px;
+            border-radius: 6px; font-weight: 700; cursor: pointer; transition: background 0.2s;
+            font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none;
         }
         .btn:hover { background-color: var(--primary-dark); }
         .btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
         .btn-outline:hover { background: var(--primary-light); }
 
-        .status-badge {
-            display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700;
+        /* Modals & Close Button (X) */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.45); z-index: 1000; align-items: center; justify-content: center;
         }
-        .status-Upcoming { background: var(--badge-upcoming); color: var(--badge-upcoming-text); }
-        .status-Archived { background: var(--badge-archived); color: var(--badge-archived-text); }
-
-        .meeting-card {
-            border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 20px; background: #fff;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        .modal.active { display: flex; }
+        .modal-content {
+            background: white; border-radius: 14px; padding: 24px; width: 100%; max-width: 540px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; max-height: 90vh; overflow-y: auto;
         }
-        .meeting-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-        .meeting-title { font-size: 1.2rem; font-weight: 800; color: var(--primary-dark); }
-        .meeting-meta { font-size: 0.88rem; color: var(--text-muted); display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 16px; }
-        
-        .section-box {
-            background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; padding: 14px 16px; margin-top: 14px;
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 2px solid var(--primary-light); padding-bottom: 10px; }
+        .close-btn {
+            font-size: 1.6rem; font-weight: 800; background: none; border: none; cursor: pointer; color: var(--text-muted);
+            transition: color 0.15s; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%;
         }
-        .section-title { font-size: 0.85rem; font-weight: 800; color: var(--primary-dark); text-transform: uppercase; margin-bottom: 8px; }
+        .close-btn:hover { color: var(--danger); background: #fee2e2; }
 
-        .action-item-list { background: #eff6ff; border-radius: 8px; border: 1px solid #dbeafe; padding: 14px 16px; margin-top: 14px; }
-        .action-item { font-size: 0.88rem; display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed #cbd5e1; }
-        .action-item:last-child { border-bottom: none; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 4px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 8px 10px; border: 1.5px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 0.88rem;
+        }
 
-        .file-link { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 700; margin-top: 10px; }
-        .file-link:hover { text-decoration: underline; }
         .alert { padding: 12px 16px; background: #d1e7dd; color: #0f5132; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; }
 
-        details.edit-board {
-            margin-top: 16px; border-top: 1px solid #e2e8f0; padding-top: 12px;
-        }
-        details.edit-board summary {
-            font-size: 0.85rem; font-weight: 700; color: var(--primary); cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px;
-        }
-        details.edit-board summary:hover { text-decoration: underline; }
-
-        /* Mobile Responsiveness */
-        @media (max-width: 768px) {
+        @media (max-width: 600px) {
             body { padding: 14px; }
-            .navbar {
-                flex-direction: column; align-items: flex-start; gap: 14px; padding: 14px 18px;
-            }
+            .navbar { flex-direction: column; align-items: flex-start; gap: 14px; padding: 14px 18px; }
             .nav-links { flex-wrap: wrap; gap: 8px; width: 100%; }
             .nav-link { font-size: 0.8rem; padding: 6px 10px; flex-grow: 1; text-align: center; }
-            .meeting-meta { gap: 10px; flex-direction: column; }
         }
     </style>
 </head>
@@ -155,13 +142,14 @@
 
 <div class="container">
 
-    <!-- Navbar Header -->
+    <!-- Standard Aligned Navbar Header -->
     <div class="navbar">
-        <div class="brand-title">🦅 Stuco Meetings & Agendas Hub</div>
+        <div class="brand-title">🦅 Meeting Notes & Agendas</div>
         <div class="nav-links">
             <a href="/" class="nav-link">Home</a>
             <a href="/workspace/1" class="nav-link">Stuco Workspace</a>
             <a href="/meetings" class="nav-link active">Meeting Notes</a>
+            <a href="/calendar" class="nav-link">Calendar</a>
             <a href="/vending" class="nav-link">Vending Machine</a>
             <a href="/updates" class="nav-link">Stuco Updates</a>
             <a href="/volunteers" class="nav-link">CSH (Volunteer)</a>
@@ -186,63 +174,31 @@
       {% endif %}
     {% endwith %}
 
-    <!-- Collapsible Executive Meeting Scheduler (Restricted to President, Vice President, Secretary) -->
-    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary'] %}
-    <details class="schedule-panel">
-        <summary>
-            <span>➕ Schedule New Meeting & Upload Agenda (Executive Officers Only)</span>
-        </summary>
-        <div class="form-content">
-            <form action="{{ url_for('add_meeting') }}" method="POST" enctype="multipart/form-data">
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 14px;">
-                    <div class="form-group">
-                        <label>Meeting Title</label>
-                        <input type="text" name="title" placeholder="e.g. Weekly Executive Officers Briefing" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Meeting Date</label>
-                        <input type="date" name="date" required>
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;">
-                    <div class="form-group">
-                        <label>Time Slot</label>
-                        <input type="text" name="time" placeholder="e.g. 3:30 PM - 4:30 PM">
-                    </div>
-                    <div class="form-group">
-                        <label>Location / Room</label>
-                        <input type="text" name="location" placeholder="e.g. Room 204 (Stuco HQ)">
-                    </div>
-                    <div class="form-group">
-                        <label>Meeting Leader</label>
-                        <input type="text" name="leader" value="{{ current_user.name }}" placeholder="e.g. Cellestine (President)">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Agenda Outline / Key Topics</label>
-                    <textarea name="agenda_summary" rows="3" placeholder="Summary of agenda items to discuss..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Attach Agenda File (PDF / Word Document)</label>
-                    <input type="file" name="agenda_file">
-                </div>
-                <button type="submit" class="btn" style="width: 100%; margin-top: 8px;">Publish Meeting Agenda</button>
-            </form>
+    <div class="page-header">
+        <div>
+            <h1 style="font-size: 1.6rem; font-weight: 900; color: var(--primary-dark);">📝 Stuco Executive Meeting Notes & Agendas</h1>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 4px;">Track published agendas, meeting minutes, discussion notes, and deliverables.</p>
         </div>
-    </details>
-    {% endif %}
+        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+        <button class="btn" onclick="openModal('addMeetingModal')">➕ Schedule New Meeting Card</button>
+        {% endif %}
+    </div>
 
-    <!-- Main Feed: Meetings, Agendas, Notes & Action Items -->
     <div class="card">
         <div class="card-header">
-            <span class="card-title">Meeting Agendas, Minutes & Action Deliverables</span>
+            <span class="card-title">Published Agendas & Executive Minutes</span>
         </div>
 
         {% for meeting in meetings %}
         <div class="meeting-card">
             <div class="meeting-card-header">
-                <h3 class="meeting-title">{{ meeting.title }}</h3>
-                <span class="status-badge status-{{ meeting.status }}">{{ meeting.status }}</span>
+                <h3 class="meeting-title">📌 {{ meeting.title }}</h3>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <span class="status-badge status-{{ meeting.status.replace(' ', '-') }}">{{ meeting.status }}</span>
+                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                    <button class="btn btn-outline" style="padding: 4px 10px; font-size: 0.78rem;" onclick='openEditMeetingModal({{ meeting | tojson | safe }})'>✏️ Edit Notes & Minutes</button>
+                    {% endif %}
+                </div>
             </div>
 
             <div class="meeting-meta">
@@ -257,99 +213,188 @@
                 <div class="section-title">📋 Agenda Outline</div>
                 <p style="font-size: 0.9rem; color: var(--text-dark); line-height: 1.5;">{{ meeting.agenda_summary }}</p>
                 {% if meeting.agenda_file %}
-                <a href="{{ url_for('static', filename='uploads/' + meeting.agenda_file) }}" class="file-link" target="_blank">
-                    📄 Download Agenda File ({{ meeting.agenda_file }})
+                <a href="{{ url_for('static', filename='uploads/' + meeting.agenda_file) }}" style="display:inline-block; font-weight:700; color:var(--primary); margin-top:6px;" target="_blank">
+                    📄 View Attached Agenda File (PDF/Doc) →
                 </a>
                 {% endif %}
             </div>
 
-            <!-- Meeting Notes / Minutes Display -->
+            <!-- Meeting Notes / Minutes -->
             {% if meeting.notes %}
-            <div class="section-box" style="background: #ffffff; border-color: var(--primary-light);">
-                <div class="section-title" style="color: var(--primary-dark);">📝 Detailed Meeting Minutes / Notes</div>
-                <p style="font-size: 0.9rem; color: var(--text-dark); line-height: 1.6; white-space: pre-line;">{{ meeting.notes }}</p>
+            <div class="section-box" style="background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <div class="section-title" style="color: var(--primary-dark);">📝 Meeting Minutes & Discussion Notes</div>
+                <p style="font-size: 0.9rem; color: var(--text-dark); line-height: 1.5; white-space: pre-wrap;">{{ meeting.notes }}</p>
             </div>
             {% endif %}
 
-            <!-- Action Required / Action Items Section -->
-            {% if meeting.action_items %}
-            <div class="action-item-list">
-                <div class="section-title" style="color: var(--primary-dark); margin-bottom: 6px;">⚡ Action Required / Deliverables:</div>
-                {% for item in meeting.action_items %}
-                <div class="action-item">
-                    <div>
-                        <strong style="color: var(--text-dark);">• {{ item.task }}</strong>
-                        <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 8px;">(Assigned: {{ item.assignee }})</span>
-                    </div>
-                    {% if item.event_id and item.event_title %}
-                    <a href="/workspace/{{ item.event_id }}" style="font-size: 0.78rem; font-weight: 700; color: var(--primary); background: white; padding: 3px 8px; border-radius: 6px; text-decoration: none; border: 1px solid var(--primary-light);">
-                        📌 {{ item.event_title }} Workspace →
-                    </a>
-                    {% endif %}
+            <!-- Action Items Table -->
+            <div class="section-box" style="margin-top: 14px;">
+                <div class="section-title">✅ Action Items & Deliverables</div>
+                <div class="table-responsive">
+                    <table class="sheet-table">
+                        <thead>
+                            <tr>
+                                <th>Task Deliverable</th>
+                                <th style="width: 140px;">Timing Category</th>
+                                <th style="width: 110px;">Due Date</th>
+                                <th>Assigned Lead</th>
+                                <th style="width: 100px;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in meeting.action_items %}
+                            <tr>
+                                <td style="font-weight: 700; color: var(--primary-dark);">{{ item.task }}</td>
+                                <td>
+                                    {% if item.timing_category == 'Before Meeting' %}
+                                    <span class="badge-before">⏳ Before Meeting</span>
+                                    {% else %}
+                                    <span class="badge-after">🚀 After Meeting</span>
+                                    {% endif %}
+                                </td>
+                                <td><strong>{{ item.due_date or meeting.date }}</strong></td>
+                                <td style="font-weight: 600;">{{ item.assignee }}</td>
+                                <td>
+                                    {% if item.done %}
+                                    <span class="status-badge status-Completed">Completed</span>
+                                    {% else %}
+                                    <span class="status-badge status-To-Do">Pending</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% if not meeting.action_items %}
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 14px;">No action items logged yet for this meeting. Click "Edit Notes & Minutes" above to add action items!</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
                 </div>
-                {% endfor %}
             </div>
-            {% endif %}
-
-            <!-- Minimized Editing Board for Stuco Members -->
-            {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-            <details class="edit-board">
-                <summary>
-                    ⚙️ Edit Meeting Notes & Add Action Items (Click to expand)
-                </summary>
-                
-                <form action="{{ url_for('update_meeting_notes', meeting_id=meeting.id) }}" method="POST" style="margin-top: 14px; background: #fafcff; padding: 18px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <div class="form-group">
-                        <label>Meeting Minutes / Key Takeaways</label>
-                        <textarea name="notes" rows="4" placeholder="Type key decisions, discussions, and vote counts here...">{{ meeting.notes }}</textarea>
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
-                        <div class="form-group">
-                            <label>Add New Action Item / Task</label>
-                            <input type="text" name="new_task" placeholder="e.g. Confirm audio equipment rental">
-                        </div>
-                        <div class="form-group">
-                            <label>Assignee</label>
-                            <input type="text" name="task_assignee" placeholder="e.g. Alex M.">
-                        </div>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 10px;">
-                        <div class="form-group">
-                            <label>Associate Task with Event Workspace (Optional)</label>
-                            <select name="target_event_id">
-                                <option value="">-- No Event Association (General Task) --</option>
-                                {% for ev in events %}
-                                <option value="{{ ev.id }}">{{ ev.title }} ({{ ev.display_date }})</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Meeting Status</label>
-                            <select name="status">
-                                <option value="Upcoming" {% if meeting.status == 'Upcoming' %}selected{% endif %}>Upcoming</option>
-                                <option value="Archived" {% if meeting.status == 'Archived' %}selected{% endif %}>Archived (Completed)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn" style="padding: 8px 16px; font-size: 0.85rem;">Save Meeting Notes & Action Items</button>
-                </form>
-            </details>
-            {% else %}
-            {% if not current_user.is_authenticated %}
-            <div style="margin-top:12px;font-size:0.8rem;color:var(--text-muted);">
-                🔒 <a href="/login" style="color:var(--primary);font-weight:700;">Sign in</a> to record meeting notes or action items.
-            </div>
-            {% endif %}
-            {% endif %}
-
         </div>
         {% endfor %}
+    </div>
 
+</div>
+
+<!-- ========================================== -->
+<!-- MODAL POPUPS WITH CLOSE (X) AND DISCARD BUTTONS -->
+<!-- ========================================== -->
+
+<!-- MODAL: ADD MEETING CARD -->
+<div class="modal" id="addMeetingModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">Schedule New Meeting</h3>
+            <button onclick="closeModal('addMeetingModal')" class="close-btn">&times;</button>
+        </div>
+        <form action="{{ url_for('add_meeting') }}" method="POST" enctype="multipart/form-data">
+            <div class="form-group"><label>Meeting Title</label><input type="text" name="title" placeholder="e.g. Executive Planning Session" required></div>
+            <div class="form-group"><label>Meeting Date</label><input type="date" name="date" required></div>
+            <div class="form-group"><label>Time Slot</label><input type="text" name="time" placeholder="e.g. 3:30 PM - 4:30 PM"></div>
+            <div class="form-group"><label>Location / Room</label><input type="text" name="location" placeholder="e.g. Room 204 (Stuco HQ)"></div>
+            <div class="form-group"><label>Meeting Leader</label><input type="text" name="leader" value="{{ current_user.name }}"></div>
+            <div class="form-group"><label>Agenda Outline</label><textarea name="agenda_summary" rows="2" placeholder="Summary of agenda items..."></textarea></div>
+            <div class="form-group"><label>Meeting Minutes & Notes</label><textarea name="notes" rows="3" placeholder="Notes taken during the meeting..."></textarea></div>
+            <div class="form-group"><label>Attach Agenda File</label><input type="file" name="agenda_file"></div>
+            
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Publish Meeting</button>
+                <button type="button" onclick="closeModal('addMeetingModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
+            </div>
+        </form>
     </div>
 </div>
+
+<!-- MODAL: EDIT MEETING NOTES & MINUTES -->
+<div class="modal" id="editMeetingModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">Edit Meeting Notes & Add Deliverable</h3>
+            <button onclick="closeModal('editMeetingModal')" class="close-btn">&times;</button>
+        </div>
+        <form id="editMeetingForm" method="POST" enctype="multipart/form-data">
+            <div class="form-group"><label>Meeting Title</label><input type="text" name="title" id="edit_meet_title" required></div>
+            <div class="form-group"><label>Meeting Date</label><input type="text" name="date" id="edit_meet_date" required></div>
+            <div class="form-group"><label>Time Slot</label><input type="text" name="time" id="edit_meet_time"></div>
+            <div class="form-group"><label>Location / Room</label><input type="text" name="location" id="edit_meet_location"></div>
+            <div class="form-group"><label>Meeting Leader</label><input type="text" name="leader" id="edit_meet_leader"></div>
+            <div class="form-group">
+                <label>Meeting Status</label>
+                <select name="status" id="edit_meet_status">
+                    <option value="Upcoming">Upcoming</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Agenda Outline</label><textarea name="agenda_summary" id="edit_meet_agenda" rows="2"></textarea></div>
+            <div class="form-group"><label>Meeting Minutes & Detailed Notes</label><textarea name="notes" id="edit_meet_notes" rows="4" placeholder="Write meeting notes, discussion points, and deliverables here..."></textarea></div>
+            
+            <div style="background: #f1f5f9; padding: 14px; border-radius: 8px; border: 1px solid #cbd5e1; margin-top: 14px; margin-bottom: 14px;">
+                <h4 style="font-size: 0.92rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 10px;">➕ Add Meeting Task / Deliverable</h4>
+                <div class="form-group">
+                    <label>Task Description</label>
+                    <input type="text" name="new_task" placeholder="e.g. Prepare presentation slides">
+                </div>
+                <div class="form-group">
+                    <label>Task Timing Category</label>
+                    <select name="timing_category">
+                        <option value="Before Meeting">⏳ Before Meeting (Pre-Meeting Preparation)</option>
+                        <option value="After Meeting" selected>🚀 After Meeting (Post-Meeting Follow-up)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Task Due Date</label>
+                    <input type="date" name="due_date">
+                </div>
+                <div class="form-group">
+                    <label>Assign Lead</label>
+                    <input type="text" name="task_assignee" placeholder="e.g. Jordan K.">
+                </div>
+                <div class="form-group">
+                    <label>Sync Task to Event Workspace</label>
+                    <select name="target_event_id">
+                        <option value="">None (Meeting Task Only)</option>
+                        {% for ev in events %}
+                        <option value="{{ ev.id }}">{{ ev.title }} Workspace</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group"><label>Update Agenda File (Optional)</label><input type="file" name="agenda_file"></div>
+            
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Save Meeting Notes</button>
+                <button type="button" onclick="closeModal('editMeetingModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('active');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+    }
+
+    function openEditMeetingModal(meeting) {
+        document.getElementById('edit_meet_title').value = meeting.title;
+        document.getElementById('edit_meet_date').value = meeting.date;
+        document.getElementById('edit_meet_time').value = meeting.time || '';
+        document.getElementById('edit_meet_location').value = meeting.location || '';
+        document.getElementById('edit_meet_leader').value = meeting.leader || '';
+        document.getElementById('edit_meet_status').value = meeting.status || 'Upcoming';
+        document.getElementById('edit_meet_agenda').value = meeting.agenda_summary || '';
+        document.getElementById('edit_meet_notes').value = meeting.notes || '';
+        document.getElementById('editMeetingForm').action = "/meetings/" + meeting.id + "/update_notes";
+        openModal('editMeetingModal');
+    }
+</script>
 
 </body>
 </html>

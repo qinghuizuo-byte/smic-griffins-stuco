@@ -486,8 +486,8 @@ MEETINGS = [
         "agenda_file": "",
         "notes": "Discussed main campus gym usage guidelines and mascot costumes.",
         "action_items": [
-            {"task": "Draft facility request form for Gymnasium", "assignee": "Jordan K.", "timing_category": "Before Meeting", "due_date": "2026-08-11", "done": False},
-            {"task": "Confirm Griffin Mascot performer schedule", "assignee": "Taylor S.", "timing_category": "After Meeting", "due_date": "2026-08-15", "done": False}
+            {"id": 1, "task": "Draft facility request form for Gymnasium", "assignee": "Jordan K.", "timing_category": "Before Meeting", "due_date": "2026-08-11", "done": False},
+            {"id": 2, "task": "Confirm Griffin Mascot performer schedule", "assignee": "Taylor S.", "timing_category": "After Meeting", "due_date": "2026-08-15", "done": False}
         ]
     },
     {
@@ -502,8 +502,8 @@ MEETINGS = [
         "agenda_file": "",
         "notes": "1. Approved $2,500 baseline budget for Homecoming 2026.\n2. Vending machine suggestion portal approved for Stuco site.\n3. Weekly meetings set for Wednesdays at 3:30 PM.",
         "action_items": [
-            {"task": "Set up Python Stuco Web Portal", "assignee": "Tech Lead", "done": True},
-            {"task": "Distribute committee signup forms", "assignee": "Alex M.", "done": True}
+            {"id": 101, "task": "Set up Python Stuco Web Portal", "assignee": "Tech Lead", "timing_category": "Before Meeting", "due_date": "2026-08-01", "done": True},
+            {"id": 102, "task": "Distribute committee signup forms", "assignee": "Alex M.", "timing_category": "After Meeting", "due_date": "2026-08-03", "done": True}
         ]
     }
 ]
@@ -1164,7 +1164,9 @@ def update_meeting_notes(meeting_id):
                     })
                     flash(f"Action item '{new_task}' synced to workspace for '{event_title}'!", "success")
 
+            new_task_id = max([t.get('id', 0) for t in meeting.get('action_items', [])], default=0) + 1
             meeting['action_items'].append({
+                "id": new_task_id,
                 "task": new_task,
                 "assignee": assignee,
                 "timing_category": timing_category,
@@ -1177,6 +1179,101 @@ def update_meeting_notes(meeting_id):
         save_data()
         flash("Meeting notes & agenda details updated!", "success")
         
+    ref = request.referrer or ""
+    if 'workspace' in ref:
+        return redirect(url_for('event_workspace', event_id=1))
+    return redirect(url_for('meetings_hub'))
+
+
+@app.route('/meetings/<int:meeting_id>/tasks/add', methods=['POST'])
+@login_required
+@require_role(['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'])
+def add_meeting_task(meeting_id):
+    meeting = next((m for m in MEETINGS if m['id'] == meeting_id), None)
+    if meeting:
+        task_title = request.form.get('task', '').strip()
+        if task_title:
+            assignee = request.form.get('assignee', 'Unassigned').strip()
+            timing_category = request.form.get('timing_category', 'After Meeting').strip()
+            due_date = request.form.get('due_date', meeting.get('date', '')).strip()
+            target_event_id_str = request.form.get('target_event_id', '').strip()
+            
+            event_id = None
+            event_title = None
+            if target_event_id_str.isdigit():
+                event_id = int(target_event_id_str)
+                target_event = EVENTS.get(event_id)
+                if target_event:
+                    event_title = target_event.get("title")
+                    new_row_id = max([r['id'] for r in target_event.get("tasks", [])], default=100) + 1
+                    if "tasks" not in target_event:
+                        target_event["tasks"] = []
+                    target_event["tasks"].append({
+                        "id": new_row_id,
+                        "date": due_date or meeting.get("date", "Pre-event"),
+                        "task": task_title,
+                        "assignee": assignee,
+                        "details": f"[{timing_category}] From Meeting: {meeting['title']}",
+                        "notes": f"Meeting task due {due_date}",
+                        "status": "To Do"
+                    })
+
+            new_task_id = max([t.get('id', 0) for t in meeting.get('action_items', [])], default=0) + 1
+            if "action_items" not in meeting:
+                meeting["action_items"] = []
+            meeting["action_items"].append({
+                "id": new_task_id,
+                "task": task_title,
+                "assignee": assignee,
+                "timing_category": timing_category,
+                "due_date": due_date,
+                "event_id": event_id,
+                "event_title": event_title,
+                "done": False
+            })
+            save_data()
+            flash(f"Meeting task '{task_title}' added!", "success")
+
+    ref = request.referrer or ""
+    if 'workspace' in ref:
+        return redirect(url_for('event_workspace', event_id=1))
+    return redirect(url_for('meetings_hub'))
+
+
+@app.route('/meetings/<int:meeting_id>/tasks/<int:task_id>/edit', methods=['POST'])
+@login_required
+@require_role(['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'])
+def edit_meeting_task(meeting_id, task_id):
+    meeting = next((m for m in MEETINGS if m['id'] == meeting_id), None)
+    if meeting:
+        for t in meeting.get("action_items", []):
+            if t.get("id") == task_id:
+                t["task"] = request.form.get('task', t["task"]).strip()
+                t["assignee"] = request.form.get('assignee', t["assignee"]).strip()
+                t["timing_category"] = request.form.get('timing_category', t.get("timing_category", "After Meeting")).strip()
+                t["due_date"] = request.form.get('due_date', t.get("due_date", "")).strip()
+                done_val = request.form.get('done', '')
+                t["done"] = (done_val.lower() == 'true' or done_val == '1')
+                flash(f"Meeting task updated successfully!", "success")
+                break
+        save_data()
+
+    ref = request.referrer or ""
+    if 'workspace' in ref:
+        return redirect(url_for('event_workspace', event_id=1))
+    return redirect(url_for('meetings_hub'))
+
+
+@app.route('/meetings/<int:meeting_id>/tasks/<int:task_id>/delete', methods=['POST'])
+@login_required
+@require_role(['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'])
+def delete_meeting_task(meeting_id, task_id):
+    meeting = next((m for m in MEETINGS if m['id'] == meeting_id), None)
+    if meeting:
+        meeting["action_items"] = [t for t in meeting.get("action_items", []) if t.get("id") != task_id]
+        save_data()
+        flash("Meeting task deleted!", "success")
+
     ref = request.referrer or ""
     if 'workspace' in ref:
         return redirect(url_for('event_workspace', event_id=1))

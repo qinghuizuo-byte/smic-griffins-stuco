@@ -170,11 +170,11 @@
         <div class="brand-logo">
             🦅 HS Student Council
         </div>
-
         <div class="nav-links">
             <a href="/" class="nav-link active">Home</a>
             <a href="/workspace/1" class="nav-link">Stuco Workspace</a>
             <a href="/meetings" class="nav-link">Meeting Notes</a>
+            <a href="/calendar" class="nav-link">Calendar</a>
             <a href="/vending" class="nav-link">Vending Machine</a>
             <a href="/updates" class="nav-link">Stuco Updates</a>
             <a href="/volunteers" class="nav-link">CSH (Volunteer)</a>
@@ -184,20 +184,10 @@
             {% endif %}
             
             {% if current_user.is_authenticated %}
-            <div class="user-pill">
-                <div class="user-avatar">
-                    {% if current_user.picture %}
-                    <img src="{{ current_user.picture }}" alt="User">
-                    {% else %}
-                    {{ current_user.name[0] | upper }}
-                    {% endif %}
-                </div>
-                <span>{{ current_user.name }}</span>
-                <a href="/me" style="font-size:0.8rem; font-weight:700; color:var(--primary); text-decoration:none; margin-left:4px;">Me</a>
-                <a href="/logout" class="logout-link">Sign out</a>
-            </div>
+            <a href="/me" class="nav-link">Me</a>
+            <a href="/logout" class="nav-link" style="color:var(--danger);">Sign out</a>
             {% else %}
-            <a href="/login" class="btn">🔑 Sign In</a>
+            <a href="/login" class="nav-link" style="background:var(--primary);color:white;">🔑 Sign In</a>
             {% endif %}
         </div>
     </div>

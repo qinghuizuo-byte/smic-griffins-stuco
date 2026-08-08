@@ -159,7 +159,7 @@
         .btn {
             background-color: var(--primary); color: white; border: none; padding: 8px 16px;
             border-radius: 6px; font-weight: 700; cursor: pointer; transition: background 0.2s;
-            font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+            font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none;
         }
         .btn:hover { background-color: var(--primary-dark); }
         .btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
@@ -257,6 +257,8 @@
         <div class="nav-links">
             <a href="/" class="nav-link">Home</a>
             <a href="/workspace/1" class="nav-link active">Stuco Workspace</a>
+            <a href="/meetings" class="nav-link">Meeting Notes</a>
+            <a href="/calendar" class="nav-link">Calendar</a>
             <a href="/vending" class="nav-link">Vending Machine</a>
             <a href="/updates" class="nav-link">Stuco Updates</a>
             <a href="/volunteers" class="nav-link">CSH (Volunteer)</a>
@@ -881,7 +883,7 @@
         <div class="card" style="border-left: 5px solid var(--primary);">
             <div class="card-header">
                 <span class="card-title">➕ Schedule New Meeting & Agenda</span>
-                <button class="btn" onclick="openModal('addMeetingModal')">➕ New Meeting</button>
+                <button class="btn" onclick="openModal('addMeetingModal')">➕ New Meeting Card</button>
             </div>
         </div>
         {% endif %}
@@ -898,7 +900,7 @@
                     <div style="display: flex; gap: 8px; align-items: center;">
                         <span class="status-badge status-{{ meeting.status.replace(' ', '-') }}">{{ meeting.status }}</span>
                         {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-                        <button class="btn btn-outline" style="padding: 4px 10px; font-size: 0.78rem;" onclick='openEditMeetingModal({{ meeting | tojson | safe }})'>✏️ Edit Notes & Minutes</button>
+                        <button class="btn btn-outline" style="padding: 4px 10px; font-size: 0.78rem;" onclick='openEditMeetingModal({{ meeting | tojson | safe }})'>✏️ Edit Meeting Info & Notes</button>
                         {% endif %}
                     </div>
                 </div>
@@ -929,9 +931,15 @@
                 </div>
                 {% endif %}
 
-                <!-- Action Items Table (With Timing Category & Due Date Display) -->
+                <!-- Action Items Table (With Individual Add, Edit, Delete Controls) -->
                 <div class="section-box" style="margin-top: 14px;">
-                    <div class="section-title">✅ Action Items & Deliverables</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div class="section-title" style="margin-bottom: 0;">✅ Action Items & Deliverables</div>
+                        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                        <button class="btn btn-outline" style="padding: 3px 8px; font-size: 0.75rem;" onclick="openAddMeetingTaskModal({{ meeting.id }})">➕ Add Task</button>
+                        {% endif %}
+                    </div>
+
                     <div class="table-responsive">
                         <table class="sheet-table">
                             <thead>
@@ -940,7 +948,10 @@
                                     <th style="width: 140px;">Timing Category</th>
                                     <th style="width: 110px;">Due Date</th>
                                     <th>Assigned Lead</th>
-                                    <th style="width: 100px;">Status</th>
+                                    <th style="width: 90px;">Status</th>
+                                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                                    <th style="width: 110px; text-align: center;">Action</th>
+                                    {% endif %}
                                 </tr>
                             </thead>
                             <tbody>
@@ -963,11 +974,21 @@
                                         <span class="status-badge status-To-Do">Pending</span>
                                         {% endif %}
                                     </td>
+                                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                                    <td style="text-align: center;">
+                                        <div style="display:flex; gap:4px; justify-content:center;">
+                                            <button class="btn btn-outline" style="padding: 3px 6px; font-size: 0.72rem;" onclick='openEditMeetingTaskModal({{ meeting.id }}, {{ item | tojson | safe }})'>Edit</button>
+                                            <form action="{{ url_for('delete_meeting_task', meeting_id=meeting.id, task_id=item.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this meeting task?');">
+                                                <button type="submit" class="btn btn-danger" style="padding: 3px 6px; font-size: 0.72rem; color: white;">Del</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                    {% endif %}
                                 </tr>
                                 {% endfor %}
                                 {% if not meeting.action_items %}
                                 <tr>
-                                    <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 14px;">No action items logged yet for this meeting. Click "Edit Notes & Minutes" above to add action items!</td>
+                                    <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 14px;">No action items logged yet. Click "+ Add Task" to create one!</td>
                                 </tr>
                                 {% endif %}
                             </tbody>
@@ -982,7 +1003,7 @@
 </div>
 
 <!-- ========================================== -->
-<!-- ALL MODALS WITH CLOSE (X) BUTTONS -->
+<!-- ALL MODALS WITH CLOSE (X) AND DISCARD BUTTONS -->
 <!-- ========================================== -->
 
 <!-- MODAL: ADD MEETING -->
@@ -1001,16 +1022,20 @@
             <div class="form-group"><label>Agenda Outline</label><textarea name="agenda_summary" rows="2" placeholder="Summary of agenda items..."></textarea></div>
             <div class="form-group"><label>Meeting Minutes & Notes</label><textarea name="notes" rows="3" placeholder="Notes taken during the meeting..."></textarea></div>
             <div class="form-group"><label>Attach Agenda File</label><input type="file" name="agenda_file"></div>
-            <button type="submit" class="btn" style="width:100%; margin-top:8px;">Publish Meeting</button>
+            
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Publish Meeting</button>
+                <button type="button" onclick="closeModal('addMeetingModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
+            </div>
         </form>
     </div>
 </div>
 
-<!-- MODAL: EDIT MEETING NOTES & MINUTES (WITH TIMING CATEGORY & DUE DATE) -->
+<!-- MODAL: EDIT MEETING NOTES & MINUTES -->
 <div class="modal" id="editMeetingModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3 style="font-weight:800; color:var(--primary-dark);">Edit Meeting Notes & Add Deliverable</h3>
+            <h3 style="font-weight:800; color:var(--primary-dark);">Edit Meeting Info & Notes</h3>
             <button onclick="closeModal('editMeetingModal')" class="close-btn">&times;</button>
         </div>
         <form id="editMeetingForm" method="POST" enctype="multipart/form-data">
@@ -1029,41 +1054,98 @@
             </div>
             <div class="form-group"><label>Agenda Outline</label><textarea name="agenda_summary" id="edit_meet_agenda" rows="2"></textarea></div>
             <div class="form-group"><label>Meeting Minutes & Detailed Notes</label><textarea name="notes" id="edit_meet_notes" rows="4" placeholder="Write meeting notes, discussion points, and deliverables here..."></textarea></div>
-            
-            <div style="background: #f1f5f9; padding: 14px; border-radius: 8px; border: 1px solid #cbd5e1; margin-top: 14px; margin-bottom: 14px;">
-                <h4 style="font-size: 0.92rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 10px;">➕ Add Meeting Task / Deliverable</h4>
-                <div class="form-group">
-                    <label>Task Description</label>
-                    <input type="text" name="new_task" placeholder="e.g. Prepare presentation slides">
-                </div>
-                <div class="form-group">
-                    <label>Task Timing Category</label>
-                    <select name="timing_category">
-                        <option value="Before Meeting">⏳ Before Meeting (Pre-Meeting Preparation)</option>
-                        <option value="After Meeting" selected>🚀 After Meeting (Post-Meeting Follow-up)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Task Due Date</label>
-                    <input type="date" name="due_date">
-                </div>
-                <div class="form-group">
-                    <label>Assign Lead</label>
-                    <input type="text" name="task_assignee" placeholder="e.g. Jordan K.">
-                </div>
-                <div class="form-group">
-                    <label>Sync Task to Event Workspace</label>
-                    <select name="target_event_id">
-                        <option value="">None (Meeting Task Only)</option>
-                        {% for ev in events %}
-                        <option value="{{ ev.id }}">{{ ev.title }} Workspace</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-
             <div class="form-group"><label>Update Agenda File (Optional)</label><input type="file" name="agenda_file"></div>
-            <button type="submit" class="btn" style="width:100%; margin-top:8px;">Save Meeting Notes & Tasks</button>
+            
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Save Meeting Info</button>
+                <button type="button" onclick="closeModal('editMeetingModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: ADD INDIVIDUAL MEETING TASK -->
+<div class="modal" id="addMeetingTaskModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">➕ Add Meeting Action Item Task</h3>
+            <button onclick="closeModal('addMeetingTaskModal')" class="close-btn">&times;</button>
+        </div>
+        <form id="addMeetingTaskForm" method="POST">
+            <div class="form-group">
+                <label>Task Description</label>
+                <input type="text" name="task" placeholder="e.g. Prepare presentation slides" required>
+            </div>
+            <div class="form-group">
+                <label>Task Timing Category</label>
+                <select name="timing_category">
+                    <option value="Before Meeting">⏳ Before Meeting (Pre-Meeting Preparation)</option>
+                    <option value="After Meeting" selected>🚀 After Meeting (Post-Meeting Follow-up)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Task Due Date</label>
+                <input type="date" name="due_date" required>
+            </div>
+            <div class="form-group">
+                <label>Assign Lead</label>
+                <input type="text" name="assignee" placeholder="e.g. Jordan K." required>
+            </div>
+            <div class="form-group">
+                <label>Sync Task to Event Workspace (Optional)</label>
+                <select name="target_event_id">
+                    <option value="">None (Meeting Task Only)</option>
+                    {% for ev in events %}
+                    <option value="{{ ev.id }}">{{ ev.title }} Workspace</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Add Task</button>
+                <button type="button" onclick="closeModal('addMeetingTaskModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: EDIT INDIVIDUAL MEETING TASK -->
+<div class="modal" id="editMeetingTaskModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">✏️ Edit Meeting Action Item Task</h3>
+            <button onclick="closeModal('editMeetingTaskModal')" class="close-btn">&times;</button>
+        </div>
+        <form id="editMeetingTaskForm" method="POST">
+            <div class="form-group">
+                <label>Task Description</label>
+                <input type="text" name="task" id="edit_mtask_title" required>
+            </div>
+            <div class="form-group">
+                <label>Task Timing Category</label>
+                <select name="timing_category" id="edit_mtask_timing">
+                    <option value="Before Meeting">⏳ Before Meeting (Pre-Meeting Preparation)</option>
+                    <option value="After Meeting">🚀 After Meeting (Post-Meeting Follow-up)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Task Due Date</label>
+                <input type="text" name="due_date" id="edit_mtask_date" required>
+            </div>
+            <div class="form-group">
+                <label>Assign Lead</label>
+                <input type="text" name="assignee" id="edit_mtask_assignee" required>
+            </div>
+            <div class="form-group">
+                <label>Completion Status</label>
+                <select name="done" id="edit_mtask_done">
+                    <option value="false">Pending (To Do)</option>
+                    <option value="true">Completed</option>
+                </select>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Save Task Changes</button>
+                <button type="button" onclick="closeModal('editMeetingTaskModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
+            </div>
         </form>
     </div>
 </div>
@@ -1090,7 +1172,11 @@
             <div class="form-group"><label>Notes</label><textarea name="notes" rows="2" placeholder="e.g. 5 blue balloons included"></textarea></div>
             <div class="form-group"><label>Item Photo File</label><input type="file" name="picture_file" accept="image/*"></div>
             <div class="form-group"><label>Or Photo URL</label><input type="url" name="picture_url" placeholder="https://example.com/photo.jpg"></div>
-            <button type="submit" class="btn" style="width:100%; margin-top:8px;">Save Storage Item</button>
+            
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Save Storage Item</button>
+                <button type="button" onclick="closeModal('addInventoryModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
+            </div>
         </form>
     </div>
 </div>
@@ -1117,7 +1203,11 @@
             <div class="form-group"><label>Notes</label><textarea name="notes" id="edit_inv_notes" rows="2"></textarea></div>
             <div class="form-group"><label>Update Photo File</label><input type="file" name="picture_file" accept="image/*"></div>
             <div class="form-group"><label>Or Update Photo URL</label><input type="url" name="picture_url" id="edit_inv_picture"></div>
-            <button type="submit" class="btn" style="width:100%; margin-top:8px;">Save Inventory Changes</button>
+            
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Save Inventory Changes</button>
+                <button type="button" onclick="closeModal('editInventoryModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
+            </div>
         </form>
     </div>
 </div>
@@ -1135,7 +1225,11 @@
             <div class="form-group"><label>Purchaser Name</label><input type="text" name="buyer" value="{{ current_user.name }}"></div>
             <div class="form-group"><label>Date of Purchase</label><input type="date" name="date" required></div>
             <div class="form-group"><label>Notes / Receipt Info</label><input type="text" name="notes" placeholder="e.g. Walmart receipt attached"></div>
-            <button type="submit" class="btn btn-success" style="width:100%; margin-top:8px;">Save Purchase Record</button>
+            
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn btn-success" style="flex:1;">Save Purchase Record</button>
+                <button type="button" onclick="closeModal('addPurchaseModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
+            </div>
         </form>
     </div>
 </div>
@@ -1149,7 +1243,11 @@
         </div>
         <form action="{{ url_for('edit_event_budget', event_id=event.id) }}" method="POST">
             <div class="form-group"><label>Allocated Budget Amount (RMB ¥)</label><input type="text" name="budget_allocated" value="{{ event.budget_allocated }}" required></div>
-            <button type="submit" class="btn" style="width:100%; margin-top:8px;">Save Budget Limit</button>
+            
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Save Budget Limit</button>
+                <button type="button" onclick="closeModal('editBudgetModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
+            </div>
         </form>
     </div>
 </div>
@@ -1164,7 +1262,11 @@
         <form action="{{ url_for('edit_stuco_balance') }}" method="POST">
             <div class="form-group"><label>Total Stuco Treasury Balance (RMB ¥)</label><input type="text" name="balance" value="{{ stuco_balance }}" required></div>
             <div class="form-group"><label>Stuco Active Debit (RMB ¥)</label><input type="text" name="debt" value="{{ stuco_debit }}" required></div>
-            <button type="submit" class="btn" style="width:100%; margin-top:8px;">Save Treasury Info</button>
+            
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Save Treasury Info</button>
+                <button type="button" onclick="closeModal('balanceModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
+            </div>
         </form>
     </div>
 </div>
@@ -1190,7 +1292,11 @@
                     <option value="Completed">Completed</option>
                 </select>
             </div>
-            <button type="submit" class="btn" style="width:100%;">Add Row</button>
+            
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Add Row</button>
+                <button type="button" onclick="closeModal('addRowModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
+            </div>
         </form>
     </div>
 </div>
@@ -1216,7 +1322,11 @@
                     <option value="Completed">Completed</option>
                 </select>
             </div>
-            <button type="submit" class="btn" style="width:100%;">Save Changes</button>
+            
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Save Changes</button>
+                <button type="button" onclick="closeModal('editRowModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
+            </div>
         </form>
     </div>
 </div>
@@ -1240,7 +1350,11 @@
                     <option value="Confirmed">Confirmed</option>
                 </select>
             </div>
-            <button type="submit" class="btn" style="width:100%;">Add Participant</button>
+            
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Add Participant</button>
+                <button type="button" onclick="closeModal('addParticipantModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
+            </div>
         </form>
     </div>
 </div>
@@ -1264,7 +1378,11 @@
                     <option value="Confirmed">Confirmed</option>
                 </select>
             </div>
-            <button type="submit" class="btn" style="width:100%;">Save Participant Changes</button>
+            
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Save Participant Changes</button>
+                <button type="button" onclick="closeModal('editParticipantModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
+            </div>
         </form>
     </div>
 </div>
@@ -1376,6 +1494,21 @@
         document.getElementById('edit_meet_notes').value = meeting.notes || '';
         document.getElementById('editMeetingForm').action = "/meetings/" + meeting.id + "/update_notes";
         openModal('editMeetingModal');
+    }
+
+    function openAddMeetingTaskModal(meetingId) {
+        document.getElementById('addMeetingTaskForm').action = "/meetings/" + meetingId + "/tasks/add";
+        openModal('addMeetingTaskModal');
+    }
+
+    function openEditMeetingTaskModal(meetingId, task) {
+        document.getElementById('edit_mtask_title').value = task.task;
+        document.getElementById('edit_mtask_timing').value = task.timing_category || 'After Meeting';
+        document.getElementById('edit_mtask_date').value = task.due_date || '';
+        document.getElementById('edit_mtask_assignee').value = task.assignee || '';
+        document.getElementById('edit_mtask_done').value = task.done ? 'true' : 'false';
+        document.getElementById('editMeetingTaskForm').action = "/meetings/" + meetingId + "/tasks/" + task.id + "/edit";
+        openModal('editMeetingTaskModal');
     }
 </script>
 
