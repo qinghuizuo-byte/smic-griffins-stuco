@@ -51,19 +51,74 @@
         .nav-link:hover { background: var(--primary-light); color: var(--primary); }
         .nav-link.active { background: var(--primary); color: white; }
 
-        /* Workspace Sub-nav / Sub-tabs */
-        .workspace-subnav {
-            display: flex; gap: 8px; background: white; padding: 8px; border-radius: 12px;
-            border: 1px solid #e2e8f0; margin-bottom: 24px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); flex-wrap: wrap;
+        /* Initial Landing View: 4 Huge Feature Block Cards */
+        .hub-blocks-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-top: 10px;
+            margin-bottom: 30px;
         }
-        .subtab-btn {
-            flex: 1; min-width: 160px; padding: 12px 14px; border: none; background: transparent;
-            font-size: 0.88rem; font-weight: 700; color: var(--text-muted); border-radius: 8px; cursor: pointer;
-            transition: all 0.2s; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;
-        }
-        .subtab-btn:hover { background: var(--primary-light); color: var(--primary); }
-        .subtab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 6px rgba(0,102,204,0.2); }
 
+        .hub-block-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 32px;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hub-block-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgba(0, 102, 204, 0.12);
+            border-color: var(--primary);
+        }
+
+        .hub-block-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+        .hub-block-icon { font-size: 2.5rem; }
+        .hub-block-title { font-size: 1.4rem; font-weight: 800; color: var(--primary-dark); }
+        .hub-block-desc { font-size: 0.92rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; }
+        .hub-block-btn { align-self: flex-start; }
+
+        /* Subnav Header for Nested Subgroups */
+        .subgroup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .back-btn {
+            background: var(--primary-light);
+            color: var(--primary);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s;
+        }
+        .back-btn:hover { background: #dbeafe; }
+
+        /* Subdiv visibility */
         .subdiv-content { display: none; }
         .subdiv-content.active { display: block; }
 
@@ -139,15 +194,23 @@
         .inventory-meta { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 10px; display: flex; justify-content: space-between; }
         .inventory-notes { font-size: 0.85rem; color: var(--text-dark); background: #f8fafc; padding: 8px 10px; border-radius: 6px; font-style: italic; }
 
-        /* Modals */
+        /* Modals & Close Button (X) */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4); z-index: 1000; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.45); z-index: 1000; align-items: center; justify-content: center;
         }
         .modal.active { display: flex; }
         .modal-content {
-            background: white; border-radius: 12px; padding: 24px; width: 100%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            background: white; border-radius: 14px; padding: 24px; width: 100%; max-width: 520px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative;
         }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 2px solid var(--primary-light); padding-bottom: 10px; }
+        .close-btn {
+            font-size: 1.6rem; font-weight: 800; background: none; border: none; cursor: pointer; color: var(--text-muted);
+            transition: color 0.15s; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%;
+        }
+        .close-btn:hover { color: var(--danger); background: #fee2e2; }
+
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 4px; }
         .form-group input, .form-group select, .form-group textarea {
@@ -156,7 +219,10 @@
 
         .alert { padding: 12px 16px; background: #d1e7dd; color: #0f5132; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; }
 
-        @media (max-width: 900px) { .summary-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 900px) {
+            .hub-blocks-grid { grid-template-columns: 1fr; }
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+        }
         @media (max-width: 600px) {
             body { padding: 14px; }
             .navbar { flex-direction: column; align-items: flex-start; gap: 14px; padding: 14px 18px; }
@@ -202,29 +268,79 @@
       {% endif %}
     {% endwith %}
 
-    <!-- Workspace Sub-tabs Navigation -->
-    <div class="workspace-subnav">
-        <button class="subtab-btn active" onclick="switchSubdiv('event-workspace-subdiv', this)">
-            📁 Event Workspace & Expenses
-        </button>
-        <button class="subtab-btn" onclick="switchSubdiv('storage-inventory-subdiv', this)">
-            📦 Storage Room Inventory
-        </button>
-        <button class="subtab-btn" onclick="switchSubdiv('budget-plan-subdiv', this)">
-            💳 Budget Plan & Treasury
-        </button>
-        <button class="subtab-btn" onclick="switchSubdiv('all-tasks-subdiv', this)">
-            📅 All Tasks (By Due Date)
-        </button>
-        <a href="/meetings" class="subtab-btn" style="text-decoration:none;">
-            📝 Meeting Notes
-        </a>
+    <!-- ========================================== -->
+    <!-- INITIAL LANDING VIEW: 4 HUGE FEATURE BLOCKS -->
+    <!-- ========================================== -->
+    <div id="hub-landing-view">
+        <div style="margin-bottom: 20px;">
+            <h1 style="font-size: 1.8rem; font-weight: 900; color: var(--primary-dark);">🦅 Stuco Workspace Hub</h1>
+            <p style="font-size: 0.95rem; color: var(--text-muted); margin-top: 4px;">Select a workspace section below to open its specific management tools.</p>
+        </div>
+
+        <div class="hub-blocks-grid">
+            
+            <!-- Block 1: Event Workspaces -->
+            <div class="hub-block-card" onclick="openSubgroup('event-workspace-subdiv')">
+                <div>
+                    <div class="hub-block-header">
+                        <span class="hub-block-icon">📁</span>
+                        <div class="hub-block-title">Event Workspaces</div>
+                    </div>
+                    <p class="hub-block-desc">Access event planning timelines, logged expense receipts, and student booking lists.</p>
+                </div>
+                <button class="btn hub-block-btn">Open Event Workspaces →</button>
+            </div>
+
+            <!-- Block 2: Storage Room Inventory -->
+            <div class="hub-block-card" onclick="openSubgroup('storage-inventory-subdiv')">
+                <div>
+                    <div class="hub-block-header">
+                        <span class="hub-block-icon">📦</span>
+                        <div class="hub-block-title">Storage Room Inventory</div>
+                    </div>
+                    <p class="hub-block-desc">View and edit equipment notes, quantities, box locations, and photos stored in HQ.</p>
+                </div>
+                <button class="btn hub-block-btn">Open Storage Inventory →</button>
+            </div>
+
+            <!-- Block 3: Budget Plan & Treasury -->
+            <div class="hub-block-card" onclick="openSubgroup('budget-plan-subdiv')">
+                <div>
+                    <div class="hub-block-header">
+                        <span class="hub-block-icon">💳</span>
+                        <div class="hub-block-title">Budget Plan & Treasury</div>
+                    </div>
+                    <p class="hub-block-desc">Track total Stuco treasury balance, active debts, and allocated event budgets.</p>
+                </div>
+                <button class="btn hub-block-btn">Open Budget Plan →</button>
+            </div>
+
+            <!-- Block 4: All Tasks Master List -->
+            <div class="hub-block-card" onclick="openSubgroup('all-tasks-subdiv')">
+                <div>
+                    <div class="hub-block-header">
+                        <span class="hub-block-icon">📅</span>
+                        <div class="hub-block-title">All Tasks (By Due Date)</div>
+                    </div>
+                    <p class="hub-block-desc">Master list of all action items and tasks arranged chronologically by due date.</p>
+                </div>
+                <button class="btn hub-block-btn">Open Master Task List →</button>
+            </div>
+
+        </div>
     </div>
 
+
     <!-- ========================================== -->
-    <!-- SUBDIV 1: EVENT WORKSPACE & EXPENSE TRACKER -->
+    <!-- NESTED SUBGROUP 1: EVENT WORKSPACE & EXPENSES -->
     <!-- ========================================== -->
-    <div id="event-workspace-subdiv" class="subdiv-content active">
+    <div id="event-workspace-subdiv" class="subdiv-content">
+        
+        <div class="subgroup-header">
+            <button class="back-btn" onclick="backToHubLanding()">⬅️ Back to Workspace Hub</button>
+            <div style="font-weight: 800; color: var(--primary-dark); font-size: 1.1rem;">📁 Event Workspace & Expenses</div>
+        </div>
+
         <!-- Event Switcher Bar -->
         <div style="margin-bottom: 18px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
             <strong style="font-size: 0.9rem; color: var(--primary-dark);">Switch Event Workspace:</strong>
@@ -245,7 +361,7 @@
                 <div>👤 <strong>Event Lead:</strong> {{ event.lead }}</div>
                 <div>💴 <strong>Allocated Budget:</strong> {{ event.budget_allocated }}
                     {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Teacher'] %}
-                    <button class="btn btn-outline" style="padding: 2px 8px; font-size: 0.75rem; margin-left: 6px;" onclick="openEditBudgetModal()">✏️ Edit Budget Limit</button>
+                    <button class="btn btn-outline" style="padding: 2px 8px; font-size: 0.75rem; margin-left: 6px;" onclick="openModal('editBudgetModal')">✏️ Edit Budget Limit</button>
                     {% endif %}
                 </div>
             </div>
@@ -259,7 +375,7 @@
                     <div class="card-header">
                         <span class="card-title">📋 Timeline Planning Sheet</span>
                         {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-                        <button class="btn" onclick="openAddRowModal()">➕ Add Timeline Row</button>
+                        <button class="btn" onclick="openModal('addRowModal')">➕ Add Timeline Row</button>
                         {% endif %}
                     </div>
 
@@ -304,12 +420,12 @@
                     </div>
                 </div>
 
-                <!-- Event Budget & Expense Ledger Card (Purchased Items Tracker) -->
+                <!-- Event Budget & Expense Ledger Card -->
                 <div class="card" style="border-left: 5px solid var(--success);">
                     <div class="card-header">
                         <span class="card-title">💰 Event Budget & Purchased Items (Expense Tracker)</span>
                         {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
-                        <button class="btn btn-success" onclick="openAddPurchaseModal()">🛒 Log New Purchased Item</button>
+                        <button class="btn btn-success" onclick="openModal('addPurchaseModal')">🛒 Log New Purchased Item</button>
                         {% endif %}
                     </div>
 
@@ -361,7 +477,7 @@
                                 {% endfor %}
                                 {% if not event.purchases %}
                                 <tr>
-                                    <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">No purchased items logged for this event yet. Click "Log New Purchased Item" above to add items!</td>
+                                    <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">No purchased items logged for this event yet.</td>
                                 </tr>
                                 {% endif %}
                             </tbody>
@@ -375,7 +491,7 @@
                     <div class="card-header">
                         <span class="card-title">🎟️ Student Participating List (Booking Event)</span>
                         {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-                        <button class="btn btn-outline" onclick="openAddParticipantModal()">➕ Add Student Participant</button>
+                        <button class="btn btn-outline" onclick="openModal('addParticipantModal')">➕ Add Student Participant</button>
                         {% endif %}
                     </div>
 
@@ -451,18 +567,24 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- SUBDIV 2: STORAGE ROOM INVENTORY (NEW!) -->
+    <!-- NESTED SUBGROUP 2: STORAGE ROOM INVENTORY -->
     <!-- ========================================== -->
     <div id="storage-inventory-subdiv" class="subdiv-content">
+        
+        <div class="subgroup-header">
+            <button class="back-btn" onclick="backToHubLanding()">⬅️ Back to Workspace Hub</button>
+            <div style="font-weight: 800; color: var(--primary-dark); font-size: 1.1rem;">📦 Storage Room Inventory</div>
+        </div>
+
         <div class="card">
             <div class="card-header">
-                <span class="card-title">📦 Storage Room Inventory Notes & Equipment Tracker</span>
+                <span class="card-title">📦 Storage Room Equipment & Inventory Tracker</span>
                 {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
-                <button class="btn" onclick="openAddInventoryModal()">➕ Log Storage Room Item</button>
+                <button class="btn" onclick="openModal('addInventoryModal')">➕ Log Storage Room Item</button>
                 {% endif %}
             </div>
             <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 20px;">
-                All Stuco members have access to record notes, quantities, locations, and photos of equipment stored in the Stuco storage room.
+                All Stuco members have full access to view, edit quantities, take notes, and upload photos of storage room items.
             </p>
 
             <div class="inventory-grid">
@@ -483,7 +605,8 @@
                         <div class="inventory-notes">"{{ item.notes }}"</div>
                     </div>
                     {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
-                    <div style="padding: 10px 16px; border-top: 1px solid #f1f5f9; text-align: right;">
+                    <div style="padding: 10px 16px; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between;">
+                        <button class="btn btn-outline" style="padding: 4px 10px; font-size: 0.75rem;" onclick='openEditInventoryModal({{ item | tojson | safe }})'>✏️ Edit Item / Qty</button>
                         <form action="{{ url_for('delete_inventory_item', item_id=item.id) }}" method="POST" onsubmit="return confirm('Delete storage item?');">
                             <button type="submit" class="btn btn-danger" style="padding: 4px 10px; font-size: 0.75rem;">Delete</button>
                         </form>
@@ -496,9 +619,15 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- SUBDIV 3: BUDGET PLAN & TREASURY -->
+    <!-- NESTED SUBGROUP 3: BUDGET PLAN & TREASURY -->
     <!-- ========================================== -->
     <div id="budget-plan-subdiv" class="subdiv-content">
+        
+        <div class="subgroup-header">
+            <button class="back-btn" onclick="backToHubLanding()">⬅️ Back to Workspace Hub</button>
+            <div style="font-weight: 800; color: var(--primary-dark); font-size: 1.1rem;">💳 Budget Plan & Treasury</div>
+        </div>
+
         <div class="summary-grid">
             <div class="summary-card" style="border-top: 4px solid var(--primary);">
                 <div class="summary-value" style="color: var(--primary);">{{ stuco_balance }}</div>
@@ -521,7 +650,7 @@
         <div style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
             <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--primary-dark);">All Event Budget Plans</h2>
             {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Treasurer'] %}
-            <button class="btn btn-outline" onclick="openBalanceModal()">✏️ Edit Stuco Balance / Debit</button>
+            <button class="btn btn-outline" onclick="openModal('balanceModal')">✏️ Edit Stuco Balance / Debit</button>
             {% endif %}
         </div>
 
@@ -554,9 +683,15 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- SUBDIV 4: ALL TASKS (ARRANGED BY DUE DATE) -->
+    <!-- NESTED SUBGROUP 4: ALL TASKS (BY DUE DATE) -->
     <!-- ========================================== -->
     <div id="all-tasks-subdiv" class="subdiv-content">
+        
+        <div class="subgroup-header">
+            <button class="back-btn" onclick="backToHubLanding()">⬅️ Back to Workspace Hub</button>
+            <div style="font-weight: 800; color: var(--primary-dark); font-size: 1.1rem;">📅 All Tasks (Arranged by Due Date)</div>
+        </div>
+
         <div class="card">
             <div class="card-header">
                 <span class="card-title">📅 Master Task List (Arranged Chronologically by Due Date)</span>
@@ -595,10 +730,17 @@
 
 </div>
 
-<!-- MODALS -->
+<!-- ========================================== -->
+<!-- ALL MODALS WITH CLOSE (X) BUTTONS -->
+<!-- ========================================== -->
+
+<!-- MODAL: ADD INVENTORY -->
 <div class="modal" id="addInventoryModal">
     <div class="modal-content">
-        <h3 style="font-weight:800; color:var(--primary-dark); margin-bottom:14px;">Log Storage Room Item</h3>
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">Log Storage Room Item</h3>
+            <button onclick="closeModal('addInventoryModal')" class="close-btn">&times;</button>
+        </div>
         <form action="{{ url_for('add_inventory_item') }}" method="POST" enctype="multipart/form-data">
             <div class="form-group"><label>Item Name</label><input type="text" name="name" placeholder="e.g. Griffin Mascot Props" required></div>
             <div class="form-group"><label>Quantity</label><input type="number" name="quantity" value="1" min="1" required></div>
@@ -611,17 +753,48 @@
                     <option value="Fair">Fair / Needs Repair</option>
                 </select>
             </div>
-            <div class="form-group"><label>Notes</label><textarea name="notes" rows="2" placeholder="e.g. 5 blue balloons included in box"></textarea></div>
+            <div class="form-group"><label>Notes</label><textarea name="notes" rows="2" placeholder="e.g. 5 blue balloons included"></textarea></div>
             <div class="form-group"><label>Item Photo File</label><input type="file" name="picture_file" accept="image/*"></div>
-            <div class="form-group"><label>Or Item Photo Image URL</label><input type="url" name="picture_url" placeholder="https://example.com/photo.jpg"></div>
+            <div class="form-group"><label>Or Photo URL</label><input type="url" name="picture_url" placeholder="https://example.com/photo.jpg"></div>
             <button type="submit" class="btn" style="width:100%; margin-top:8px;">Save Storage Item</button>
         </form>
     </div>
 </div>
 
+<!-- MODAL: EDIT INVENTORY -->
+<div class="modal" id="editInventoryModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">Edit Storage Room Item & Quantity</h3>
+            <button onclick="closeModal('editInventoryModal')" class="close-btn">&times;</button>
+        </div>
+        <form id="editInventoryForm" method="POST" enctype="multipart/form-data">
+            <div class="form-group"><label>Item Name</label><input type="text" name="name" id="edit_inv_name" required></div>
+            <div class="form-group"><label>Quantity</label><input type="number" name="quantity" id="edit_inv_quantity" min="0" required></div>
+            <div class="form-group"><label>Storage Location / Box</label><input type="text" name="location" id="edit_inv_location" required></div>
+            <div class="form-group">
+                <label>Condition</label>
+                <select name="condition" id="edit_inv_condition">
+                    <option value="Excellent">Excellent</option>
+                    <option value="Good">Good</option>
+                    <option value="Fair">Fair / Needs Repair</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Notes</label><textarea name="notes" id="edit_inv_notes" rows="2"></textarea></div>
+            <div class="form-group"><label>Update Photo File</label><input type="file" name="picture_file" accept="image/*"></div>
+            <div class="form-group"><label>Or Update Photo URL</label><input type="url" name="picture_url" id="edit_inv_picture"></div>
+            <button type="submit" class="btn" style="width:100%; margin-top:8px;">Save Inventory Changes</button>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: ADD PURCHASE -->
 <div class="modal" id="addPurchaseModal">
     <div class="modal-content">
-        <h3 style="font-weight:800; color:var(--primary-dark); margin-bottom:14px;">Log New Purchased Item</h3>
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">Log New Purchased Item</h3>
+            <button onclick="closeModal('addPurchaseModal')" class="close-btn">&times;</button>
+        </div>
         <form action="{{ url_for('add_purchase', event_id=event.id) }}" method="POST">
             <div class="form-group"><label>Item Description</label><input type="text" name="item" placeholder="e.g. Sound Speakers" required></div>
             <div class="form-group"><label>Cost Amount (RMB ¥)</label><input type="number" step="0.01" name="cost" placeholder="e.g. 150.00" required></div>
@@ -633,9 +806,13 @@
     </div>
 </div>
 
+<!-- MODAL: EDIT BUDGET -->
 <div class="modal" id="editBudgetModal">
     <div class="modal-content">
-        <h3 style="font-weight:800; color:var(--primary-dark); margin-bottom:14px;">Edit Event Budget Limit</h3>
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">Edit Event Budget Limit</h3>
+            <button onclick="closeModal('editBudgetModal')" class="close-btn">&times;</button>
+        </div>
         <form action="{{ url_for('edit_event_budget', event_id=event.id) }}" method="POST">
             <div class="form-group"><label>Allocated Budget Amount (RMB ¥)</label><input type="text" name="budget_allocated" value="{{ event.budget_allocated }}" required></div>
             <button type="submit" class="btn" style="width:100%; margin-top:8px;">Save Budget Limit</button>
@@ -643,9 +820,13 @@
     </div>
 </div>
 
+<!-- MODAL: BALANCE & DEBIT -->
 <div class="modal" id="balanceModal">
     <div class="modal-content">
-        <h3 style="font-weight:800; color:var(--primary-dark); margin-bottom:14px;">Edit Stuco Treasury Balance & Debit</h3>
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">Edit Stuco Treasury Balance & Debit</h3>
+            <button onclick="closeModal('balanceModal')" class="close-btn">&times;</button>
+        </div>
         <form action="{{ url_for('edit_stuco_balance') }}" method="POST">
             <div class="form-group"><label>Total Stuco Treasury Balance (RMB ¥)</label><input type="text" name="balance" value="{{ stuco_balance }}" required></div>
             <div class="form-group"><label>Stuco Active Debit (RMB ¥)</label><input type="text" name="debt" value="{{ stuco_debit }}" required></div>
@@ -654,9 +835,13 @@
     </div>
 </div>
 
+<!-- MODAL: ADD ROW -->
 <div class="modal" id="addRowModal">
     <div class="modal-content">
-        <h3 style="font-weight:800; color:var(--primary-dark); margin-bottom:14px;">Add Timeline Row</h3>
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">Add Timeline Row</h3>
+            <button onclick="closeModal('addRowModal')" class="close-btn">&times;</button>
+        </div>
         <form action="{{ url_for('add_workspace_row', event_id=event.id) }}" method="POST">
             <div class="form-group"><label>Due Date</label><input type="text" name="date" required></div>
             <div class="form-group"><label>Task Title</label><input type="text" name="task" required></div>
@@ -676,9 +861,39 @@
     </div>
 </div>
 
+<!-- MODAL: EDIT ROW -->
+<div class="modal" id="editRowModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">Edit Timeline Row</h3>
+            <button onclick="closeModal('editRowModal')" class="close-btn">&times;</button>
+        </div>
+        <form id="editRowForm" method="POST">
+            <div class="form-group"><label>Due Date</label><input type="text" name="date" id="edit_date" required></div>
+            <div class="form-group"><label>Task Title</label><input type="text" name="task" id="edit_task" required></div>
+            <div class="form-group"><label>Assignee</label><input type="text" name="assignee" id="edit_assignee"></div>
+            <div class="form-group"><label>Details</label><input type="text" name="details" id="edit_details"></div>
+            <div class="form-group"><label>Notes</label><input type="text" name="notes" id="edit_notes"></div>
+            <div class="form-group">
+                <label>Status</label>
+                <select name="status" id="edit_status">
+                    <option value="To Do">To Do</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+            <button type="submit" class="btn" style="width:100%;">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: ADD PARTICIPANT -->
 <div class="modal" id="addParticipantModal">
     <div class="modal-content">
-        <h3 style="font-weight:800; color:var(--primary-dark); margin-bottom:14px;">Add Student Participant</h3>
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">Add Student Participant</h3>
+            <button onclick="closeModal('addParticipantModal')" class="close-btn">&times;</button>
+        </div>
         <form action="{{ url_for('add_participant', event_id=event.id) }}" method="POST">
             <div class="form-group"><label>Student Name</label><input type="text" name="name" required></div>
             <div class="form-group"><label>Grade Level</label><input type="text" name="grade" required></div>
@@ -696,26 +911,82 @@
     </div>
 </div>
 
+<!-- MODAL: EDIT PARTICIPANT -->
+<div class="modal" id="editParticipantModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">Edit Student Participant</h3>
+            <button onclick="closeModal('editParticipantModal')" class="close-btn">&times;</button>
+        </div>
+        <form id="editParticipantForm" method="POST">
+            <div class="form-group"><label>Student Name</label><input type="text" name="name" id="edit_part_name" required></div>
+            <div class="form-group"><label>Grade Level</label><input type="text" name="grade" id="edit_part_grade" required></div>
+            <div class="form-group"><label>Student Email</label><input type="email" name="email" id="edit_part_email" required></div>
+            <div class="form-group">
+                <label>Booking Stage</label>
+                <select name="status" id="edit_part_status">
+                    <option value="Signed Up">Signed Up</option>
+                    <option value="Paid">Paid</option>
+                    <option value="Confirmed">Confirmed</option>
+                </select>
+            </div>
+            <button type="submit" class="btn" style="width:100%;">Save Participant Changes</button>
+        </form>
+    </div>
+</div>
+
 <script>
-    function switchSubdiv(subdivId, btn) {
+    function openSubgroup(subdivId) {
+        document.getElementById('hub-landing-view').style.display = 'none';
         document.querySelectorAll('.subdiv-content').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.subtab-btn').forEach(el => el.classList.remove('active'));
         document.getElementById(subdivId).classList.add('active');
-        btn.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function openAddInventoryModal() { document.getElementById('addInventoryModal').classList.add('active'); }
-    function closeAddInventoryModal() { document.getElementById('addInventoryModal').classList.remove('active'); }
-    function openEditBudgetModal() { document.getElementById('editBudgetModal').classList.add('active'); }
-    function closeEditBudgetModal() { document.getElementById('editBudgetModal').classList.remove('active'); }
-    function openBalanceModal() { document.getElementById('balanceModal').classList.add('active'); }
-    function closeBalanceModal() { document.getElementById('balanceModal').classList.remove('active'); }
-    function openAddPurchaseModal() { document.getElementById('addPurchaseModal').classList.add('active'); }
-    function closeAddPurchaseModal() { document.getElementById('addPurchaseModal').classList.remove('active'); }
-    function openAddRowModal() { document.getElementById('addRowModal').classList.add('active'); }
-    function closeAddRowModal() { document.getElementById('addRowModal').classList.remove('active'); }
-    function openAddParticipantModal() { document.getElementById('addParticipantModal').classList.add('active'); }
-    function closeAddParticipantModal() { document.getElementById('addParticipantModal').classList.remove('active'); }
+    function backToHubLanding() {
+        document.querySelectorAll('.subdiv-content').forEach(el => el.classList.remove('active'));
+        document.getElementById('hub-landing-view').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('active');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+    }
+
+    function openEditRowModal(row) {
+        document.getElementById('edit_date').value = row.date;
+        document.getElementById('edit_task').value = row.task;
+        document.getElementById('edit_assignee').value = row.assignee || '';
+        document.getElementById('edit_details').value = row.details || '';
+        document.getElementById('edit_notes').value = row.notes || '';
+        document.getElementById('edit_status').value = row.status;
+        document.getElementById('editRowForm').action = "/workspace/{{ event.id }}/edit_row/" + row.id;
+        openModal('editRowModal');
+    }
+
+    function openEditParticipantModal(part) {
+        document.getElementById('edit_part_name').value = part.name;
+        document.getElementById('edit_part_grade').value = part.grade;
+        document.getElementById('edit_part_email').value = part.email;
+        document.getElementById('edit_part_status').value = part.status;
+        document.getElementById('editParticipantForm').action = "/workspace/{{ event.id }}/edit_participant/" + part.id;
+        openModal('editParticipantModal');
+    }
+
+    function openEditInventoryModal(item) {
+        document.getElementById('edit_inv_name').value = item.name;
+        document.getElementById('edit_inv_quantity').value = item.quantity;
+        document.getElementById('edit_inv_location').value = item.location;
+        document.getElementById('edit_inv_condition').value = item.condition;
+        document.getElementById('edit_inv_notes').value = item.notes || '';
+        document.getElementById('edit_inv_picture').value = item.picture || '';
+        document.getElementById('editInventoryForm').action = "/inventory/edit/" + item.id;
+        openModal('editInventoryModal');
+    }
 </script>
 
 </body>

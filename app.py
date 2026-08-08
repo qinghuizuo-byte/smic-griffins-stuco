@@ -853,6 +853,32 @@ def delete_inventory_item(item_id):
     return redirect(url_for('event_workspace', event_id=1))
 
 
+@app.route('/inventory/edit/<int:item_id>', methods=['POST'])
+@login_required
+@require_role(['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'])
+def edit_inventory_item(item_id):
+    item = next((i for i in INVENTORY if i['id'] == item_id), None)
+    if item:
+        item['name'] = request.form.get('name', item['name']).strip()
+        item['quantity'] = _safe_int(request.form.get('quantity'), item['quantity'])
+        item['location'] = request.form.get('location', item['location']).strip()
+        item['condition'] = request.form.get('condition', item['condition']).strip()
+        item['notes'] = request.form.get('notes', item['notes']).strip()
+        
+        file = request.files.get('picture_file')
+        picture_url = request.form.get('picture_url', '').strip()
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            item['picture'] = url_for('static', filename='uploads/' + filename)
+        elif picture_url:
+            item['picture'] = picture_url
+            
+        save_data()
+        flash(f"Storage item '{item['name']}' updated successfully!", "success")
+    return redirect(url_for('event_workspace', event_id=1))
+
+
 @app.route('/workspace/<int:event_id>/edit_budget', methods=['POST'])
 @login_required
 @require_role(['President', 'Vice President', 'Teacher'])
