@@ -588,6 +588,9 @@ VENDING_SUGGESTIONS = [
     }
 ]
 
+STUCO_DEBT = "¥0.00"
+STUCO_BALANCE = "¥15,000.00"
+
 
 # ==========================================
 # DATA PERSISTENCE (JSON BACKING STORE)
@@ -611,7 +614,9 @@ def save_data():
             "BUDGET_REQUESTS": BUDGET_REQUESTS,
             "VENDING_ITEMS": VENDING_ITEMS,
             "VENDING_SUGGESTIONS": VENDING_SUGGESTIONS,
-            "VOLUNTEER_OPPORTUNITIES": VOLUNTEER_OPPORTUNITIES
+            "VOLUNTEER_OPPORTUNITIES": VOLUNTEER_OPPORTUNITIES,
+            "STUCO_DEBT": STUCO_DEBT,
+            "STUCO_BALANCE": STUCO_BALANCE
         }
         with open(DATA_FILE, 'w', encoding='utf-8') as f:
             json.dump(store, f, ensure_ascii=False, indent=2)
@@ -619,7 +624,7 @@ def save_data():
         print(f"Error saving data: {e}")
 
 def load_data():
-    global ACCOUNTS, STUCO_MEMBERS, EVENTS, MEETINGS, ANNOUNCEMENTS, BUDGET_REQUESTS, VENDING_ITEMS, VENDING_SUGGESTIONS, VOLUNTEER_OPPORTUNITIES
+    global ACCOUNTS, STUCO_MEMBERS, EVENTS, MEETINGS, ANNOUNCEMENTS, BUDGET_REQUESTS, VENDING_ITEMS, VENDING_SUGGESTIONS, VOLUNTEER_OPPORTUNITIES, STUCO_DEBT, STUCO_BALANCE
     if os.path.exists(DATA_FILE):
         try:
             with open(DATA_FILE, 'r', encoding='utf-8') as f:
@@ -634,6 +639,8 @@ def load_data():
                 if "VENDING_ITEMS" in store: VENDING_ITEMS = store["VENDING_ITEMS"]
                 if "VENDING_SUGGESTIONS" in store: VENDING_SUGGESTIONS = store["VENDING_SUGGESTIONS"]
                 if "VOLUNTEER_OPPORTUNITIES" in store: VOLUNTEER_OPPORTUNITIES = store["VOLUNTEER_OPPORTUNITIES"]
+                if "STUCO_DEBT" in store: STUCO_DEBT = store["STUCO_DEBT"]
+                if "STUCO_BALANCE" in store: STUCO_BALANCE = store["STUCO_BALANCE"]
         except Exception as e:
             print(f"Error loading data: {e}")
 
@@ -657,7 +664,9 @@ def inject_user():
 @app.route('/')
 @login_required
 def home():
-    return render_template('index.html', announcements=ANNOUNCEMENTS, members=STUCO_MEMBERS)
+    all_events = list(EVENTS.values())
+    upcoming_events = sorted(all_events, key=lambda x: x.get('date', ''))[:2]
+    return render_template('index.html', announcements=ANNOUNCEMENTS, members=STUCO_MEMBERS, upcoming_events=upcoming_events, events=all_events)
 
 
 # 2. Public Event Calendar & API — no login needed
@@ -978,7 +987,7 @@ def update_meeting_notes(meeting_id):
     return redirect(url_for('meetings_hub'))
 
 
-# 5. Treasurer Portal — Event-Specific Budget Overview
+# 5. Budget Plan (Treasurer Portal) — Event-Specific Budget Overview & Stuco Finances
 @app.route('/budget')
 @login_required
 def budget_portal():
@@ -987,7 +996,7 @@ def budget_portal():
     grand_total_spent = 0.0
 
     for event_id, event in EVENTS.items():
-        raw_budget_str = event.get("budget_allocated", "$0").replace('$', '').replace(',', '').strip()
+        raw_budget_str = event.get("budget_allocated", "¥0").replace('¥', '').replace('$', '').replace(',', '').strip()
         try:
             total_budget = float(raw_budget_str)
         except ValueError:
@@ -1016,8 +1025,30 @@ def budget_portal():
         events=event_budgets,
         grand_total_allocated=grand_total_allocated,
         grand_total_spent=grand_total_spent,
-        grand_remaining=grand_total_allocated - grand_total_spent
+        grand_remaining=grand_total_allocated - grand_total_spent,
+        stuco_debit=STUCO_DEBT,
+        stuco_balance=STUCO_BALANCE
     )
+
+
+@app.route('/budget/edit_balance', methods=['POST'])
+@login_required
+@require_role(['President', 'Vice President', 'Treasurer'])
+def edit_stuco_balance():
+    global STUCO_BALANCE, STUCO_DEBT
+    balance = request.form.get('balance', '').strip()
+    debt = request.form.get('debt', '').strip()
+    
+    if balance:
+        bal_clean = balance.replace('¥', '').replace('$', '').replace(',', '').strip()
+        STUCO_BALANCE = f"¥{bal_clean}" if bal_clean else "¥0.00"
+    if debt:
+        debt_clean = debt.replace('¥', '').replace('$', '').replace(',', '').strip()
+        STUCO_DEBT = f"¥{debt_clean}" if debt_clean else "¥0.00"
+        
+    save_data()
+    flash("Stuco Treasury Balance & Debit updated successfully!", "success")
+    return redirect(url_for('budget_portal'))
 
 
 @app.route('/budget/submit', methods=['POST'])
