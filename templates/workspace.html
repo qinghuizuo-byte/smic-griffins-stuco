@@ -51,7 +51,7 @@
         .nav-link:hover { background: var(--primary-light); color: var(--primary); }
         .nav-link.active { background: var(--primary); color: white; }
 
-        /* Initial Landing View: 4 Huge Feature Block Cards */
+        /* Initial Landing View: Huge Feature Block Cards */
         .hub-blocks-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -286,7 +286,7 @@
                         <span class="hub-block-icon">📁</span>
                         <div class="hub-block-title">Event Workspaces</div>
                     </div>
-                    <p class="hub-block-desc">Access event planning timelines, logged expense receipts, and student booking lists.</p>
+                    <p class="hub-block-desc">Access event-specific planning timelines, expense ledgers, and student booking lists.</p>
                 </div>
                 <button class="btn hub-block-btn">Open Event Workspaces →</button>
             </div>
@@ -310,7 +310,7 @@
                         <span class="hub-block-icon">💳</span>
                         <div class="hub-block-title">Budget Plan & Treasury</div>
                     </div>
-                    <p class="hub-block-desc">Track total Stuco treasury balance, active debts, and allocated event budgets.</p>
+                    <p class="hub-block-desc">Track total Stuco treasury balance, active debts, and exclusive event budget ledgers.</p>
                 </div>
                 <button class="btn hub-block-btn">Open Budget Plan →</button>
             </div>
@@ -332,235 +332,262 @@
 
 
     <!-- ========================================== -->
-    <!-- NESTED SUBGROUP 1: EVENT WORKSPACE & EXPENSES -->
+    <!-- NESTED SUBGROUP 1: EVENT WORKSPACES (DIVIDED BY HUGE EVENT BUTTONS) -->
     <!-- ========================================== -->
     <div id="event-workspace-subdiv" class="subdiv-content">
         
         <div class="subgroup-header">
             <button class="back-btn" onclick="backToHubLanding()">⬅️ Back to Workspace Hub</button>
-            <div style="font-weight: 800; color: var(--primary-dark); font-size: 1.1rem;">📁 Event Workspace & Expenses</div>
+            <div style="font-weight: 800; color: var(--primary-dark); font-size: 1.1rem;">📁 Event Workspaces</div>
         </div>
 
-        <!-- Event Switcher Bar -->
-        <div style="margin-bottom: 18px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-            <strong style="font-size: 0.9rem; color: var(--primary-dark);">Switch Event Workspace:</strong>
-            {% for ev in events %}
-            <a href="/workspace/{{ ev.id }}" style="font-size: 0.85rem; font-weight: 700; text-decoration: none; padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--primary); {% if ev.id == event.id %}background:var(--primary);color:white;{% else %}background:white;color:var(--primary);{% endif %}">
-                📌 {{ ev.title }}
-            </a>
-            {% endfor %}
-        </div>
-
-        <!-- Event Header -->
-        <div class="workspace-header">
-            <h1>{{ event.title }}</h1>
-            <p>{{ event.description }}</p>
-            <div class="event-meta">
-                <div>📅 <strong>Date:</strong> {{ event.display_date }}</div>
-                <div>📍 <strong>Venue:</strong> {{ event.location }}</div>
-                <div>👤 <strong>Event Lead:</strong> {{ event.lead }}</div>
-                <div>💴 <strong>Allocated Budget:</strong> {{ event.budget_allocated }}
-                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Teacher'] %}
-                    <button class="btn btn-outline" style="padding: 2px 8px; font-size: 0.75rem; margin-left: 6px;" onclick="openModal('editBudgetModal')">✏️ Edit Budget Limit</button>
-                    {% endif %}
+        <!-- Event Selection View: Huge Blocks for Each Event -->
+        <div id="event-selection-view">
+            <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 6px;">Select Event Workspace</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px;">Click any event block below to open its specific planning sheet, expense tracker, and participant booking list.</p>
+            
+            <div class="hub-blocks-grid">
+                {% for ev in events %}
+                <div class="hub-block-card" style="border-left: 6px solid var(--primary);" onclick="showEventDetails({{ ev.id }})">
+                    <div>
+                        <span class="status-badge status-Confirmed" style="margin-bottom: 10px;">{{ ev.category }}</span>
+                        <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 8px;">📌 {{ ev.title }}</h3>
+                        <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 14px;">{{ ev.description }}</p>
+                        <div style="font-size: 0.84rem; color: var(--text-dark); display: grid; gap: 4px; margin-bottom: 16px; background: #f8fafc; padding: 10px; border-radius: 8px;">
+                            <div>📅 <strong>Date:</strong> {{ ev.display_date }}</div>
+                            <div>📍 <strong>Venue:</strong> {{ ev.location }}</div>
+                            <div>👤 <strong>Lead:</strong> {{ ev.lead }}</div>
+                            <div>💴 <strong>Allocated Budget:</strong> {{ ev.budget_allocated }}</div>
+                        </div>
+                    </div>
+                    <button class="btn hub-block-btn" style="width: 100%; justify-content: center;">Open {{ ev.title }} Workspace →</button>
                 </div>
+                {% endfor %}
             </div>
         </div>
 
-        <div class="grid-layout">
-            <!-- Left Column -->
-            <div>
-                <!-- Timeline Planning Sheet -->
-                <div class="card">
-                    <div class="card-header">
-                        <span class="card-title">📋 Timeline Planning Sheet</span>
-                        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-                        <button class="btn" onclick="openModal('addRowModal')">➕ Add Timeline Row</button>
-                        {% endif %}
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="sheet-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 110px;">Due Date</th>
-                                    <th>Task</th>
-                                    <th>Assignee</th>
-                                    <th>Details</th>
-                                    <th>Notes</th>
-                                    <th style="width: 100px;">Status</th>
-                                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-                                    <th style="width: 100px; text-align: center;">Action</th>
-                                    {% endif %}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for r in event.tasks %}
-                                <tr>
-                                    <td><strong>{{ r.date }}</strong></td>
-                                    <td style="font-weight: 700; color: var(--primary-dark);">{{ r.task }}</td>
-                                    <td><span style="font-weight:600; color:#475569;">{{ r.assignee }}</span></td>
-                                    <td>{{ r.details }}</td>
-                                    <td style="font-style: italic; color: var(--text-muted);">{{ r.notes }}</td>
-                                    <td><span class="status-badge status-{{ r.status.replace(' ', '-') }}">{{ r.status }}</span></td>
-                                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-                                    <td style="text-align: center;">
-                                        <div style="display:flex; gap:4px; justify-content:center;">
-                                            <button class="btn btn-outline" style="padding: 4px 6px; font-size: 0.72rem;" onclick='openEditRowModal({{ r | tojson | safe }})'>Edit</button>
-                                            <form action="{{ url_for('delete_workspace_row', event_id=event.id, row_id=r.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this row?');">
-                                                <button type="submit" class="btn btn-danger" style="padding: 4px 6px; font-size: 0.72rem; color: white;">Del</button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                    {% endif %}
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+        <!-- Detailed Event Workspace View (Shown when an event block is clicked) -->
+        <div id="event-details-view" style="display: none;">
+            <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <button class="back-btn" onclick="showEventSelection()">⬅️ Back to All Event Workspaces</button>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    {% for ev in events %}
+                    <button class="btn btn-outline" style="padding: 4px 10px; font-size: 0.78rem;" onclick="showEventDetails({{ ev.id }})">📌 {{ ev.title }}</button>
+                    {% endfor %}
                 </div>
-
-                <!-- Event Budget & Expense Ledger Card -->
-                <div class="card" style="border-left: 5px solid var(--success);">
-                    <div class="card-header">
-                        <span class="card-title">💰 Event Budget & Purchased Items (Expense Tracker)</span>
-                        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
-                        <button class="btn btn-success" onclick="openModal('addPurchaseModal')">🛒 Log New Purchased Item</button>
-                        {% endif %}
-                    </div>
-
-                    <div class="summary-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 16px;">
-                        <div class="summary-card">
-                            <div class="summary-label">Allocated Budget</div>
-                            <div class="summary-value">¥{{ "%.2f"|format(total_budget) }}</div>
-                        </div>
-                        <div class="summary-card">
-                            <div class="summary-label">Total Spent</div>
-                            <div class="summary-value" style="color: var(--danger);">¥{{ "%.2f"|format(total_spent) }}</div>
-                        </div>
-                        <div class="summary-card">
-                            <div class="summary-label">Remaining Event Budget</div>
-                            <div class="summary-value" style="color: var(--success);">¥{{ "%.2f"|format(remaining_budget) }}</div>
-                        </div>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="sheet-table">
-                            <thead>
-                                <tr>
-                                    <th>Item Purchased</th>
-                                    <th style="width: 110px;">Cost (RMB ¥)</th>
-                                    <th style="width: 120px;">Purchaser</th>
-                                    <th style="width: 110px;">Date</th>
-                                    <th>Notes / Receipt Info</th>
-                                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
-                                    <th style="width: 80px; text-align: center;">Action</th>
-                                    {% endif %}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for p in event.purchases %}
-                                <tr>
-                                    <td style="font-weight: 700; color: var(--primary-dark);">🛒 {{ p.item }}</td>
-                                    <td style="font-weight: 800; color: var(--danger);">¥{{ "%.2f"|format(p.cost) }}</td>
-                                    <td>{{ p.buyer }}</td>
-                                    <td>{{ p.date }}</td>
-                                    <td style="font-style: italic; color: var(--text-muted);">{{ p.notes }}</td>
-                                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
-                                    <td style="text-align: center;">
-                                        <form action="{{ url_for('delete_purchase', event_id=event.id, purchase_id=p.id) }}" method="POST" onsubmit="return confirm('Remove purchase record?');">
-                                            <button type="submit" class="btn btn-danger" style="padding: 4px 6px; font-size: 0.72rem; color: white;">Del</button>
-                                        </form>
-                                    </td>
-                                    {% endif %}
-                                </tr>
-                                {% endfor %}
-                                {% if not event.purchases %}
-                                <tr>
-                                    <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">No purchased items logged for this event yet.</td>
-                                </tr>
-                                {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Student Participating List -->
-                {% if event.requires_booking or event.category == 'Paid Event' or event.participants %}
-                <div class="card">
-                    <div class="card-header">
-                        <span class="card-title">🎟️ Student Participating List (Booking Event)</span>
-                        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-                        <button class="btn btn-outline" onclick="openModal('addParticipantModal')">➕ Add Student Participant</button>
-                        {% endif %}
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="sheet-table">
-                            <thead>
-                                <tr>
-                                    <th>Student Name</th>
-                                    <th>Grade</th>
-                                    <th>Email</th>
-                                    <th>Booking Stage</th>
-                                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-                                    <th style="width: 90px; text-align: center;">Action</th>
-                                    {% endif %}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for part in event.participants %}
-                                <tr>
-                                    <td style="font-weight: 700; color: var(--text-dark);">👤 {{ part.name }}</td>
-                                    <td>Grade {{ part.grade }}</td>
-                                    <td>{{ part.email }}</td>
-                                    <td><span class="status-badge status-{{ part.status.replace(' ', '-') }}">{{ part.status }}</span></td>
-                                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-                                    <td style="text-align: center;">
-                                        <div style="display:flex; gap:4px; justify-content:center;">
-                                            <button class="btn btn-outline" style="padding: 4px 6px; font-size: 0.72rem;" onclick='openEditParticipantModal({{ part | tojson | safe }})'>Edit</button>
-                                            <form action="{{ url_for('delete_participant', event_id=event.id, part_id=part.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Remove participant?');">
-                                                <button type="submit" class="btn btn-danger" style="padding: 4px 6px; font-size: 0.72rem; color: white;">Del</button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                    {% endif %}
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                {% endif %}
-
             </div>
 
-            <!-- Right Column -->
-            <div>
-                <!-- Upload Gallery -->
-                <div class="card">
-                    <div class="card-header"><span class="card-title">Upload Layout/Photo</span></div>
-                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-                    <form action="{{ url_for('upload_photo', event_id=event.id) }}" method="POST" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <label>Select Image File</label>
-                            <input type="file" name="file" accept="image/*" required>
+            <!-- Event Header -->
+            <div class="workspace-header">
+                <h1>{{ event.title }}</h1>
+                <p>{{ event.description }}</p>
+                <div class="event-meta">
+                    <div>📅 <strong>Date:</strong> {{ event.display_date }}</div>
+                    <div>📍 <strong>Venue:</strong> {{ event.location }}</div>
+                    <div>👤 <strong>Event Lead:</strong> {{ event.lead }}</div>
+                    <div>💴 <strong>Allocated Budget:</strong> {{ event.budget_allocated }}
+                        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Teacher'] %}
+                        <button class="btn btn-outline" style="padding: 2px 8px; font-size: 0.75rem; margin-left: 6px;" onclick="openModal('editBudgetModal')">✏️ Edit Budget Limit</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-layout">
+                <!-- Left Column -->
+                <div>
+                    <!-- Timeline Planning Sheet -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">📋 Timeline Planning Sheet</span>
+                            {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                            <button class="btn" onclick="openModal('addRowModal')">➕ Add Timeline Row</button>
+                            {% endif %}
                         </div>
-                        <div class="form-group">
-                            <label>Caption</label>
-                            <input type="text" name="caption" placeholder="e.g. Stage placement layout">
+
+                        <div class="table-responsive">
+                            <table class="sheet-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 110px;">Due Date</th>
+                                        <th>Task</th>
+                                        <th>Assignee</th>
+                                        <th>Details</th>
+                                        <th>Notes</th>
+                                        <th style="width: 100px;">Status</th>
+                                        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                                        <th style="width: 100px; text-align: center;">Action</th>
+                                        {% endif %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for r in event.tasks %}
+                                    <tr>
+                                        <td><strong>{{ r.date }}</strong></td>
+                                        <td style="font-weight: 700; color: var(--primary-dark);">{{ r.task }}</td>
+                                        <td><span style="font-weight:600; color:#475569;">{{ r.assignee }}</span></td>
+                                        <td>{{ r.details }}</td>
+                                        <td style="font-style: italic; color: var(--text-muted);">{{ r.notes }}</td>
+                                        <td><span class="status-badge status-{{ r.status.replace(' ', '-') }}">{{ r.status }}</span></td>
+                                        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                                        <td style="text-align: center;">
+                                            <div style="display:flex; gap:4px; justify-content:center;">
+                                                <button class="btn btn-outline" style="padding: 4px 6px; font-size: 0.72rem;" onclick='openEditRowModal({{ r | tojson | safe }})'>Edit</button>
+                                                <form action="{{ url_for('delete_workspace_row', event_id=event.id, row_id=r.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this row?');">
+                                                    <button type="submit" class="btn btn-danger" style="padding: 4px 6px; font-size: 0.72rem; color: white;">Del</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="form-group">
-                            <label>Category</label>
-                            <select name="category">
-                                <option value="Venue">Venue Photo</option>
-                                <option value="Decor">Decor Idea</option>
-                                <option value="Floorplan">Floorplan / Map</option>
-                            </select>
+                    </div>
+
+                    <!-- Event Budget & Expense Ledger Card -->
+                    <div class="card" style="border-left: 5px solid var(--success);">
+                        <div class="card-header">
+                            <span class="card-title">💰 Event Budget & Purchased Items (Expense Tracker)</span>
+                            {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
+                            <button class="btn btn-success" onclick="openModal('addPurchaseModal')">🛒 Log New Purchased Item</button>
+                            {% endif %}
                         </div>
-                        <button type="submit" class="btn" style="width: 100%; margin-top: 8px;">Upload Image</button>
-                    </form>
+
+                        <div class="summary-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 16px;">
+                            <div class="summary-card">
+                                <div class="summary-label">Allocated Budget</div>
+                                <div class="summary-value">¥{{ "%.2f"|format(total_budget) }}</div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="summary-label">Total Spent</div>
+                                <div class="summary-value" style="color: var(--danger);">¥{{ "%.2f"|format(total_spent) }}</div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="summary-label">Remaining Event Budget</div>
+                                <div class="summary-value" style="color: var(--success);">¥{{ "%.2f"|format(remaining_budget) }}</div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="sheet-table">
+                                <thead>
+                                    <tr>
+                                        <th>Item Purchased</th>
+                                        <th style="width: 110px;">Cost (RMB ¥)</th>
+                                        <th style="width: 120px;">Purchaser</th>
+                                        <th style="width: 110px;">Date</th>
+                                        <th>Notes / Receipt Info</th>
+                                        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
+                                        <th style="width: 80px; text-align: center;">Action</th>
+                                        {% endif %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in event.purchases %}
+                                    <tr>
+                                        <td style="font-weight: 700; color: var(--primary-dark);">🛒 {{ p.item }}</td>
+                                        <td style="font-weight: 800; color: var(--danger);">¥{{ "%.2f"|format(p.cost) }}</td>
+                                        <td>{{ p.buyer }}</td>
+                                        <td>{{ p.date }}</td>
+                                        <td style="font-style: italic; color: var(--text-muted);">{{ p.notes }}</td>
+                                        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
+                                        <td style="text-align: center;">
+                                            <form action="{{ url_for('delete_purchase', event_id=event.id, purchase_id=p.id) }}" method="POST" onsubmit="return confirm('Remove purchase record?');">
+                                                <button type="submit" class="btn btn-danger" style="padding: 4px 6px; font-size: 0.72rem; color: white;">Del</button>
+                                            </form>
+                                        </td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                                    {% if not event.purchases %}
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">No purchased items logged for this event yet.</td>
+                                    </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Student Participating List -->
+                    {% if event.requires_booking or event.category == 'Paid Event' or event.participants %}
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">🎟️ Student Participating List (Booking Event)</span>
+                            {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                            <button class="btn btn-outline" onclick="openModal('addParticipantModal')">➕ Add Student Participant</button>
+                            {% endif %}
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="sheet-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student Name</th>
+                                        <th>Grade</th>
+                                        <th>Email</th>
+                                        <th>Booking Stage</th>
+                                        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                                        <th style="width: 90px; text-align: center;">Action</th>
+                                        {% endif %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for part in event.participants %}
+                                    <tr>
+                                        <td style="font-weight: 700; color: var(--text-dark);">👤 {{ part.name }}</td>
+                                        <td>Grade {{ part.grade }}</td>
+                                        <td>{{ part.email }}</td>
+                                        <td><span class="status-badge status-{{ part.status.replace(' ', '-') }}">{{ part.status }}</span></td>
+                                        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                                        <td style="text-align: center;">
+                                            <div style="display:flex; gap:4px; justify-content:center;">
+                                                <button class="btn btn-outline" style="padding: 4px 6px; font-size: 0.72rem;" onclick='openEditParticipantModal({{ part | tojson | safe }})'>Edit</button>
+                                                <form action="{{ url_for('delete_participant', event_id=event.id, part_id=part.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Remove participant?');">
+                                                    <button type="submit" class="btn btn-danger" style="padding: 4px 6px; font-size: 0.72rem; color: white;">Del</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                     {% endif %}
+
+                </div>
+
+                <!-- Right Column -->
+                <div>
+                    <!-- Upload Gallery -->
+                    <div class="card">
+                        <div class="card-header"><span class="card-title">Upload Layout/Photo</span></div>
+                        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                        <form action="{{ url_for('upload_photo', event_id=event.id) }}" method="POST" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label>Select Image File</label>
+                                <input type="file" name="file" accept="image/*" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Caption</label>
+                                <input type="text" name="caption" placeholder="e.g. Stage placement layout">
+                            </div>
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select name="category">
+                                    <option value="Venue">Venue Photo</option>
+                                    <option value="Decor">Decor Idea</option>
+                                    <option value="Floorplan">Floorplan / Map</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn" style="width: 100%; margin-top: 8px;">Upload Image</button>
+                        </form>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -628,58 +655,144 @@
             <div style="font-weight: 800; color: var(--primary-dark); font-size: 1.1rem;">💳 Budget Plan & Treasury</div>
         </div>
 
-        <div class="summary-grid">
-            <div class="summary-card" style="border-top: 4px solid var(--primary);">
-                <div class="summary-value" style="color: var(--primary);">{{ stuco_balance }}</div>
-                <div class="summary-label">Total Treasury Balance</div>
+        <!-- Treasury Overview View -->
+        <div id="treasury-overview-view">
+            <div class="summary-grid">
+                <div class="summary-card" style="border-top: 4px solid var(--primary);">
+                    <div class="summary-value" style="color: var(--primary);">{{ stuco_balance }}</div>
+                    <div class="summary-label">Total Treasury Balance</div>
+                </div>
+                <div class="summary-card" style="border-top: 4px solid var(--danger);">
+                    <div class="summary-value" style="color: var(--danger);">{{ stuco_debit }}</div>
+                    <div class="summary-label">Stuco Active Debit</div>
+                </div>
+                <div class="summary-card" style="border-top: 4px solid var(--primary-dark);">
+                    <div class="summary-value">¥{{ "%.2f"|format(grand_total_allocated) }}</div>
+                    <div class="summary-label">Allocated Across Events</div>
+                </div>
+                <div class="summary-card" style="border-top: 4px solid var(--success);">
+                    <div class="summary-value" style="color: var(--success);">¥{{ "%.2f"|format(grand_remaining) }}</div>
+                    <div class="summary-label">Net Remaining Budget</div>
+                </div>
             </div>
-            <div class="summary-card" style="border-top: 4px solid var(--danger);">
-                <div class="summary-value" style="color: var(--danger);">{{ stuco_debit }}</div>
-                <div class="summary-label">Stuco Active Debit</div>
+
+            <div style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--primary-dark);">Event Exclusive Budget Plans</h2>
+                {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Treasurer'] %}
+                <button class="btn btn-outline" onclick="openModal('balanceModal')">✏️ Edit Stuco Balance / Debit</button>
+                {% endif %}
             </div>
-            <div class="summary-card" style="border-top: 4px solid var(--primary-dark);">
-                <div class="summary-value">¥{{ "%.2f"|format(grand_total_allocated) }}</div>
-                <div class="summary-label">Allocated Across Events</div>
-            </div>
-            <div class="summary-card" style="border-top: 4px solid var(--success);">
-                <div class="summary-value" style="color: var(--success);">¥{{ "%.2f"|format(grand_remaining) }}</div>
-                <div class="summary-label">Net Remaining Budget</div>
+
+            <div class="grid-layout" style="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));">
+                {% for eb in event_budgets %}
+                <div class="card" style="border-left: 5px solid var(--primary);">
+                    <span class="status-badge status-Confirmed" style="margin-bottom: 8px;">{{ eb.category }}</span>
+                    <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--primary-dark);">{{ eb.title }}</h3>
+                    <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">📅 {{ eb.display_date }}</div>
+                    
+                    <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; margin-bottom: 14px;">
+                        <div>
+                            <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted);">Allocated</div>
+                            <div style="font-size:1rem; font-weight:800; color:var(--primary-dark);">¥{{ "%.2f"|format(eb.total_budget) }}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted);">Spent</div>
+                            <div style="font-size:1rem; font-weight:800; color:var(--danger);">¥{{ "%.2f"|format(eb.total_spent) }}</div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted);">Remains</div>
+                            <div style="font-size:1rem; font-weight:800; color:var(--success);">¥{{ "%.2f"|format(eb.remaining) }}</div>
+                        </div>
+                    </div>
+
+                    <button onclick="showExclusiveEventBudget({{ eb.id }})" class="btn" style="width:100%;">Open Exclusive Event Budget & Expenses →</button>
+                </div>
+                {% endfor %}
             </div>
         </div>
 
-        <div style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-            <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--primary-dark);">All Event Budget Plans</h2>
-            {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Treasurer'] %}
-            <button class="btn btn-outline" onclick="openModal('balanceModal')">✏️ Edit Stuco Balance / Debit</button>
-            {% endif %}
-        </div>
+        <!-- Exclusive Specific Event Budget View (Shows ONLY that event's budget breakdown & purchased ledger) -->
+        {% for eb in event_budgets %}
+        <div id="exclusive-budget-view-{{ eb.id }}" class="exclusive-budget-panel" style="display: none;">
+            <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <button class="back-btn" onclick="showTreasuryOverview()">⬅️ Back to Treasury Overview</button>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    {% for evb in event_budgets %}
+                    <button class="btn btn-outline" style="padding: 4px 10px; font-size: 0.78rem;" onclick="showExclusiveEventBudget({{ evb.id }})">💰 {{ evb.title }} Budget</button>
+                    {% endfor %}
+                </div>
+            </div>
 
-        <div class="grid-layout" style="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));">
-            {% for eb in event_budgets %}
-            <div class="card">
-                <span class="status-badge status-Confirmed" style="margin-bottom: 8px;">{{ eb.category }}</span>
-                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--primary-dark);">{{ eb.title }}</h3>
-                <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">📅 {{ eb.display_date }}</div>
-                
-                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; margin-bottom: 14px;">
+            <div class="card" style="border-left: 6px solid var(--success);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
                     <div>
-                        <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted);">Allocated</div>
-                        <div style="font-size:1rem; font-weight:800; color:var(--primary-dark);">¥{{ "%.2f"|format(eb.total_budget) }}</div>
+                        <span class="status-badge status-Confirmed" style="margin-bottom: 6px;">Exclusive Event Budget Ledger</span>
+                        <h1 style="font-size: 1.6rem; font-weight: 900; color: var(--primary-dark);">💰 {{ eb.title }} - Budget & Expense Ledger</h1>
+                        <p style="font-size: 0.88rem; color: var(--text-muted);">Exclusive ledger showing itemized purchases and budget limits for {{ eb.title }}.</p>
                     </div>
-                    <div>
-                        <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted);">Spent</div>
-                        <div style="font-size:1rem; font-weight:800; color:var(--danger);">¥{{ "%.2f"|format(eb.total_spent) }}</div>
+                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
+                    <button class="btn btn-success" onclick="openModal('addPurchaseModal')">🛒 Log New Purchased Item</button>
+                    {% endif %}
+                </div>
+
+                <div class="summary-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 20px;">
+                    <div class="summary-card">
+                        <div class="summary-label">Allocated Budget Limit</div>
+                        <div class="summary-value">¥{{ "%.2f"|format(eb.total_budget) }}</div>
                     </div>
-                    <div>
-                        <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted);">Remains</div>
-                        <div style="font-size:1rem; font-weight:800; color:var(--success);">¥{{ "%.2f"|format(eb.remaining) }}</div>
+                    <div class="summary-card">
+                        <div class="summary-label">Total Spent to Date</div>
+                        <div class="summary-value" style="color: var(--danger);">¥{{ "%.2f"|format(eb.total_spent) }}</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Remaining Event Balance</div>
+                        <div class="summary-value" style="color: var(--success);">¥{{ "%.2f"|format(eb.remaining) }}</div>
                     </div>
                 </div>
 
-                <a href="/workspace/{{ eb.id }}" class="btn" style="width:100%;">Open Event Workspace →</a>
+                <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 12px;">🛒 Itemized Purchased Expenses for {{ eb.title }}</h3>
+                <div class="table-responsive">
+                    <table class="sheet-table">
+                        <thead>
+                            <tr>
+                                <th>Item Purchased</th>
+                                <th style="width: 120px;">Cost (RMB ¥)</th>
+                                <th style="width: 130px;">Purchaser</th>
+                                <th style="width: 110px;">Date</th>
+                                <th>Notes / Receipt Info</th>
+                                {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
+                                <th style="width: 80px; text-align: center;">Action</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in eb.purchases %}
+                            <tr>
+                                <td style="font-weight: 700; color: var(--primary-dark);">🛒 {{ p.item }}</td>
+                                <td style="font-weight: 800; color: var(--danger);">¥{{ "%.2f"|format(p.cost) }}</td>
+                                <td>{{ p.buyer }}</td>
+                                <td>{{ p.date }}</td>
+                                <td style="font-style: italic; color: var(--text-muted);">{{ p.notes }}</td>
+                                {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
+                                <td style="text-align: center;">
+                                    <form action="{{ url_for('delete_purchase', event_id=eb.id, purchase_id=p.id) }}" method="POST" onsubmit="return confirm('Remove purchase record?');">
+                                        <button type="submit" class="btn btn-danger" style="padding: 4px 6px; font-size: 0.72rem; color: white;">Del</button>
+                                    </form>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                            {% if not eb.purchases %}
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">No purchased items logged for this event yet. Click "Log New Purchased Item" to add expenses!</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            {% endfor %}
         </div>
+        {% endfor %}
     </div>
 
     <!-- ========================================== -->
@@ -715,9 +828,9 @@
                             <td style="font-weight: 700; color: var(--primary-dark);">{{ t.task }}</td>
                             <td><span style="font-weight:600; color:#475569;">{{ t.assignee }}</span></td>
                             <td>
-                                <a href="/workspace/{{ t.event_id }}" style="font-weight:700; color:var(--primary); text-decoration:none;">
+                                <button onclick="showEventFromTasks({{ t.event_id }})" style="font-weight:700; color:var(--primary); background:none; border:none; cursor:pointer; text-decoration:underline;">
                                     📌 {{ t.event_title }}
-                                </a>
+                                </button>
                             </td>
                             <td><span class="status-badge status-{{ t.status.replace(' ', '-') }}">{{ t.status }}</span></td>
                         </tr>
@@ -940,6 +1053,12 @@
         document.getElementById('hub-landing-view').style.display = 'none';
         document.querySelectorAll('.subdiv-content').forEach(el => el.classList.remove('active'));
         document.getElementById(subdivId).classList.add('active');
+        
+        if (subdivId === 'event-workspace-subdiv') {
+            showEventSelection();
+        } else if (subdivId === 'budget-plan-subdiv') {
+            showTreasuryOverview();
+        }
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -949,6 +1068,43 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    /* Event Subgroup Views */
+    function showEventSelection() {
+        document.getElementById('event-selection-view').style.display = 'block';
+        document.getElementById('event-details-view').style.display = 'none';
+    }
+
+    function showEventDetails(eventId) {
+        if (eventId === {{ event.id }}) {
+            document.getElementById('event-selection-view').style.display = 'none';
+            document.getElementById('event-details-view').style.display = 'block';
+        } else {
+            window.location.href = "/workspace/" + eventId;
+        }
+    }
+
+    function showEventFromTasks(eventId) {
+        openSubgroup('event-workspace-subdiv');
+        showEventDetails(eventId);
+    }
+
+    /* Budget Plan Views */
+    function showTreasuryOverview() {
+        document.getElementById('treasury-overview-view').style.display = 'block';
+        document.querySelectorAll('.exclusive-budget-panel').forEach(el => el.style.display = 'none');
+    }
+
+    function showExclusiveEventBudget(eventId) {
+        document.getElementById('treasury-overview-view').style.display = 'none';
+        document.querySelectorAll('.exclusive-budget-panel').forEach(el => el.style.display = 'none');
+        let targetView = document.getElementById('exclusive-budget-view-' + eventId);
+        if (targetView) {
+            targetView.style.display = 'block';
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* Modal Controls */
     function openModal(modalId) {
         document.getElementById(modalId).classList.add('active');
     }
