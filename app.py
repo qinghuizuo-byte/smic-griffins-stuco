@@ -686,16 +686,18 @@ def get_event_details(event_id):
 
 
 # 3. Event Workspace — public view, login required to edit
+@app.route('/workspace')
 @app.route('/workspace/<int:event_id>')
-def event_workspace(event_id):
+def event_workspace(event_id=1):
     event = EVENTS.get(event_id)
     if not event:
-        return "Event workspace not found", 404
+        event_id = 1
+        event = EVENTS.get(1)
 
     if "purchases" not in event:
         event["purchases"] = []
 
-    raw_budget_str = event.get("budget_allocated", "$0").replace('$', '').replace(',', '').strip()
+    raw_budget_str = event.get("budget_allocated", "¥0").replace('¥', '').replace('$', '').replace(',', '').strip()
     try:
         total_budget = float(raw_budget_str)
     except ValueError:
@@ -704,12 +706,71 @@ def event_workspace(event_id):
     total_spent = sum(float(p.get("cost", 0)) for p in event["purchases"])
     remaining_budget = total_budget - total_spent
 
+    # Budget Plan summaries across all events
+    event_budgets = []
+    grand_total_allocated = 0.0
+    grand_total_spent = 0.0
+
+    for eid, ev in EVENTS.items():
+        b_str = ev.get("budget_allocated", "¥0").replace('¥', '').replace('$', '').replace(',', '').strip()
+        try: b_tot = float(b_str)
+        except ValueError: b_tot = 0.0
+        p_list = ev.get("purchases", [])
+        s_tot = sum(float(p.get("cost", 0)) for p in p_list)
+        grand_total_allocated += b_tot
+        grand_total_spent += s_tot
+        event_budgets.append({
+            "id": eid,
+            "title": ev.get("title"),
+            "category": ev.get("category"),
+            "display_date": ev.get("display_date"),
+            "total_budget": b_tot,
+            "total_spent": s_tot,
+            "remaining": b_tot - s_tot,
+            "purchases": p_list
+        })
+
+    # All tasks arranged by due date
+    all_tasks = []
+    for eid, ev in EVENTS.items():
+        for t in ev.get("tasks", []):
+            all_tasks.append({
+                "date": t.get("date", "9999-99-99"),
+                "task": t.get("task"),
+                "assignee": t.get("assignee", "Unassigned"),
+                "event_title": ev.get("title"),
+                "event_id": eid,
+                "status": t.get("status", "To Do"),
+                "notes": t.get("notes", "")
+            })
+    for m in MEETINGS:
+        for item in m.get("action_items", []):
+            all_tasks.append({
+                "date": m.get("date", "9999-99-99"),
+                "task": item.get("task"),
+                "assignee": item.get("assignee", "Unassigned"),
+                "event_title": item.get("event_title") or f"Meeting: {m.get('title')}",
+                "event_id": item.get("event_id") or 1,
+                "status": "Completed" if item.get("done") else "To Do",
+                "notes": "Action item from meeting"
+            })
+            
+    all_tasks_sorted = sorted(all_tasks, key=lambda x: x.get("date", "9999-99-99"))
+
     return render_template(
         'workspace.html',
         event=event,
+        events=list(EVENTS.values()),
         total_budget=total_budget,
         total_spent=total_spent,
-        remaining_budget=remaining_budget
+        remaining_budget=remaining_budget,
+        event_budgets=event_budgets,
+        grand_total_allocated=grand_total_allocated,
+        grand_total_spent=grand_total_spent,
+        grand_remaining=grand_total_allocated - grand_total_spent,
+        stuco_debit=STUCO_DEBT,
+        stuco_balance=STUCO_BALANCE,
+        all_tasks_sorted=all_tasks_sorted
     )
 
 
@@ -1422,22 +1483,86 @@ def stats_page():
 
 
 # ==========================================
-# ADMIN: TRIGGER EVENT SURVEY
+# MEMBER PROFILE ("ME" PAGE)
+# ==========================================
+
+@app.route('/me', methods=['GET', 'POST'])
+@login_required
+def me_page():
+    if request.method == 'POST':
+        quote = request.form.get('quote', '').strip()
+        picture_file = request.files.get('picture_file')
+        picture_url = request.form.get('picture_url', '').strip()
+        
+        filename = ""
+        if picture_file and allowed_file(picture_file.filename):
+            filename = secure_filename(picture_file.filename)
+            picture_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            current_user.picture = url_for('static', filename='uploads/' + filename)
+        elif picture_url:
+            current_user.picture = picture_url
+            
+        # Update STUCO_MEMBERS profile matching current_user.email
+        for m in STUCO_MEMBERS:
+            if m.get("email", "").lower() == current_user.email.lower():
+                if quote: m["quote"] = quote
+                if current_user.picture: m["picture"] = current_user.picture
+                break
+                
+        # Update ACCOUNTS dict
+        if current_user.email.lower() in ACCOUNTS:
+            if current_user.picture:
+                ACCOUNTS[current_user.email.lower()]["picture"] = current_user.picture
+                
+        save_data()
+        flash("Profile & picture updated successfully!", "success")
+        return redirect(url_for('me_page'))
+
+    member_info = next((m for m in STUCO_MEMBERS if m.get("email", "").lower() == current_user.email.lower()), None)
+    return render_template('me.html', member_info=member_info)
+
+
+# ==========================================
+# ADMIN: TRIGGER MICROSOFT FORMS SURVEY
 # ==========================================
 
 @app.route('/stats/trigger_survey', methods=['POST'])
 @login_required
+@require_role(['President', 'Vice President', 'Secretary', 'Teacher'])
 def trigger_event_survey():
-    event_id = _safe_int(request.form.get('event_id'))
-    if event_id and event_id in EVENTS:
-        # Add this event to all active users' pending surveys
-        for uid in active_users:
-            if uid not in pending_event_surveys:
-                pending_event_surveys[uid] = []
-            if event_id not in pending_event_surveys[uid]:
-                pending_event_surveys[uid].append(event_id)
-        event_title = EVENTS[event_id]['title']
-        flash(f"📬 Post-event survey for '{event_title}' sent to all active members!", "success")
+    survey_title = request.form.get('survey_title', 'Student Feedback Survey').strip()
+    survey_link = request.form.get('survey_link', '').strip()
+    qr_code_file = request.files.get('qr_code_file')
+    qr_code_url = request.form.get('qr_code_url', '').strip()
+    
+    qr_src = ""
+    if qr_code_file and allowed_file(qr_code_file.filename):
+        qr_filename = secure_filename(qr_code_file.filename)
+        qr_code_file.save(os.path.join(app.config['UPLOAD_FOLDER'], qr_filename))
+        qr_src = url_for('static', filename='uploads/' + qr_filename)
+    elif qr_code_url:
+        qr_src = qr_code_url
+
+    # Automatically post survey announcement to home page
+    new_id = max([a['id'] for a in ANNOUNCEMENTS], default=0) + 1
+    content_text = f"Please complete our Microsoft Forms survey for '{survey_title}'."
+    if qr_src:
+        content_text += " Scan the QR code or click the link below to participate!"
+
+    ANNOUNCEMENTS.insert(0, {
+        "id": new_id,
+        "title": f"📋 Survey: {survey_title}",
+        "date": "Today",
+        "badge": "Student Voice",
+        "badge_color": "priority",
+        "content": content_text,
+        "qr_code": qr_src,
+        "link": survey_link or "/survey",
+        "link_text": "Take Microsoft Forms Survey →"
+    })
+    
+    save_data()
+    flash(f"📬 Survey '{survey_title}' published to Home Page & sent to all members!", "success")
     return redirect(url_for('stats_page'))
 
 

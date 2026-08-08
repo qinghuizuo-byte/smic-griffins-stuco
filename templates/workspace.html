@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ event.title }} | Stuco Event Workspace</title>
+    <title>Stuco Workspace | {{ event.title }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -23,16 +23,14 @@
             --status-done: #dcfce7;
             --status-done-text: #166534;
             --danger: #ef4444;
-            --danger-light: #fef2f2;
             --success: #10b981;
-            --success-light: #ecfdf5;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
         body { background-color: var(--bg-main); color: var(--text-dark); padding: 24px; }
         .container { max-width: 1300px; margin: 0 auto; }
 
-        /* Navbar */
+        /* Standard Navbar Header */
         .navbar {
             background: var(--card-bg);
             border-radius: 12px;
@@ -45,21 +43,34 @@
             border-left: 6px solid var(--primary);
         }
         .brand-title { font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); }
-        .nav-links { display: flex; gap: 14px; align-items: center; }
+        .nav-links { display: flex; gap: 12px; align-items: center; }
         .nav-link {
             text-decoration: none; color: var(--text-dark); font-weight: 600; font-size: 0.88rem;
-            padding: 7px 14px; border-radius: 8px; transition: background 0.15s;
+            padding: 7px 12px; border-radius: 8px; transition: background 0.15s;
         }
         .nav-link:hover { background: var(--primary-light); color: var(--primary); }
+        .nav-link.active { background: var(--primary); color: white; }
+
+        /* Workspace Sub-nav / Sub-tabs */
+        .workspace-subnav {
+            display: flex; gap: 10px; background: white; padding: 8px; border-radius: 12px;
+            border: 1px solid #e2e8f0; margin-bottom: 24px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); flex-wrap: wrap;
+        }
+        .subtab-btn {
+            flex: 1; min-width: 180px; padding: 12px 18px; border: none; background: transparent;
+            font-size: 0.92rem; font-weight: 700; color: var(--text-muted); border-radius: 8px; cursor: pointer;
+            transition: all 0.2s; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .subtab-btn:hover { background: var(--primary-light); color: var(--primary); }
+        .subtab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 6px rgba(0,102,204,0.2); }
+
+        .subdiv-content { display: none; }
+        .subdiv-content.active { display: block; }
 
         /* Workspace Header */
         .workspace-header {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            border: 1px solid #e2e8f0;
+            background: var(--card-bg); border-radius: 12px; padding: 24px; margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); border: 1px solid #e2e8f0;
         }
         .workspace-header h1 { font-size: 1.8rem; color: var(--text-dark); font-weight: 800; margin-bottom: 8px; }
         .workspace-header p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
@@ -81,15 +92,13 @@
         }
         .card-title { font-size: 1.15rem; color: var(--primary-dark); font-weight: 800; }
 
-        /* Summary Stats Cards */
-        .budget-summary-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px;
+        .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+        .summary-card {
+            background: var(--card-bg); border-radius: 10px; padding: 18px; border: 1px solid #e2e8f0;
+            text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.02);
         }
-        .budget-stat-box {
-            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; text-align: center;
-        }
-        .budget-stat-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
-        .budget-stat-value { font-size: 1.3rem; font-weight: 900; color: var(--primary-dark); margin-top: 4px; }
+        .summary-value { font-size: 1.4rem; font-weight: 900; color: var(--primary-dark); }
+        .summary-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; }
 
         /* Buttons */
         .btn {
@@ -101,11 +110,9 @@
         .btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
         .btn-outline:hover { background: var(--primary-light); }
         .btn-danger { background-color: var(--danger); }
-        .btn-danger:hover { background-color: #dc2626; }
         .btn-success { background-color: var(--success); }
-        .btn-success:hover { background-color: #059669; }
 
-        /* Spreadsheet-like Table */
+        /* Spreadsheet Table */
         .table-responsive { width: 100%; overflow-x: auto; border-radius: 8px; border: 1px solid var(--border-color); }
         .sheet-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; background: white; }
         .sheet-table th {
@@ -113,19 +120,12 @@
             font-size: 0.82rem; text-transform: uppercase; border-bottom: 2px solid var(--border-color);
         }
         .sheet-table td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
-        .sheet-table tr:last-child td { border-bottom: none; }
         .sheet-table tr:hover td { background-color: #f8fafc; }
 
-        .status-badge {
-            display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700;
-        }
-        .status-To-Do { background: var(--status-todo); color: var(--status-todo-text); }
-        .status-In-Progress { background: var(--status-progress); color: var(--status-progress-text); }
-        .status-Completed { background: var(--status-done); color: var(--status-done-text); }
-
-        .status-Signed-Up { background: #fef3c7; color: #92400e; }
-        .status-Paid { background: #dcfce7; color: #166534; }
-        .status-Confirmed { background: #dbeafe; color: #1e40af; }
+        .status-badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; }
+        .status-To-Do, .status-Signed-Up { background: var(--status-todo); color: var(--status-todo-text); }
+        .status-In-Progress, .status-Confirmed { background: var(--status-progress); color: var(--status-progress-text); }
+        .status-Completed, .status-Paid { background: var(--status-done); color: var(--status-done-text); }
 
         /* Modals */
         .modal {
@@ -134,62 +134,53 @@
         }
         .modal.active { display: flex; }
         .modal-content {
-            background: white; border-radius: 12px; padding: 24px; width: 100%; max-width: 500px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            background: white; border-radius: 12px; padding: 24px; width: 100%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
-
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 4px; }
         .form-group input, .form-group select, .form-group textarea {
-            width: 100%; padding: 8px 10px; border: 1.5px solid var(--border-color); border-radius: 6px;
-            font-family: inherit; font-size: 0.88rem; outline: none;
+            width: 100%; padding: 8px 10px; border: 1.5px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 0.88rem;
         }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); }
 
-        /* Gallery Grid */
         .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-top: 14px; }
         .photo-card { border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: #fff; }
         .photo-card img { width: 100%; height: 120px; object-fit: cover; display: block; }
         .photo-info { padding: 8px; font-size: 0.8rem; }
-        .photo-caption { font-weight: 600; color: var(--text-dark); }
-        .photo-category { color: var(--text-muted); font-size: 0.72rem; }
 
         .alert { padding: 12px 16px; background: #d1e7dd; color: #0f5132; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; }
 
-        /* Mobile Responsiveness */
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
             body { padding: 14px; }
-            .navbar {
-                flex-direction: column; align-items: flex-start; gap: 14px; padding: 14px 18px;
-            }
+            .navbar { flex-direction: column; align-items: flex-start; gap: 14px; padding: 14px 18px; }
             .nav-links { flex-wrap: wrap; gap: 8px; width: 100%; }
             .nav-link { font-size: 0.8rem; padding: 6px 10px; flex-grow: 1; text-align: center; }
-            .workspace-header { padding: 20px; }
-            .workspace-header h1 { font-size: 1.4rem; }
-            .grid-layout { grid-template-columns: 1fr; gap: 16px; }
-            .budget-summary-grid { grid-template-columns: 1fr; }
-            .modal-content { width: 95%; padding: 20px; }
+            .grid-layout { grid-template-columns: 1fr; }
+            .summary-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
+
 <div class="container">
 
-    <!-- Navbar Header -->
+    <!-- Standard Aligned Navbar Header -->
     <div class="navbar">
-        <div class="brand-title">🦅 Stuco Event Workspace</div>
+        <div class="brand-title">🦅 Stuco Workspace</div>
         <div class="nav-links">
             <a href="/" class="nav-link">Home</a>
-            <a href="/calendar" class="nav-link">Calendar</a>
-            <a href="/meetings" class="nav-link">Meetings</a>
-            <a href="/budget" class="nav-link">Treasurer Portal</a>
-            <a href="/updates" class="nav-link">Updates</a>
-            <a href="/volunteers" class="nav-link">Volunteers</a>
+            <a href="/workspace/1" class="nav-link active">Stuco Workspace</a>
+            <a href="/vending" class="nav-link">Vending Machine</a>
+            <a href="/updates" class="nav-link">Stuco Updates</a>
+            <a href="/volunteers" class="nav-link">CSH (Volunteer)</a>
             <a href="/stats" class="nav-link">Statistics</a>
             {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher'] %}
             <a href="/admin" class="nav-link">Admin</a>
             {% endif %}
             {% if current_user.is_authenticated %}
+            <a href="/me" class="nav-link">Me</a>
             <a href="/logout" class="nav-link" style="color:var(--danger);">Sign out</a>
             {% else %}
             <a href="/login" class="nav-link" style="background:var(--primary);color:white;">🔑 Sign In</a>
@@ -205,316 +196,324 @@
       {% endif %}
     {% endwith %}
 
-    <!-- Event Header -->
-    <div class="workspace-header">
-        <h1>{{ event.title }}</h1>
-        <p>{{ event.description }}</p>
-        <div class="event-meta">
-            <div>📅 <strong>Date:</strong> {{ event.display_date }}</div>
-            <div>📍 <strong>Venue:</strong> {{ event.location }}</div>
-            <div>👤 <strong>Event Lead:</strong> {{ event.lead }}</div>
-            <div>💴 <strong>Allocated Budget:</strong> {{ event.budget_allocated }}
-                {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Teacher'] %}
-                <button class="btn btn-outline" style="padding: 2px 8px; font-size: 0.75rem; margin-left: 6px;" onclick="openEditBudgetModal()">✏️ Edit Budget Limit</button>
-                {% endif %}
-            </div>
-        </div>
+    <!-- Workspace Sub-tabs Navigation -->
+    <div class="workspace-subnav">
+        <button class="subtab-btn active" onclick="switchSubdiv('event-workspace-subdiv', this)">
+            📁 Event Workspace & Timelines
+        </button>
+        <button class="subtab-btn" onclick="switchSubdiv('budget-plan-subdiv', this)">
+            💳 Budget Plan & Treasury
+        </button>
+        <button class="subtab-btn" onclick="switchSubdiv('all-tasks-subdiv', this)">
+            📅 All Tasks (By Due Date)
+        </button>
     </div>
 
-    <!-- Layout Grid -->
-    <div class="grid-layout">
-        
-        <!-- Left Column -->
-        <div>
-            <!-- Timeline Planning Sheet -->
-            <div class="card">
-                <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
-                    <span class="card-title">📋 Timeline Planning Sheet</span>
-                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-                    <button class="btn" onclick="openAddRowModal()">➕ Add Timeline Row</button>
-                    {% endif %}
-                </div>
-
-                <div class="table-responsive">
-                    <table class="sheet-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 110px;">Date/Timeline</th>
-                                <th style="width: 160px;">Task</th>
-                                <th style="width: 110px;">Assignee</th>
-                                <th>Details</th>
-                                <th>Notes</th>
-                                <th style="width: 110px;">Status</th>
-                                {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-                                <th style="width: 120px; text-align: center;">Action</th>
-                                {% endif %}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for r in event.tasks %}
-                            <tr>
-                                <td><strong>{{ r.date }}</strong></td>
-                                <td style="font-weight: 600; color: var(--primary-dark);">{{ r.task }}</td>
-                                <td><span style="font-weight:600; color:#475569;">{{ r.assignee }}</span></td>
-                                <td>{{ r.details }}</td>
-                                <td style="font-style: italic; color: var(--text-muted);">{{ r.notes }}</td>
-                                <td>
-                                    <span class="status-badge status-{{ r.status.replace(' ', '-') }}">
-                                        {{ r.status }}
-                                    </span>
-                                </td>
-                                {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-                                <td style="text-align: center;">
-                                    <div style="display:flex; gap:6px; justify-content:center;">
-                                        <button class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem;" onclick='openEditRowModal({{ r | tojson | safe }})'>Edit</button>
-                                        <form action="{{ url_for('delete_workspace_row', event_id=event.id, row_id=r.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this row?');">
-                                            <button type="submit" class="btn btn-danger" style="padding: 4px 8px; font-size: 0.75rem; color: white;">Del</button>
-                                        </form>
-                                    </div>
-                                </td>
-                                {% endif %}
-                            </tr>
-                            {% endfor %}
-                            {% if not event.tasks %}
-                            <tr>
-                                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">No timeline rows added yet.</td>
-                            </tr>
-                            {% endif %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Event Budget & Expense Ledger -->
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">💰 Event Budget & Purchased Items</span>
-                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-                    <button class="btn btn-success" onclick="openAddPurchaseModal()">🛒 Log Purchased Item</button>
-                    {% endif %}
-                </div>
-
-                <div class="budget-summary-grid">
-                    <div class="budget-stat-box">
-                        <div class="budget-stat-label">Total Allocated</div>
-                        <div class="budget-stat-value">¥{{ "%.2f"|format(total_budget) }}</div>
-                    </div>
-                    <div class="budget-stat-box">
-                        <div class="budget-stat-label">Total Spent</div>
-                        <div class="budget-stat-value" style="color: var(--danger);">¥{{ "%.2f"|format(total_spent) }}</div>
-                    </div>
-                    <div class="budget-stat-box">
-                        <div class="budget-stat-label">Remaining Budget</div>
-                        <div class="budget-stat-value" style="color: var(--success);">¥{{ "%.2f"|format(remaining_budget) }}</div>
-                    </div>
-                </div>
-
-                <div class="table-responsive">
-                    <table class="sheet-table">
-                        <thead>
-                            <tr>
-                                <th>Item Purchased</th>
-                                <th style="width: 110px;">Cost (¥)</th>
-                                <th style="width: 120px;">Purchaser</th>
-                                <th style="width: 110px;">Date</th>
-                                <th>Notes / Receipt</th>
-                                {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-                                <th style="width: 90px; text-align: center;">Action</th>
-                                {% endif %}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for p in event.purchases %}
-                            <tr>
-                                <td style="font-weight: 700; color: var(--primary-dark);">{{ p.item }}</td>
-                                <td style="font-weight: 800; color: var(--danger);">¥{{ "%.2f"|format(p.cost) }}</td>
-                                <td>{{ p.buyer }}</td>
-                                <td>{{ p.date }}</td>
-                                <td style="font-style: italic; color: var(--text-muted);">{{ p.notes }}</td>
-                                {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-                                <td style="text-align: center;">
-                                    <form action="{{ url_for('delete_purchase', event_id=event.id, purchase_id=p.id) }}" method="POST" onsubmit="return confirm('Remove purchase record?');">
-                                        <button type="submit" class="btn btn-danger" style="padding: 4px 8px; font-size: 0.75rem; color: white;">Del</button>
-                                    </form>
-                                </td>
-                                {% endif %}
-                            </tr>
-                            {% endfor %}
-                            {% if not event.purchases %}
-                            <tr>
-                                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">No purchases logged for this event yet.</td>
-                            </tr>
-                            {% endif %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Student Participating List (For Booking Events) -->
-            {% if event.requires_booking or event.category == 'Paid Event' or event.participants %}
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">🎟️ Student Participating List (Booking Event)</span>
-                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-                    <button class="btn btn-outline" onclick="openAddParticipantModal()">➕ Add Student Participant</button>
-                    {% endif %}
-                </div>
-
-                <div class="table-responsive">
-                    <table class="sheet-table">
-                        <thead>
-                            <tr>
-                                <th>Student Name</th>
-                                <th>Grade</th>
-                                <th>Email</th>
-                                <th>Booking Stage</th>
-                                {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-                                <th style="width: 90px; text-align: center;">Action</th>
-                                {% endif %}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for part in event.participants %}
-                            <tr>
-                                <td style="font-weight: 700; color: var(--text-dark);">👤 {{ part.name }}</td>
-                                <td>Grade {{ part.grade }}</td>
-                                <td>{{ part.email }}</td>
-                                <td>
-                                    <span class="status-badge status-{{ part.status.replace(' ', '-') }}">
-                                        {{ part.status }}
-                                    </span>
-                                </td>
-                                {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-                                <td style="text-align: center;">
-                                    <div style="display:flex; gap:6px; justify-content:center;">
-                                        <button class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem;" onclick='openEditParticipantModal({{ part | tojson | safe }})'>Edit</button>
-                                        <form action="{{ url_for('delete_participant', event_id=event.id, part_id=part.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Remove student from participating list?');">
-                                            <button type="submit" class="btn btn-danger" style="padding: 4px 8px; font-size: 0.75rem; color: white;">Del</button>
-                                        </form>
-                                    </div>
-                                </td>
-                                {% endif %}
-                            </tr>
-                            {% endfor %}
-                            {% if not event.participants %}
-                            <tr>
-                                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">No participating students registered yet.</td>
-                            </tr>
-                            {% endif %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            {% endif %}
-
+    <!-- ========================================== -->
+    <!-- SUBDIV 1: EVENT WORKSPACE & TIMELINES -->
+    <!-- ========================================== -->
+    <div id="event-workspace-subdiv" class="subdiv-content active">
+        <!-- Event Switcher Bar -->
+        <div style="margin-bottom: 18px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <strong style="font-size: 0.9rem; color: var(--primary-dark);">Switch Event Workspace:</strong>
+            {% for ev in events %}
+            <a href="/workspace/{{ ev.id }}" style="font-size: 0.85rem; font-weight: 700; text-decoration: none; padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--primary); {% if ev.id == event.id %}background:var(--primary);color:white;{% else %}background:white;color:var(--primary);{% endif %}">
+                📌 {{ ev.title }}
+            </a>
+            {% endfor %}
         </div>
 
-        <!-- Right Column: Photo gallery and attachments -->
-        <div>
-            <!-- Upload Card -->
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">Upload Design/Layout</span>
+        <!-- Event Header -->
+        <div class="workspace-header">
+            <h1>{{ event.title }}</h1>
+            <p>{{ event.description }}</p>
+            <div class="event-meta">
+                <div>📅 <strong>Date:</strong> {{ event.display_date }}</div>
+                <div>📍 <strong>Venue:</strong> {{ event.location }}</div>
+                <div>👤 <strong>Event Lead:</strong> {{ event.lead }}</div>
+                <div>💴 <strong>Allocated Budget:</strong> {{ event.budget_allocated }}
+                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Teacher'] %}
+                    <button class="btn btn-outline" style="padding: 2px 8px; font-size: 0.75rem; margin-left: 6px;" onclick="openEditBudgetModal()">✏️ Edit Budget Limit</button>
+                    {% endif %}
                 </div>
-                {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-                <form action="{{ url_for('upload_photo', event_id=event.id) }}" method="POST" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label>Select Image File</label>
-                        <input type="file" name="file" accept="image/*" required>
+            </div>
+        </div>
+
+        <div class="grid-layout">
+            <!-- Left Column -->
+            <div>
+                <!-- Timeline Planning Sheet -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">📋 Timeline Planning Sheet</span>
+                        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                        <button class="btn" onclick="openAddRowModal()">➕ Add Timeline Row</button>
+                        {% endif %}
                     </div>
-                    <div class="form-group">
-                        <label>Caption / Note</label>
-                        <input type="text" name="caption" placeholder="e.g. Stage placement layout">
+
+                    <div class="table-responsive">
+                        <table class="sheet-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 110px;">Due Date</th>
+                                    <th>Task</th>
+                                    <th>Assignee</th>
+                                    <th>Details</th>
+                                    <th>Notes</th>
+                                    <th style="width: 100px;">Status</th>
+                                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                                    <th style="width: 100px; text-align: center;">Action</th>
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for r in event.tasks %}
+                                <tr>
+                                    <td><strong>{{ r.date }}</strong></td>
+                                    <td style="font-weight: 700; color: var(--primary-dark);">{{ r.task }}</td>
+                                    <td><span style="font-weight:600; color:#475569;">{{ r.assignee }}</span></td>
+                                    <td>{{ r.details }}</td>
+                                    <td style="font-style: italic; color: var(--text-muted);">{{ r.notes }}</td>
+                                    <td><span class="status-badge status-{{ r.status.replace(' ', '-') }}">{{ r.status }}</span></td>
+                                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                                    <td style="text-align: center;">
+                                        <div style="display:flex; gap:4px; justify-content:center;">
+                                            <button class="btn btn-outline" style="padding: 4px 6px; font-size: 0.72rem;" onclick='openEditRowModal({{ r | tojson | safe }})'>Edit</button>
+                                            <form action="{{ url_for('delete_workspace_row', event_id=event.id, row_id=r.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this row?');">
+                                                <button type="submit" class="btn btn-danger" style="padding: 4px 6px; font-size: 0.72rem; color: white;">Del</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="form-group">
-                        <label>Category</label>
-                        <select name="category">
-                            <option value="Venue">Venue Photo</option>
-                            <option value="Decor">Decor Idea</option>
-                            <option value="Item to Buy">Item to Buy</option>
-                            <option value="Floorplan">Floorplan / Map</option>
-                        </select>
+                </div>
+
+                <!-- Student Participating List -->
+                {% if event.requires_booking or event.category == 'Paid Event' or event.participants %}
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">🎟️ Student Participating List (Booking Event)</span>
+                        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                        <button class="btn btn-outline" onclick="openAddParticipantModal()">➕ Add Student Participant</button>
+                        {% endif %}
                     </div>
-                    <button type="submit" class="btn" style="width: 100%; margin-top: 8px;">Upload Image</button>
-                </form>
-                {% else %}
-                <div style="text-align:center;padding:12px 8px;">
-                    <p style="font-size:0.82rem;color:var(--text-muted);">🔒 <a href="/login" style="color:var(--primary);font-weight:700;">Sign in</a> to upload venue layouts and photos.</p>
+
+                    <div class="table-responsive">
+                        <table class="sheet-table">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Grade</th>
+                                    <th>Email</th>
+                                    <th>Booking Stage</th>
+                                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                                    <th style="width: 90px; text-align: center;">Action</th>
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for part in event.participants %}
+                                <tr>
+                                    <td style="font-weight: 700; color: var(--text-dark);">👤 {{ part.name }}</td>
+                                    <td>Grade {{ part.grade }}</td>
+                                    <td>{{ part.email }}</td>
+                                    <td><span class="status-badge status-{{ part.status.replace(' ', '-') }}">{{ part.status }}</span></td>
+                                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                                    <td style="text-align: center;">
+                                        <div style="display:flex; gap:4px; justify-content:center;">
+                                            <button class="btn btn-outline" style="padding: 4px 6px; font-size: 0.72rem;" onclick='openEditParticipantModal({{ part | tojson | safe }})'>Edit</button>
+                                            <form action="{{ url_for('delete_participant', event_id=event.id, part_id=part.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Remove participant?');">
+                                                <button type="submit" class="btn btn-danger" style="padding: 4px 6px; font-size: 0.72rem; color: white;">Del</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 {% endif %}
+
             </div>
 
-            <!-- Gallery -->
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">Workspace Gallery</span>
-                </div>
-                <div class="photo-grid">
-                    {% for photo in event.photos %}
-                    <div class="photo-card">
-                        <img src="{{ url_for('static', filename='uploads/' + photo.filename) }}" alt="{{ photo.caption }}" onerror="this.src='https://via.placeholder.com/180x120?text=Venue+Photo';">
-                        <div class="photo-info">
-                            <div class="photo-caption">{{ photo.caption }}</div>
-                            <div class="photo-category">{{ photo.category }}</div>
+            <!-- Right Column -->
+            <div>
+                <!-- Upload Gallery -->
+                <div class="card">
+                    <div class="card-header"><span class="card-title">Upload Layout/Photo</span></div>
+                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                    <form action="{{ url_for('upload_photo', event_id=event.id) }}" method="POST" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label>Select Image File</label>
+                            <input type="file" name="file" accept="image/*" required>
                         </div>
-                    </div>
-                    {% endfor %}
+                        <div class="form-group">
+                            <label>Caption</label>
+                            <input type="text" name="caption" placeholder="e.g. Stage placement layout">
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select name="category">
+                                <option value="Venue">Venue Photo</option>
+                                <option value="Decor">Decor Idea</option>
+                                <option value="Floorplan">Floorplan / Map</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn" style="width: 100%; margin-top: 8px;">Upload Image</button>
+                    </form>
+                    {% endif %}
                 </div>
             </div>
         </div>
-
     </div>
+
+    <!-- ========================================== -->
+    <!-- SUBDIV 2: BUDGET PLAN & TREASURY -->
+    <!-- ========================================== -->
+    <div id="budget-plan-subdiv" class="subdiv-content">
+        <div class="summary-grid">
+            <div class="summary-card" style="border-top: 4px solid var(--primary);">
+                <div class="summary-value" style="color: var(--primary);">{{ stuco_balance }}</div>
+                <div class="summary-label">Total Treasury Balance</div>
+            </div>
+            <div class="summary-card" style="border-top: 4px solid var(--danger);">
+                <div class="summary-value" style="color: var(--danger);">{{ stuco_debit }}</div>
+                <div class="summary-label">Stuco Active Debit</div>
+            </div>
+            <div class="summary-card" style="border-top: 4px solid var(--primary-dark);">
+                <div class="summary-value">¥{{ "%.2f"|format(grand_total_allocated) }}</div>
+                <div class="summary-label">Allocated Across Events</div>
+            </div>
+            <div class="summary-card" style="border-top: 4px solid var(--success);">
+                <div class="summary-value" style="color: var(--success);">¥{{ "%.2f"|format(grand_remaining) }}</div>
+                <div class="summary-label">Net Remaining Budget</div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--primary-dark);">All Event Budget Plans</h2>
+            {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Treasurer'] %}
+            <button class="btn btn-outline" onclick="openBalanceModal()">✏️ Edit Stuco Balance / Debit</button>
+            {% endif %}
+        </div>
+
+        <div class="grid-layout" style="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));">
+            {% for eb in event_budgets %}
+            <div class="card">
+                <span class="status-badge status-Confirmed" style="margin-bottom: 8px;">{{ eb.category }}</span>
+                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--primary-dark);">{{ eb.title }}</h3>
+                <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">📅 {{ eb.display_date }}</div>
+                
+                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; margin-bottom: 14px;">
+                    <div>
+                        <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted);">Allocated</div>
+                        <div style="font-size:1rem; font-weight:800; color:var(--primary-dark);">¥{{ "%.2f"|format(eb.total_budget) }}</div>
+                    </div>
+                    <div>
+                        <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted);">Spent</div>
+                        <div style="font-size:1rem; font-weight:800; color:var(--danger);">¥{{ "%.2f"|format(eb.total_spent) }}</div>
+                    </div>
+                    <div>
+                        <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted);">Remains</div>
+                        <div style="font-size:1rem; font-weight:800; color:var(--success);">¥{{ "%.2f"|format(eb.remaining) }}</div>
+                    </div>
+                </div>
+
+                <a href="/workspace/{{ eb.id }}" class="btn" style="width:100%;">Open Event Workspace →</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SUBDIV 3: ALL TASKS (ARRANGED BY DUE DATE) -->
+    <!-- ========================================== -->
+    <div id="all-tasks-subdiv" class="subdiv-content">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">📅 Master Task List (Arranged Chronologically by Due Date)</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="sheet-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 120px;">Due Date</th>
+                            <th>Task Description</th>
+                            <th>Assignee</th>
+                            <th>Associated Event / Context</th>
+                            <th style="width: 110px;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in all_tasks_sorted %}
+                        <tr>
+                            <td><strong>{{ t.date }}</strong></td>
+                            <td style="font-weight: 700; color: var(--primary-dark);">{{ t.task }}</td>
+                            <td><span style="font-weight:600; color:#475569;">{{ t.assignee }}</span></td>
+                            <td>
+                                <a href="/workspace/{{ t.event_id }}" style="font-weight:700; color:var(--primary); text-decoration:none;">
+                                    📌 {{ t.event_title }}
+                                </a>
+                            </td>
+                            <td><span class="status-badge status-{{ t.status.replace(' ', '-') }}">{{ t.status }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
 </div>
 
-<!-- ========================================== -->
-<!-- MODAL: EDIT BUDGET LIMIT -->
-<!-- ========================================== -->
+<!-- MODALS -->
 <div class="modal" id="editBudgetModal">
     <div class="modal-content">
-        <div style="display:flex; justify-content:space-between; margin-bottom:18px;">
-            <h3 style="font-weight:800; color:var(--primary-dark);">Edit Event Budget Limit</h3>
-            <button onclick="closeEditBudgetModal()" style="font-size:1.5rem; background:none; border:none; cursor:pointer; color:var(--text-muted);">&times;</button>
-        </div>
+        <h3 style="font-weight:800; color:var(--primary-dark); margin-bottom:14px;">Edit Event Budget Limit</h3>
         <form action="{{ url_for('edit_event_budget', event_id=event.id) }}" method="POST">
             <div class="form-group">
                 <label>Allocated Budget Amount (RMB ¥)</label>
-                <input type="text" name="budget_allocated" value="{{ event.budget_allocated }}" placeholder="e.g. ¥2,500.00" required>
+                <input type="text" name="budget_allocated" value="{{ event.budget_allocated }}" required>
             </div>
             <button type="submit" class="btn" style="width:100%; margin-top:8px;">Save Budget Limit</button>
         </form>
     </div>
 </div>
 
-<!-- ========================================== -->
-<!-- MODAL: ADD ROW -->
-<!-- ========================================== -->
+<div class="modal" id="balanceModal">
+    <div class="modal-content">
+        <h3 style="font-weight:800; color:var(--primary-dark); margin-bottom:14px;">Edit Stuco Treasury Balance & Debit</h3>
+        <form action="{{ url_for('edit_stuco_balance') }}" method="POST">
+            <div class="form-group">
+                <label>Total Stuco Treasury Balance (RMB ¥)</label>
+                <input type="text" name="balance" value="{{ stuco_balance }}" required>
+            </div>
+            <div class="form-group">
+                <label>Stuco Active Debit (RMB ¥)</label>
+                <input type="text" name="debt" value="{{ stuco_debit }}" required>
+            </div>
+            <button type="submit" class="btn" style="width:100%; margin-top:8px;">Save Treasury Info</button>
+        </form>
+    </div>
+</div>
+
+<!-- Add/Edit Row Modals -->
 <div class="modal" id="addRowModal">
     <div class="modal-content">
-        <div style="display:flex; justify-content:space-between; margin-bottom:18px;">
-            <h3 style="font-weight:800; color:var(--primary-dark);">Add Planning Row</h3>
-            <button onclick="closeAddRowModal()" style="font-size:1.5rem; background:none; border:none; cursor:pointer; color:var(--text-muted);">&times;</button>
-        </div>
+        <h3 style="font-weight:800; color:var(--primary-dark); margin-bottom:14px;">Add Timeline Row</h3>
         <form action="{{ url_for('add_workspace_row', event_id=event.id) }}" method="POST">
-            <div class="form-group">
-                <label>Date / Timeline</label>
-                <input type="text" name="date" placeholder="e.g. 2026-10-10 or Pre-event" required>
-            </div>
-            <div class="form-group">
-                <label>Task Title</label>
-                <input type="text" name="task" placeholder="e.g. Setup Sound System" required>
-            </div>
-            <div class="form-group">
-                <label>Assignee</label>
-                <input type="text" name="assignee" placeholder="e.g. Jordan K.">
-            </div>
-            <div class="form-group">
-                <label>Details</label>
-                <input type="text" name="details" placeholder="e.g. Coordinate speakers with AV Club">
-            </div>
-            <div class="form-group">
-                <label>Notes</label>
-                <input type="text" name="notes" placeholder="e.g. Check power sockets count">
-            </div>
+            <div class="form-group"><label>Due Date</label><input type="text" name="date" required></div>
+            <div class="form-group"><label>Task Title</label><input type="text" name="task" required></div>
+            <div class="form-group"><label>Assignee</label><input type="text" name="assignee"></div>
+            <div class="form-group"><label>Details</label><input type="text" name="details"></div>
+            <div class="form-group"><label>Notes</label><input type="text" name="notes"></div>
             <div class="form-group">
                 <label>Status</label>
                 <select name="status">
@@ -523,111 +522,18 @@
                     <option value="Completed">Completed</option>
                 </select>
             </div>
-            <button type="submit" class="btn" style="width:100%; margin-top:8px;">Add Row</button>
+            <button type="submit" class="btn" style="width:100%;">Add Row</button>
         </form>
     </div>
 </div>
 
-<!-- ========================================== -->
-<!-- MODAL: EDIT ROW -->
-<!-- ========================================== -->
-<div class="modal" id="editRowModal">
-    <div class="modal-content">
-        <div style="display:flex; justify-content:space-between; margin-bottom:18px;">
-            <h3 style="font-weight:800; color:var(--primary-dark);">Edit Planning Row</h3>
-            <button onclick="closeEditRowModal()" style="font-size:1.5rem; background:none; border:none; cursor:pointer; color:var(--text-muted);">&times;</button>
-        </div>
-        <form id="editRowForm" method="POST">
-            <div class="form-group">
-                <label>Date / Timeline</label>
-                <input type="text" name="date" id="edit_date" required>
-            </div>
-            <div class="form-group">
-                <label>Task Title</label>
-                <input type="text" name="task" id="edit_task" required>
-            </div>
-            <div class="form-group">
-                <label>Assignee</label>
-                <input type="text" name="assignee" id="edit_assignee">
-            </div>
-            <div class="form-group">
-                <label>Details</label>
-                <input type="text" name="details" id="edit_details">
-            </div>
-            <div class="form-group">
-                <label>Notes</label>
-                <input type="text" name="notes" id="edit_notes">
-            </div>
-            <div class="form-group">
-                <label>Status</label>
-                <select name="status" id="edit_status">
-                    <option value="To Do">To Do</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
-                </select>
-            </div>
-            <button type="submit" class="btn" style="width:100%; margin-top:8px;">Save Changes</button>
-        </form>
-    </div>
-</div>
-
-<!-- ========================================== -->
-<!-- MODAL: ADD PURCHASE / EXPENSE -->
-<!-- ========================================== -->
-<div class="modal" id="addPurchaseModal">
-    <div class="modal-content">
-        <div style="display:flex; justify-content:space-between; margin-bottom:18px;">
-            <h3 style="font-weight:800; color:var(--primary-dark);">Log Purchased Item</h3>
-            <button onclick="closeAddPurchaseModal()" style="font-size:1.5rem; background:none; border:none; cursor:pointer; color:var(--text-muted);">&times;</button>
-        </div>
-        <form action="{{ url_for('add_purchase', event_id=event.id) }}" method="POST">
-            <div class="form-group">
-                <label>Item Name / Description</label>
-                <input type="text" name="item" placeholder="e.g. Sound System Speakers" required>
-            </div>
-            <div class="form-group">
-                <label>Cost Amount (¥)</label>
-                <input type="number" step="0.01" name="cost" placeholder="e.g. 150.00" required>
-            </div>
-            <div class="form-group">
-                <label>Purchaser Name</label>
-                <input type="text" name="buyer" placeholder="e.g. Lily Goufo" value="{{ current_user.name }}">
-            </div>
-            <div class="form-group">
-                <label>Date of Purchase</label>
-                <input type="date" name="date" required>
-            </div>
-            <div class="form-group">
-                <label>Notes / Receipt Info</label>
-                <input type="text" name="notes" placeholder="e.g. Purchased from store, receipt attached">
-            </div>
-            <button type="submit" class="btn btn-success" style="width:100%; margin-top:8px;">Save Purchased Item</button>
-        </form>
-    </div>
-</div>
-
-<!-- ========================================== -->
-<!-- MODAL: ADD PARTICIPANT -->
-<!-- ========================================== -->
 <div class="modal" id="addParticipantModal">
     <div class="modal-content">
-        <div style="display:flex; justify-content:space-between; margin-bottom:18px;">
-            <h3 style="font-weight:800; color:var(--primary-dark);">Add Student Participant</h3>
-            <button onclick="closeAddParticipantModal()" style="font-size:1.5rem; background:none; border:none; cursor:pointer; color:var(--text-muted);">&times;</button>
-        </div>
+        <h3 style="font-weight:800; color:var(--primary-dark); margin-bottom:14px;">Add Student Participant</h3>
         <form action="{{ url_for('add_participant', event_id=event.id) }}" method="POST">
-            <div class="form-group">
-                <label>Student Name</label>
-                <input type="text" name="name" placeholder="e.g. Sam V." required>
-            </div>
-            <div class="form-group">
-                <label>Grade Level</label>
-                <input type="text" name="grade" placeholder="e.g. 12" required>
-            </div>
-            <div class="form-group">
-                <label>Student Email</label>
-                <input type="email" name="email" placeholder="e.g. student@bjsmicschool.com" required>
-            </div>
+            <div class="form-group"><label>Student Name</label><input type="text" name="name" required></div>
+            <div class="form-group"><label>Grade Level</label><input type="text" name="grade" required></div>
+            <div class="form-group"><label>Student Email</label><input type="email" name="email" required></div>
             <div class="form-group">
                 <label>Booking Stage</label>
                 <select name="status">
@@ -636,82 +542,28 @@
                     <option value="Confirmed">Confirmed</option>
                 </select>
             </div>
-            <button type="submit" class="btn" style="width:100%; margin-top:8px;">Add Participant</button>
-        </form>
-    </div>
-</div>
-
-<!-- ========================================== -->
-<!-- MODAL: EDIT PARTICIPANT -->
-<!-- ========================================== -->
-<div class="modal" id="editParticipantModal">
-    <div class="modal-content">
-        <div style="display:flex; justify-content:space-between; margin-bottom:18px;">
-            <h3 style="font-weight:800; color:var(--primary-dark);">Edit Student Participant</h3>
-            <button onclick="closeEditParticipantModal()" style="font-size:1.5rem; background:none; border:none; cursor:pointer; color:var(--text-muted);">&times;</button>
-        </div>
-        <form id="editParticipantForm" method="POST">
-            <div class="form-group">
-                <label>Student Name</label>
-                <input type="text" name="name" id="edit_part_name" required>
-            </div>
-            <div class="form-group">
-                <label>Grade Level</label>
-                <input type="text" name="grade" id="edit_part_grade" required>
-            </div>
-            <div class="form-group">
-                <label>Student Email</label>
-                <input type="email" name="email" id="edit_part_email" required>
-            </div>
-            <div class="form-group">
-                <label>Booking Stage</label>
-                <select name="status" id="edit_part_status">
-                    <option value="Signed Up">Signed Up</option>
-                    <option value="Paid">Paid</option>
-                    <option value="Confirmed">Confirmed</option>
-                </select>
-            </div>
-            <button type="submit" class="btn" style="width:100%; margin-top:8px;">Save Participant Changes</button>
+            <button type="submit" class="btn" style="width:100%;">Add Participant</button>
         </form>
     </div>
 </div>
 
 <script>
+    function switchSubdiv(subdivId, btn) {
+        document.querySelectorAll('.subdiv-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.subtab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(subdivId).classList.add('active');
+        btn.classList.add('active');
+    }
+
     function openEditBudgetModal() { document.getElementById('editBudgetModal').classList.add('active'); }
     function closeEditBudgetModal() { document.getElementById('editBudgetModal').classList.remove('active'); }
-
+    function openBalanceModal() { document.getElementById('balanceModal').classList.add('active'); }
+    function closeBalanceModal() { document.getElementById('balanceModal').classList.remove('active'); }
     function openAddRowModal() { document.getElementById('addRowModal').classList.add('active'); }
     function closeAddRowModal() { document.getElementById('addRowModal').classList.remove('active'); }
-
-    function openEditRowModal(row) {
-        document.getElementById('edit_date').value = row.date;
-        document.getElementById('edit_task').value = row.task;
-        document.getElementById('edit_assignee').value = row.assignee || '';
-        document.getElementById('edit_details').value = row.details || '';
-        document.getElementById('edit_notes').value = row.notes || '';
-        document.getElementById('edit_status').value = row.status;
-
-        document.getElementById('editRowForm').action = "/workspace/{{ event.id }}/edit_row/" + row.id;
-        document.getElementById('editRowModal').classList.add('active');
-    }
-    function closeEditRowModal() { document.getElementById('editRowModal').classList.remove('active'); }
-
-    function openAddPurchaseModal() { document.getElementById('addPurchaseModal').classList.add('active'); }
-    function closeAddPurchaseModal() { document.getElementById('addPurchaseModal').classList.remove('active'); }
-
     function openAddParticipantModal() { document.getElementById('addParticipantModal').classList.add('active'); }
     function closeAddParticipantModal() { document.getElementById('addParticipantModal').classList.remove('active'); }
-
-    function openEditParticipantModal(part) {
-        document.getElementById('edit_part_name').value = part.name;
-        document.getElementById('edit_part_grade').value = part.grade;
-        document.getElementById('edit_part_email').value = part.email;
-        document.getElementById('edit_part_status').value = part.status;
-
-        document.getElementById('editParticipantForm').action = "/workspace/{{ event.id }}/edit_participant/" + part.id;
-        document.getElementById('editParticipantModal').classList.add('active');
-    }
-    function closeEditParticipantModal() { document.getElementById('editParticipantModal').classList.remove('active'); }
 </script>
+
 </body>
 </html>

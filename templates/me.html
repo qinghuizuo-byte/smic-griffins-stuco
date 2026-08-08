@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Stuco Member Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #f0f6ff;
+            --primary: #0066cc;
+            --primary-light: #e6f0fa;
+            --primary-dark: #004488;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --card-bg: #ffffff;
+            --border-color: #cbd5e1;
+            --danger: #ef4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-dark); padding: 24px; }
+        .container { max-width: 900px; margin: 0 auto; }
+
+        /* Navbar */
+        .navbar {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 102, 204, 0.08);
+            margin-bottom: 24px;
+            border-left: 6px solid var(--primary);
+        }
+        .brand-title { font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); }
+        .nav-links { display: flex; gap: 14px; align-items: center; }
+        .nav-link {
+            text-decoration: none; color: var(--text-dark); font-weight: 600; font-size: 0.88rem;
+            padding: 7px 14px; border-radius: 8px; transition: background 0.15s;
+        }
+        .nav-link:hover { background: var(--primary-light); color: var(--primary); }
+        .nav-link.active { background: var(--primary); color: white; }
+
+        .profile-card {
+            background: var(--card-bg); border-radius: 14px; padding: 32px; border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.04); margin-bottom: 24px;
+        }
+
+        .avatar-preview {
+            width: 100px; height: 100px; border-radius: 50%; background: var(--primary-light);
+            border: 3px solid var(--primary); display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem; font-weight: 800; color: var(--primary); overflow: hidden; margin-bottom: 16px;
+        }
+        .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.88rem; font-weight: 700; margin-bottom: 6px; }
+        .form-group input, .form-group textarea {
+            width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: 8px;
+            font-family: inherit; font-size: 0.9rem; outline: none;
+        }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--primary); }
+
+        .btn {
+            background-color: var(--primary); color: white; border: none; padding: 10px 22px;
+            border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s ease;
+            font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+        }
+        .btn:hover { background-color: var(--primary-dark); }
+        .alert { padding: 12px 16px; background: #d1e7dd; color: #0f5132; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; }
+
+        @media (max-width: 768px) {
+            body { padding: 14px; }
+            .navbar { flex-direction: column; align-items: flex-start; gap: 14px; padding: 14px 18px; }
+            .nav-links { flex-wrap: wrap; gap: 8px; width: 100%; }
+            .nav-link { font-size: 0.8rem; padding: 6px 10px; flex-grow: 1; text-align: center; }
+            .profile-card { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Standard Aligned Navbar Header -->
+    <div class="navbar">
+        <div class="brand-title">🦅 Stuco Member Hub</div>
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/workspace/1" class="nav-link">Stuco Workspace</a>
+            <a href="/vending" class="nav-link">Vending Machine</a>
+            <a href="/updates" class="nav-link">Stuco Updates</a>
+            <a href="/volunteers" class="nav-link">CSH (Volunteer)</a>
+            <a href="/stats" class="nav-link">Statistics</a>
+            {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher'] %}
+            <a href="/admin" class="nav-link">Admin</a>
+            {% endif %}
+            <a href="/me" class="nav-link active">Me</a>
+            <a href="/logout" class="nav-link" style="color:var(--danger);">Sign out</a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="profile-card">
+        <div style="display: flex; gap: 24px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+            <div class="avatar-preview">
+                {% if current_user.picture %}
+                <img src="{{ current_user.picture }}" alt="{{ current_user.name }}">
+                {% else %}
+                {{ current_user.name[0] | upper }}
+                {% endif %}
+            </div>
+            <div>
+                <h1 style="font-size: 1.6rem; font-weight: 800; color: var(--primary-dark);">{{ current_user.name }}</h1>
+                <p style="font-size: 0.92rem; color: var(--primary); font-weight: 700; margin-top: 2px;">{{ current_user.role }}</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">✉️ {{ current_user.email }}</p>
+            </div>
+        </div>
+
+        <form action="{{ url_for('me_page') }}" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>Upload Profile Picture (File)</label>
+                <input type="file" name="picture_file" accept="image/*">
+            </div>
+
+            <div class="form-group">
+                <label>Or Profile Picture Image URL</label>
+                <input type="url" name="picture_url" placeholder="https://example.com/avatar.jpg" value="{{ current_user.picture }}">
+            </div>
+
+            {% if member_info %}
+            <div class="form-group">
+                <label>Personal Quote / Stuco Statement</label>
+                <textarea name="quote" rows="3" placeholder="Share your quote or statement for the homepage leader section...">{{ member_info.quote }}</textarea>
+            </div>
+            {% endif %}
+
+            <button type="submit" class="btn" style="margin-top: 10px;">Save Profile & Picture</button>
+        </form>
+    </div>
+
+</div>
+
+</body>
+</html>

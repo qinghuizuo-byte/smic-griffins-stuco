@@ -22,6 +22,7 @@
             --badge-event-txt: #166534;
             --badge-community-bg: #fef3c7;
             --badge-community-txt: #92400e;
+            --danger: #ef4444;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
@@ -41,25 +42,12 @@
             border-left: 6px solid var(--primary);
         }
 
-        .brand-logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 1.3rem;
-            font-weight: 800;
-            color: var(--primary-dark);
-        }
-
-        .nav-links { display: flex; gap: 14px; align-items: center; }
+        .brand-logo { display: flex; align-items: center; gap: 12px; font-size: 1.3rem; font-weight: 800; color: var(--primary-dark); }
+        .nav-links { display: flex; gap: 12px; align-items: center; }
 
         .nav-link {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 600;
-            font-size: 0.88rem;
-            padding: 8px 14px;
-            border-radius: 8px;
-            transition: background 0.15s;
+            text-decoration: none; color: var(--text-dark); font-weight: 600; font-size: 0.88rem;
+            padding: 7px 12px; border-radius: 8px; transition: background 0.15s;
         }
 
         .nav-link:hover { background: var(--primary-light); color: var(--primary); }
@@ -74,7 +62,7 @@
             display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; overflow: hidden;
         }
         .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .logout-link { font-size: 0.8rem; color: #ef4444; text-decoration: none; padding: 4px 8px; border-radius: 6px; font-weight: 700; }
+        .logout-link { font-size: 0.8rem; color: var(--danger); text-decoration: none; padding: 4px 8px; border-radius: 6px; font-weight: 700; }
 
         /* Section 1: Top 3 News Announcements Grid */
         .top-news-section { margin-bottom: 28px; }
@@ -88,9 +76,7 @@
         }
         .news-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,102,204,0.08); }
 
-        .badge {
-            display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-bottom: 10px; align-self: flex-start;
-        }
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-bottom: 10px; align-self: flex-start; }
         .badge-priority { background: var(--badge-priority-bg); color: var(--badge-priority-txt); }
         .badge-event { background: var(--badge-event-bg); color: var(--badge-event-txt); }
         .badge-community { background: var(--badge-community-bg); color: var(--badge-community-txt); }
@@ -147,6 +133,13 @@
             background: var(--card-bg); border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0;
             box-shadow: 0 2px 6px rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: space-between;
         }
+        .member-avatar {
+            width: 54px; height: 54px; border-radius: 50%; background: var(--primary-light);
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 800;
+            color: var(--primary); overflow: hidden; border: 2px solid var(--primary); flex-shrink: 0;
+        }
+        .member-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
         .member-name { font-size: 1.1rem; font-weight: 800; color: var(--primary-dark); }
         .member-role { font-size: 0.85rem; font-weight: 700; color: var(--accent-blue); margin-top: 2px; }
         .member-grade { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
@@ -172,7 +165,7 @@
 
 <div class="container">
 
-    <!-- Navbar Header -->
+    <!-- Navbar Header (Aligned Standard) -->
     <div class="navbar">
         <div class="brand-logo">
             🦅 HS Student Council
@@ -180,12 +173,10 @@
 
         <div class="nav-links">
             <a href="/" class="nav-link active">Home</a>
-            <a href="/calendar" class="nav-link">Calendar</a>
-            <a href="/workspace/1" class="nav-link">Stuco Workspaces</a>
-            <a href="/budget" class="nav-link">Budget Plan</a>
-            <a href="/vending" class="nav-link">Vending Hub</a>
-            <a href="/updates" class="nav-link">Updates</a>
-            <a href="/volunteers" class="nav-link">Volunteers</a>
+            <a href="/workspace/1" class="nav-link">Stuco Workspace</a>
+            <a href="/vending" class="nav-link">Vending Machine</a>
+            <a href="/updates" class="nav-link">Stuco Updates</a>
+            <a href="/volunteers" class="nav-link">CSH (Volunteer)</a>
             <a href="/stats" class="nav-link">Statistics</a>
             {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher'] %}
             <a href="/admin" class="nav-link">Admin</a>
@@ -200,7 +191,8 @@
                     {{ current_user.name[0] | upper }}
                     {% endif %}
                 </div>
-                <span>{{ current_user.name }} ({{ current_user.role }})</span>
+                <span>{{ current_user.name }}</span>
+                <a href="/me" style="font-size:0.8rem; font-weight:700; color:var(--primary); text-decoration:none; margin-left:4px;">Me</a>
                 <a href="/logout" class="logout-link">Sign out</a>
             </div>
             {% else %}
@@ -220,8 +212,14 @@
                     <h3 class="news-title">{{ item.title }}</h3>
                     <div class="news-date">📅 {{ item.date }}</div>
                     <p class="news-content">{{ item.content }}</p>
+                    
+                    {% if item.qr_code %}
+                    <div style="margin-top: 10px; margin-bottom: 10px; text-align: center;">
+                        <img src="{{ item.qr_code }}" alt="Survey QR Code" style="max-width: 130px; border-radius: 8px; border: 1px solid #cbd5e1; padding: 4px; background: white;">
+                    </div>
+                    {% endif %}
                 </div>
-                <a href="{{ item.link }}" class="news-link">{{ item.link_text }}</a>
+                <a href="{{ item.link }}" class="news-link" {% if 'http' in item.link %}target="_blank"{% endif %}>{{ item.link_text }}</a>
             </div>
             {% endfor %}
         </div>
@@ -244,7 +242,7 @@
             <div>
                 <div class="tile-header">
                     <span class="tile-icon">📅</span>
-                    <span class="tile-title">Event Calendar & Schedules</span>
+                    <span class="tile-title">Event Calendar</span>
                 </div>
                 <p class="tile-desc">View upcoming high school events, ticket bookings, and house competitions.</p>
                 
@@ -259,7 +257,7 @@
                 </div>
                 {% endfor %}
             </div>
-            <a href="/calendar" class="btn" style="margin-top: 14px;">Open Full Event Calendar →</a>
+            <a href="/calendar" class="btn" style="margin-top: 14px;">Open Event Calendar →</a>
         </div>
 
         <!-- Stuco Workspaces Tile -->
@@ -269,7 +267,7 @@
                     <span class="tile-icon">📁</span>
                     <span class="tile-title">Stuco Workspaces</span>
                 </div>
-                <p class="tile-desc">Access event-specific planning timelines, expense receipts, and student booking lists.</p>
+                <p class="tile-desc">Access event planning timelines, budget plan ledgers, and student booking lists.</p>
                 
                 <strong style="font-size: 0.82rem; color: var(--primary-dark); display: block; margin-bottom: 8px;">Active Workspaces:</strong>
                 {% for ev in events[:2] %}
@@ -281,19 +279,16 @@
             <a href="/workspace/1" class="btn btn-outline" style="margin-top: 14px;">Browse Workspaces →</a>
         </div>
 
-        <!-- Budget Plan & Vending Quick Tile -->
+        <!-- Vending Hub Quick Tile -->
         <div class="nav-tile" style="border-left: 5px solid #10b981;">
             <div>
                 <div class="tile-header">
-                    <span class="tile-icon">💳</span>
-                    <span class="tile-title">Budget Plan & Vending</span>
+                    <span class="tile-icon">🥤</span>
+                    <span class="tile-title">Vending Machine Hub</span>
                 </div>
-                <p class="tile-desc">Track treasury balance, active debts, line-item expenses, and submit vending requests.</p>
+                <p class="tile-desc">Explore main campus vending machine items and submit anonymous snack suggestions.</p>
             </div>
-            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 14px;">
-                <a href="/budget" class="btn">View Budget Plan →</a>
-                <a href="/vending" class="btn btn-outline">Vending Machine Hub →</a>
-            </div>
+            <a href="/vending" class="btn" style="margin-top: 14px;">Vending Machine Hub →</a>
         </div>
 
     </div>
@@ -305,9 +300,20 @@
             {% for m in members %}
             <div class="member-card">
                 <div>
-                    <div class="member-name">{{ m.name }}</div>
-                    <div class="member-role">{{ m.role }}</div>
-                    <div class="member-grade">{{ m.grade }}</div>
+                    <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 8px;">
+                        <div class="member-avatar">
+                            {% if m.picture %}
+                            <img src="{{ m.picture }}" alt="{{ m.name }}">
+                            {% else %}
+                            {{ m.name[0] | upper }}
+                            {% endif %}
+                        </div>
+                        <div>
+                            <div class="member-name">{{ m.name }}</div>
+                            <div class="member-role">{{ m.role }}</div>
+                            <div class="member-grade">{{ m.grade }}</div>
+                        </div>
+                    </div>
                     <div class="member-quote">"{{ m.quote }}"</div>
                 </div>
                 <div class="member-email">✉️ {{ m.email }}</div>
