@@ -189,7 +189,7 @@
         .sheet-table tr:hover td { background-color: #f8fafc; }
 
         .status-badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; }
-        .status-To-Do, .status-Signed-Up { background: var(--status-todo); color: var(--status-todo-text); }
+        .status-To-Do, .status-Signed-Up, .status-Upcoming { background: var(--status-todo); color: var(--status-todo-text); }
         .status-In-Progress, .status-Confirmed { background: var(--status-progress); color: var(--status-progress-text); }
         .status-Completed, .status-Paid { background: var(--status-done); color: var(--status-done-text); }
 
@@ -213,7 +213,7 @@
         .modal.active { display: flex; }
         .modal-content {
             background: white; border-radius: 14px; padding: 24px; width: 100%; max-width: 520px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; max-height: 90vh; overflow-y: auto;
         }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 2px solid var(--primary-light); padding-bottom: 10px; }
         .close-btn {
@@ -337,7 +337,7 @@
                 <button class="btn hub-block-btn">Open Master Task List →</button>
             </div>
 
-            <!-- Block 5: Meeting Notes & Agendas (NEW!) -->
+            <!-- Block 5: Meeting Notes & Agendas -->
             <div class="hub-block-card" onclick="openSubgroup('meetings-subdiv')">
                 <div>
                     <div class="hub-block-header">
@@ -733,7 +733,7 @@
             </div>
         </div>
 
-        <!-- Exclusive Specific Event Budget View (Shows ONLY that event's budget breakdown & purchased ledger) -->
+        <!-- Exclusive Specific Event Budget View -->
         {% for eb in event_budgets %}
         <div id="exclusive-budget-view-{{ eb.id }}" class="exclusive-budget-panel" style="display: none;">
             <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
@@ -864,7 +864,7 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- NESTED SUBGROUP 5: MEETING NOTES & AGENDAS (NEW!) -->
+    <!-- NESTED SUBGROUP 5: MEETING NOTES & AGENDAS -->
     <!-- ========================================== -->
     <div id="meetings-subdiv" class="subdiv-content">
         
@@ -874,44 +874,12 @@
         </div>
 
         <!-- Schedule Meeting Panel for Officers -->
-        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary'] %}
+        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
         <div class="card" style="border-left: 5px solid var(--primary);">
-            <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 12px;">➕ Schedule New Meeting & Upload Agenda</h3>
-            <form action="{{ url_for('add_meeting') }}" method="POST" enctype="multipart/form-data">
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 14px;">
-                    <div class="form-group">
-                        <label>Meeting Title</label>
-                        <input type="text" name="title" placeholder="e.g. Weekly Executive Officers Briefing" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Meeting Date</label>
-                        <input type="date" name="date" required>
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;">
-                    <div class="form-group">
-                        <label>Time Slot</label>
-                        <input type="text" name="time" placeholder="e.g. 3:30 PM - 4:30 PM">
-                    </div>
-                    <div class="form-group">
-                        <label>Location / Room</label>
-                        <input type="text" name="location" placeholder="e.g. Room 204 (Stuco HQ)">
-                    </div>
-                    <div class="form-group">
-                        <label>Meeting Leader</label>
-                        <input type="text" name="leader" value="{{ current_user.name }}" placeholder="e.g. Cellestine (President)">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Agenda Outline / Key Topics</label>
-                    <textarea name="agenda_summary" rows="3" placeholder="Summary of agenda items to discuss..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Attach Agenda File (PDF / Word Document)</label>
-                    <input type="file" name="agenda_file">
-                </div>
-                <button type="submit" class="btn" style="margin-top: 6px;">Publish Meeting Agenda</button>
-            </form>
+            <div class="card-header">
+                <span class="card-title">➕ Schedule New Meeting & Agenda</span>
+                <button class="btn" onclick="openModal('addMeetingModal')">➕ New Meeting</button>
+            </div>
         </div>
         {% endif %}
 
@@ -923,8 +891,13 @@
             {% for meeting in meetings %}
             <div class="meeting-card">
                 <div class="meeting-card-header">
-                    <h3 class="meeting-title">{{ meeting.title }}</h3>
-                    <span class="status-badge status-{{ meeting.status }}">{{ meeting.status }}</span>
+                    <h3 class="meeting-title">📌 {{ meeting.title }}</h3>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <span class="status-badge status-{{ meeting.status.replace(' ', '-') }}">{{ meeting.status }}</span>
+                        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                        <button class="btn btn-outline" style="padding: 4px 10px; font-size: 0.78rem;" onclick='openEditMeetingModal({{ meeting | tojson | safe }})'>✏️ Edit Notes & Minutes</button>
+                        {% endif %}
+                    </div>
                 </div>
 
                 <div class="meeting-meta">
@@ -945,8 +918,16 @@
                     {% endif %}
                 </div>
 
+                <!-- Meeting Notes / Minutes -->
+                {% if meeting.notes %}
+                <div class="section-box" style="background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div class="section-title" style="color: var(--primary-dark);">📝 Meeting Minutes & Discussion Notes</div>
+                    <p style="font-size: 0.9rem; color: var(--text-dark); line-height: 1.5; white-space: pre-wrap;">{{ meeting.notes }}</p>
+                </div>
+                {% endif %}
+
                 <!-- Action Items Table -->
-                <div class="section-box">
+                <div class="section-box" style="margin-top: 14px;">
                     <div class="section-title">✅ Action Items & Deliverables</div>
                     <div class="table-responsive">
                         <table class="sheet-table">
@@ -971,6 +952,11 @@
                                     </td>
                                 </tr>
                                 {% endfor %}
+                                {% if not meeting.action_items %}
+                                <tr>
+                                    <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 14px;">No action items logged yet for this meeting. Click "Edit Notes & Minutes" above to add action items!</td>
+                                </tr>
+                                {% endif %}
                             </tbody>
                         </table>
                     </div>
@@ -985,6 +971,73 @@
 <!-- ========================================== -->
 <!-- ALL MODALS WITH CLOSE (X) BUTTONS -->
 <!-- ========================================== -->
+
+<!-- MODAL: ADD MEETING -->
+<div class="modal" id="addMeetingModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">Schedule New Meeting</h3>
+            <button onclick="closeModal('addMeetingModal')" class="close-btn">&times;</button>
+        </div>
+        <form action="{{ url_for('add_meeting') }}" method="POST" enctype="multipart/form-data">
+            <div class="form-group"><label>Meeting Title</label><input type="text" name="title" placeholder="e.g. Executive Planning Session" required></div>
+            <div class="form-group"><label>Meeting Date</label><input type="date" name="date" required></div>
+            <div class="form-group"><label>Time Slot</label><input type="text" name="time" placeholder="e.g. 3:30 PM - 4:30 PM"></div>
+            <div class="form-group"><label>Location / Room</label><input type="text" name="location" placeholder="e.g. Room 204 (Stuco HQ)"></div>
+            <div class="form-group"><label>Meeting Leader</label><input type="text" name="leader" value="{{ current_user.name }}"></div>
+            <div class="form-group"><label>Agenda Outline</label><textarea name="agenda_summary" rows="2" placeholder="Summary of agenda items..."></textarea></div>
+            <div class="form-group"><label>Meeting Minutes & Notes</label><textarea name="notes" rows="3" placeholder="Notes taken during the meeting..."></textarea></div>
+            <div class="form-group"><label>Attach Agenda File</label><input type="file" name="agenda_file"></div>
+            <button type="submit" class="btn" style="width:100%; margin-top:8px;">Publish Meeting</button>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: EDIT MEETING NOTES & MINUTES -->
+<div class="modal" id="editMeetingModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">Edit Meeting Notes & Minutes</h3>
+            <button onclick="closeModal('editMeetingModal')" class="close-btn">&times;</button>
+        </div>
+        <form id="editMeetingForm" method="POST" enctype="multipart/form-data">
+            <div class="form-group"><label>Meeting Title</label><input type="text" name="title" id="edit_meet_title" required></div>
+            <div class="form-group"><label>Meeting Date</label><input type="text" name="date" id="edit_meet_date" required></div>
+            <div class="form-group"><label>Time Slot</label><input type="text" name="time" id="edit_meet_time"></div>
+            <div class="form-group"><label>Location / Room</label><input type="text" name="location" id="edit_meet_location"></div>
+            <div class="form-group"><label>Meeting Leader</label><input type="text" name="leader" id="edit_meet_leader"></div>
+            <div class="form-group">
+                <label>Meeting Status</label>
+                <select name="status" id="edit_meet_status">
+                    <option value="Upcoming">Upcoming</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Agenda Outline</label><textarea name="agenda_summary" id="edit_meet_agenda" rows="2"></textarea></div>
+            <div class="form-group"><label>Meeting Minutes & Detailed Notes</label><textarea name="notes" id="edit_meet_notes" rows="4" placeholder="Write meeting notes, discussion points, and deliverables here..."></textarea></div>
+            <div class="form-group">
+                <label>Add New Action Item / Task</label>
+                <input type="text" name="new_task" placeholder="e.g. Finalize DJ contract">
+            </div>
+            <div class="form-group">
+                <label>Assign Action Item To</label>
+                <input type="text" name="task_assignee" placeholder="e.g. Sam (Senior)">
+            </div>
+            <div class="form-group">
+                <label>Sync Task to Event Workspace</label>
+                <select name="target_event_id">
+                    <option value="">None (Meeting Task Only)</option>
+                    {% for ev in events %}
+                    <option value="{{ ev.id }}">{{ ev.title }} Workspace</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group"><label>Update Agenda File (Optional)</label><input type="file" name="agenda_file"></div>
+            <button type="submit" class="btn" style="width:100%; margin-top:8px;">Save Meeting Notes</button>
+        </form>
+    </div>
+</div>
 
 <!-- MODAL: ADD INVENTORY -->
 <div class="modal" id="addInventoryModal">
@@ -1281,6 +1334,19 @@
         document.getElementById('edit_inv_picture').value = item.picture || '';
         document.getElementById('editInventoryForm').action = "/inventory/edit/" + item.id;
         openModal('editInventoryModal');
+    }
+
+    function openEditMeetingModal(meeting) {
+        document.getElementById('edit_meet_title').value = meeting.title;
+        document.getElementById('edit_meet_date').value = meeting.date;
+        document.getElementById('edit_meet_time').value = meeting.time || '';
+        document.getElementById('edit_meet_location').value = meeting.location || '';
+        document.getElementById('edit_meet_leader').value = meeting.leader || '';
+        document.getElementById('edit_meet_status').value = meeting.status || 'Upcoming';
+        document.getElementById('edit_meet_agenda').value = meeting.agenda_summary || '';
+        document.getElementById('edit_meet_notes').value = meeting.notes || '';
+        document.getElementById('editMeetingForm').action = "/meetings/" + meeting.id + "/update_notes";
+        openModal('editMeetingModal');
     }
 </script>
 

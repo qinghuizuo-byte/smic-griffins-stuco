@@ -1076,7 +1076,7 @@ def meetings_hub():
 
 @app.route('/meetings/add', methods=['POST'])
 @login_required
-@require_role(['President', 'Vice President', 'Secretary'])
+@require_role(['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'])
 def add_meeting():
     file = request.files.get('agenda_file')
     filename = ""
@@ -1095,10 +1095,14 @@ def add_meeting():
         "leader": request.form.get('leader', 'Stuco Exec'),
         "agenda_summary": request.form.get('agenda_summary', 'No summary provided.'),
         "agenda_file": filename,
-        "notes": "",
+        "notes": request.form.get('notes', ''),
         "action_items": []
     })
+    save_data()
     flash("Meeting and agenda published!", "success")
+    ref = request.referrer or ""
+    if 'workspace' in ref:
+        return redirect(url_for('event_workspace', event_id=1))
     return redirect(url_for('meetings_hub'))
 
 
@@ -1108,10 +1112,30 @@ def add_meeting():
 def update_meeting_notes(meeting_id):
     meeting = next((m for m in MEETINGS if m['id'] == meeting_id), None)
     if meeting:
-        meeting['notes'] = request.form.get('notes', '')
-        meeting['status'] = request.form.get('status', meeting['status'])
+        if 'title' in request.form and request.form.get('title').strip():
+            meeting['title'] = request.form.get('title').strip()
+        if 'date' in request.form and request.form.get('date').strip():
+            meeting['date'] = request.form.get('date').strip()
+        if 'time' in request.form:
+            meeting['time'] = request.form.get('time').strip()
+        if 'location' in request.form:
+            meeting['location'] = request.form.get('location').strip()
+        if 'leader' in request.form:
+            meeting['leader'] = request.form.get('leader').strip()
+        if 'agenda_summary' in request.form:
+            meeting['agenda_summary'] = request.form.get('agenda_summary').strip()
+        if 'notes' in request.form:
+            meeting['notes'] = request.form.get('notes').strip()
+        if 'status' in request.form:
+            meeting['status'] = request.form.get('status').strip()
+            
+        file = request.files.get('agenda_file')
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            meeting['agenda_file'] = filename
+
         new_task = request.form.get('new_task', '').strip()
-        
         if new_task:
             assignee = request.form.get('task_assignee', 'Unassigned').strip()
             target_event_id_str = request.form.get('target_event_id', '').strip()
@@ -1124,7 +1148,6 @@ def update_meeting_notes(meeting_id):
                 target_event = EVENTS.get(event_id)
                 if target_event:
                     event_title = target_event.get("title")
-                    # Add task row to event workspace automatically
                     new_row_id = max([r['id'] for r in target_event.get("tasks", [])], default=100) + 1
                     if "tasks" not in target_event:
                         target_event["tasks"] = []
@@ -1146,11 +1169,13 @@ def update_meeting_notes(meeting_id):
                 "event_title": event_title,
                 "done": False
             })
-            if not event_title:
-                flash("Meeting notes and action item saved!", "success")
-        else:
-            flash("Meeting notes updated!", "success")
-            
+
+        save_data()
+        flash("Meeting notes & agenda details updated!", "success")
+        
+    ref = request.referrer or ""
+    if 'workspace' in ref:
+        return redirect(url_for('event_workspace', event_id=1))
     return redirect(url_for('meetings_hub'))
 
 
