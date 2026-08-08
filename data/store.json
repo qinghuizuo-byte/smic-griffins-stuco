@@ -1,0 +1,558 @@
+{
+  "ACCOUNTS": {
+    "270036@bjsmicschool.com": {
+      "name": "Cellestine Zuo",
+      "role": "President",
+      "can_edit_updates": true
+    },
+    "270013@bjsmicschool.com": {
+      "name": "Jerry Li",
+      "role": "Vice President",
+      "can_edit_updates": true
+    },
+    "28010@bjsmicschool.com": {
+      "name": "Lucas Lee",
+      "role": "Secretary",
+      "can_edit_updates": true
+    },
+    "270005@bjsmicschoo.com": {
+      "name": "Amy Feng",
+      "role": "Treasurer",
+      "can_edit_updates": true
+    },
+    "elena_chen@bjsmicschool.com": {
+      "name": "Elena Chen",
+      "role": "Teacher",
+      "can_edit_updates": true
+    },
+    "280007@bjsmicschool.com": {
+      "name": "Lily Goufo",
+      "role": "Stuco Member",
+      "can_edit_updates": false
+    },
+    "290018@bjsmicschool.com": {
+      "name": "Sophie Sun",
+      "role": "Stuco Member",
+      "can_edit_updates": false
+    },
+    "290024@bjsmicschool.com": {
+      "name": "Rocky Yang",
+      "role": "Stuco Member",
+      "can_edit_updates": false
+    },
+    "280024@bjsmicschool.com": {
+      "name": "Mike Zhan",
+      "role": "Stuco Member",
+      "can_edit_updates": false
+    },
+    "280019@bjsmicschool.com": {
+      "name": "Cassie Wu",
+      "role": "Stuco Member",
+      "can_edit_updates": false
+    },
+    "280009@bjsmicschool.com": {
+      "name": "Hyun Lee",
+      "role": "Stuco Member",
+      "can_edit_updates": false
+    },
+    "27270018@bjsmicschool.com": {
+      "name": "Camille Lv",
+      "role": "Stuco Member",
+      "can_edit_updates": false
+    },
+    "290010@bjsmicschool.com": {
+      "name": "Camille Kou",
+      "role": "Stuco Member",
+      "can_edit_updates": false
+    },
+    "280030@bjsmicschool.com": {
+      "name": "Connie Ho",
+      "role": "Stuco Member",
+      "can_edit_updates": false
+    },
+    "student@bjsmicschool.com": {
+      "name": "Sam V.",
+      "role": "Student",
+      "can_edit_updates": false
+    }
+  },
+  "STUCO_MEMBERS": [
+    {
+      "name": "Cellestine Zuo",
+      "role": "Student Body President",
+      "grade": "Senior (Class of '27)",
+      "quote": "Leading our return to the main campus with transparency, enthusiasm, and unstoppable Griffin spirit!",
+      "email": "270036@bjsmicschool.com"
+    },
+    {
+      "name": "Jerry Li",
+      "role": "Vice President",
+      "grade": "Senior (Class of '27)",
+      "quote": "Coordinating student life activities and serving as the direct channel between student voices and administration.",
+      "email": "270013@bjsmicschool.com"
+    },
+    {
+      "name": "Lucas Lee",
+      "role": "Secretary",
+      "grade": "Junior (Class of '28)",
+      "quote": "Managing documentations, maintaining schedules, and keeping student leaders fully synchronized.",
+      "email": "28010@bjsmicschool.com"
+    },
+    {
+      "name": "Amy Feng",
+      "role": "Student Body Treasurer",
+      "grade": "Senior (Class of '27)",
+      "quote": "Allocating funds fairly across events and maintaining a transparent budget for all student activities.",
+      "email": "270005@bjsmicschoo.com"
+    },
+    {
+      "name": "Lily Goufo",
+      "role": "Activity Officer",
+      "grade": "Junior (Class of '28)",
+      "quote": "Organizing school dances, spirit rallies, and campus festivals to build our Griffin community.",
+      "email": "280007@bjsmicschool.com"
+    },
+    {
+      "name": "Sophie Sun",
+      "role": "Media Officer",
+      "grade": "Sophomore (Class of '29)",
+      "quote": "Documenting school memories through photos, recap videos, and dynamic visuals.",
+      "email": "290018@bjsmicschool.com"
+    },
+    {
+      "name": "Rocky Yang",
+      "role": "Publicity Officer",
+      "grade": "Sophomore (Class of '29)",
+      "quote": "Designing flyers, managing social channels, and publicizing all upcoming student activities.",
+      "email": "290024@bjsmicschool.com"
+    },
+    {
+      "name": "Mike Zhan",
+      "role": "Chief Technology Officer",
+      "grade": "Junior (Class of '28)",
+      "quote": "Developing digital tools, maintaining the Stuco site, and managing systems integration.",
+      "email": "280024@bjsmicschool.com"
+    },
+    {
+      "name": "Cassie Wu",
+      "role": "Red House Leader",
+      "grade": "Junior (Class of '28)",
+      "quote": "Fostering collaboration, leading sports meets, and driving Red House to victory!",
+      "email": "280019@bjsmicschool.com"
+    },
+    {
+      "name": "Hyun Lee",
+      "role": "Green House Leader",
+      "grade": "Junior (Class of '28)",
+      "quote": "Bringing green house pride to pep rallies, sports days, and academic challenge basins.",
+      "email": "280009@bjsmicschool.com"
+    },
+    {
+      "name": "Camille Lv",
+      "role": "Yellow House Leader",
+      "grade": "Senior (Class of '27)",
+      "quote": "Powering Yellow House to first place with high energy, house events, and friendly competition.",
+      "email": "27270018@bjsmicschool.com"
+    },
+    {
+      "name": "Camille Kou",
+      "role": "Blue House Leader",
+      "grade": "Sophomore (Class of '29)",
+      "quote": "Inspiring blue house solidarity, support, and excellence in every student-led tournament.",
+      "email": "290010@bjsmicschool.com"
+    },
+    {
+      "name": "Connie Ho",
+      "role": "Charity Officer",
+      "grade": "Junior (Class of '28)",
+      "quote": "Dedicated to organizing donation drives, volunteering campaigns, and community service projects to make a difference.",
+      "email": "280030@bjsmicschool.com"
+    }
+  ],
+  "EVENTS": {
+    "1": {
+      "id": 1,
+      "title": "Homecoming Dance 2026",
+      "date": "2026-10-24",
+      "display_date": "Saturday, October 24, 2026",
+      "time": "7:00 PM - 10:30 PM",
+      "location": "Main Gymnasium & Courtyard",
+      "category": "Paid Event",
+      "scope": "Entire School",
+      "requires_booking": true,
+      "participants": [
+        {
+          "id": 1,
+          "name": "Sam V.",
+          "grade": "12",
+          "email": "student@bjsmicschool.com",
+          "status": "Confirmed"
+        },
+        {
+          "id": 2,
+          "name": "Jerry Li",
+          "grade": "12",
+          "email": "270013@bjsmicschool.com",
+          "status": "Pending"
+        }
+      ],
+      "lead": "Cellestine (Stuco President)",
+      "budget_allocated": "$2,500.00",
+      "description": "Annual homecoming dance setup on the main campus. Theme and decor layout pending final approval.",
+      "ticket_link": "https://schooltickets.example.com/homecoming",
+      "ticket_status": "Tickets Available ($15)",
+      "has_workspace": true,
+      "schedule": [
+        {
+          "time": "7:00 PM",
+          "activity": "Doors Open & Photo Booths"
+        },
+        {
+          "time": "8:30 PM",
+          "activity": "Royalty Crowning Ceremony"
+        },
+        {
+          "time": "9:30 PM",
+          "activity": "Special Griffin Mascot Dance Off"
+        },
+        {
+          "time": "10:30 PM",
+          "activity": "Event Concludes"
+        }
+      ],
+      "tasks": [
+        {
+          "id": 101,
+          "date": "2026-10-01",
+          "task": "Finalize DJ Contract",
+          "assignee": "Alex M.",
+          "details": "Review and sign the contract with DJ Griffin",
+          "notes": "Approved by Advisor",
+          "status": "In Progress"
+        },
+        {
+          "id": 102,
+          "date": "2026-10-05",
+          "task": "Confirm Gymnasium Floor Coverings",
+          "assignee": "Jordan K.",
+          "details": "Check inventory for protective tarp rolls",
+          "notes": "Need to verify tape quantity",
+          "status": "To Do"
+        },
+        {
+          "id": 103,
+          "date": "2026-09-28",
+          "task": "Design Ticket Flyers & Social Graphics",
+          "assignee": "Taylor S.",
+          "details": "Create Canva assets and share with PR team",
+          "notes": "Flyers printed!",
+          "status": "Completed"
+        }
+      ],
+      "photos": [],
+      "purchases": []
+    },
+    "2": {
+      "id": 2,
+      "title": "Main Campus Welcome Pep Rally",
+      "date": "2026-08-28",
+      "display_date": "Friday, August 28, 2026",
+      "time": "1:30 PM - 3:00 PM",
+      "location": "Central Courtyard",
+      "category": "Free School Event",
+      "scope": "Entire School",
+      "requires_booking": false,
+      "participants": [],
+      "lead": "Jordan K. (Logistics Lead)",
+      "budget_allocated": "$350.00",
+      "description": "Kickoff pep rally introducing all Stuco committees, school mascot performance, and class competitions.",
+      "ticket_link": "",
+      "ticket_status": "Free Entry",
+      "has_workspace": true,
+      "schedule": [
+        {
+          "time": "1:30 PM",
+          "activity": "Griffin Mascot Entrance & Marching Band"
+        },
+        {
+          "time": "2:00 PM",
+          "activity": "Class Tug-of-War Competition"
+        },
+        {
+          "time": "2:45 PM",
+          "activity": "Presidential Welcome Address & Free Popsicles"
+        }
+      ],
+      "tasks": [
+        {
+          "id": 201,
+          "date": "2026-08-15",
+          "task": "Rent ice cream coolers",
+          "assignee": "Jordan K.",
+          "details": "Source 3 coolers for popsicles",
+          "notes": "Popsicles sponsored",
+          "status": "To Do"
+        },
+        {
+          "id": 202,
+          "date": "2026-08-20",
+          "task": "Invite Marching Band",
+          "assignee": "Taylor S.",
+          "details": "Send invitation letter to Band Director",
+          "notes": "Awaiting response",
+          "status": "In Progress"
+        }
+      ],
+      "photos": [],
+      "purchases": []
+    },
+    "3": {
+      "id": 3,
+      "title": "Fall Club Rush & Food Fair",
+      "date": "2026-09-15",
+      "display_date": "Tuesday, September 15, 2026",
+      "time": "12:00 PM - 2:00 PM",
+      "location": "Main Campus Plaza",
+      "category": "Free School Event",
+      "scope": "High School",
+      "requires_booking": false,
+      "participants": [],
+      "lead": "Alex M. (Vice President)",
+      "budget_allocated": "$500.00",
+      "description": "Explore 30+ student organizations, sign up for campus committees, and enjoy food stalls managed by Stuco.",
+      "ticket_link": "",
+      "ticket_status": "Free Entry",
+      "has_workspace": true,
+      "schedule": [
+        {
+          "time": "12:00 PM",
+          "activity": "Club Booths & Food Stalls Open"
+        },
+        {
+          "time": "1:00 PM",
+          "activity": "Acoustic Stage Performances"
+        }
+      ],
+      "tasks": [
+        {
+          "id": 301,
+          "date": "2026-09-01",
+          "task": "Print layout map",
+          "assignee": "Alex M.",
+          "details": "Draft map of booth spacing in main courtyard",
+          "notes": "Need to count clubs first",
+          "status": "To Do"
+        }
+      ],
+      "photos": [],
+      "purchases": []
+    }
+  },
+  "MEETINGS": [
+    {
+      "id": 1,
+      "title": "Main Campus Venue Logistics & Transition",
+      "date": "2026-08-12",
+      "time": "3:30 PM - 4:30 PM",
+      "location": "Room 204 (Stuco HQ)",
+      "status": "Upcoming",
+      "leader": "Cellestine (President)",
+      "agenda_summary": "Review main campus venue booking rules, budget allocation for Homecoming, and Spirit Rally scheduling.",
+      "agenda_file": "",
+      "notes": "",
+      "action_items": [
+        {
+          "task": "Draft facility request form for Gymnasium",
+          "assignee": "Jordan K.",
+          "done": false
+        },
+        {
+          "task": "Confirm Griffin Mascot performer schedule",
+          "assignee": "Taylor S.",
+          "done": false
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Executive Council Orientation & Fall Calendar",
+      "date": "2026-08-01",
+      "time": "2:00 PM - 3:30 PM",
+      "location": "Student Center Conference Room",
+      "status": "Archived",
+      "leader": "Cellestine (President)",
+      "agenda_summary": "Finalize fall semester goal priorities, committee budget limits, and main campus transition strategy.",
+      "agenda_file": "",
+      "notes": "1. Approved $2,500 baseline budget for Homecoming 2026.\n2. Vending machine suggestion portal approved for Stuco site.\n3. Weekly meetings set for Wednesdays at 3:30 PM.",
+      "action_items": [
+        {
+          "task": "Set up Python Stuco Web Portal",
+          "assignee": "Tech Lead",
+          "done": true
+        },
+        {
+          "task": "Distribute committee signup forms",
+          "assignee": "Alex M.",
+          "done": true
+        }
+      ]
+    }
+  ],
+  "ANNOUNCEMENTS": [
+    {
+      "id": 4,
+      "title": "📋 Survey: Student Feedback Survey",
+      "date": "Today",
+      "badge": "Student Voice",
+      "badge_color": "priority",
+      "content": "Please complete our Microsoft Forms survey for 'Student Feedback Survey'.",
+      "qr_code": "",
+      "link": "/survey",
+      "link_text": "Take Microsoft Forms Survey →"
+    },
+    {
+      "id": 1,
+      "title": "Welcome Back to the Main Campus!",
+      "date": "August 7, 2026",
+      "badge": "Important Update",
+      "badge_color": "priority",
+      "content": "Stuco is thrilled to welcome everyone back to the main campus! Check out our new event calendar and stay tuned for main courtyard pep rally announcements.",
+      "link": "/calendar",
+      "link_text": "View Campus Calendar →"
+    },
+    {
+      "id": 2,
+      "title": "Homecoming 2026 Ticket Presale Open",
+      "date": "August 5, 2026",
+      "badge": "Tickets & RSVPs",
+      "badge_color": "event",
+      "content": "Early bird tickets for 'Homecoming 2026' are now live. Reserve your spot before prices increase next month.",
+      "link": "/calendar",
+      "link_text": "Book Tickets Now →"
+    },
+    {
+      "id": 3,
+      "title": "Main Campus Vending Machine Suggestions",
+      "date": "August 3, 2026",
+      "badge": "Student Voice",
+      "badge_color": "community",
+      "content": "Have a snack or drink you want stocked in the main campus vending machines? Submit your requests directly to our Vending Committee.",
+      "link": "/vending",
+      "link_text": "Submit Snack Request →"
+    }
+  ],
+  "BUDGET_REQUESTS": [
+    {
+      "id": 101,
+      "event_title": "Homecoming Dance 2026",
+      "committee": "Decor & Spirit",
+      "requester": "Taylor S.",
+      "amount": 285.5,
+      "category": "Decorations",
+      "item_description": "Griffin Mascot Photo Arch Balloons & Blue Drape Fabric",
+      "justification": "Required for main entrance photo booth backdrop on main campus.",
+      "attachment": "",
+      "status": "Approved",
+      "treasurer_notes": "Approved under Homecoming Decor Line Item #4.",
+      "date_submitted": "2026-08-05"
+    },
+    {
+      "id": 102,
+      "event_title": "Fall Spirit Week",
+      "committee": "Logistics",
+      "requester": "Jordan K.",
+      "amount": 120.0,
+      "category": "Equipment",
+      "item_description": "Outdoor Portable Megaphone and Batteries",
+      "justification": "Needed for crowd control during courtyard pep rallies.",
+      "attachment": "",
+      "status": "Pending",
+      "treasurer_notes": "",
+      "date_submitted": "2026-08-06"
+    },
+    {
+      "id": 103,
+      "event_title": "General Stuco HQ",
+      "committee": "Executive",
+      "requester": "Alex M.",
+      "amount": 45.0,
+      "category": "Supplies",
+      "item_description": "Dry erase markers and whiteboard calendar grid",
+      "justification": "Planning calendar for Room 204 HQ transition.",
+      "attachment": "",
+      "status": "Reimbursed",
+      "treasurer_notes": "Reimbursed via school check #8421.",
+      "date_submitted": "2026-08-02"
+    }
+  ],
+  "VENDING_ITEMS": [
+    {
+      "id": 1,
+      "name": "Baked Jalapeño Chips",
+      "category": "Snacks",
+      "price": 1.75,
+      "status": "In Stock",
+      "badge": "Popular",
+      "icon": "🍿",
+      "description": "Crunchy spicy baked potato chips. Located in Main Hall Machine #1."
+    },
+    {
+      "id": 2,
+      "name": "Sparkling Berry Electrolyte Water",
+      "category": "Drinks",
+      "price": 2.25,
+      "status": "Just Restocked!",
+      "badge": "New Arrival",
+      "icon": "🥤",
+      "description": "Zero sugar berry refreshment. Main Courtyard Machine."
+    }
+  ],
+  "VENDING_SUGGESTIONS": [
+    {
+      "id": 1,
+      "item_name": "Matcha Boba Milk Tea (Canned)",
+      "category": "Drinks",
+      "suggested_by": "Sam V. (Senior)",
+      "reason": "Perfect afternoon pick-me-up during AP study sessions!",
+      "votes": 42,
+      "status": "Under Review"
+    }
+  ],
+  "VOLUNTEER_OPPORTUNITIES": [
+    {
+      "id": 1,
+      "event_id": 1,
+      "title": "Homecoming Setup Crew",
+      "date": "2026-10-24",
+      "time": "12:00 PM - 4:00 PM",
+      "hours_given": 4.0,
+      "spots_needed": 10,
+      "task_description": "Assemble tables, hang banners, test lighting systems, and arrange sound equipment in the Gym.",
+      "signups": [
+        {
+          "email": "student@bjsmicschool.com",
+          "name": "Sam V.",
+          "approved": true
+        },
+        {
+          "email": "volunteer_test@bjsmicschool.com",
+          "name": "Alex Volunteer",
+          "approved": false
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "event_id": 2,
+      "title": "Pep Rally Popsicle Distribution",
+      "date": "2026-08-28",
+      "time": "2:30 PM - 3:30 PM",
+      "hours_given": 1.5,
+      "spots_needed": 5,
+      "task_description": "Pass out free popsicles to students entering the Central Courtyard during class competitions.",
+      "signups": []
+    }
+  ],
+  "STUCO_DEBT": "¥0.00",
+  "STUCO_BALANCE": "¥15,000.00"
+}
