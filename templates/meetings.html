@@ -212,24 +212,48 @@
         <div class="card-header" style="flex-wrap: wrap; gap: 10px;">
             <span class="card-title" style="margin-bottom: 0;">Published Agendas & Executive Minutes</span>
             <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-                <button class="btn btn-outline meet-nav-btn" id="btn-all-meetings" onclick="showAllMeetings()">📋 View All Meetings</button>
+                <button class="btn btn-outline" id="btn-back-finder" onclick="backToMeetingList()" style="display: none;">⬅️ Back to Meeting List</button>
+                <button class="btn btn-outline" id="btn-all-meetings" onclick="showAllMeetings()">📋 View All Meetings</button>
             </div>
         </div>
 
-        <!-- Date & Topic Selection Buttons -->
-        <div style="margin-bottom: 20px; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
-            <div style="font-size: 0.82rem; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">📅 Select Meeting by Date & Topic:</div>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                {% for meeting in meetings %}
-                <button class="btn btn-outline meet-nav-btn" id="btn-meet-{{ meeting.id }}" onclick="showSingleMeeting({{ meeting.id }})" style="font-size: 0.82rem; padding: 6px 12px;">
-                    📅 {{ meeting.date }} — {{ meeting.title }}
-                </button>
-                {% endfor %}
+        <!-- Finder-Style Meeting List View with Search -->
+        <div id="finder-list-view" style="margin-bottom: 20px;">
+            <div style="margin-bottom: 14px;">
+                <input type="text" id="meetingSearchInput" onkeyup="filterFinderMeetings()" placeholder="🔍 Search meetings by date, topic, leader, or keyword..." style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 0.9rem;">
+            </div>
+
+            <div style="background: white; border-radius: 10px; border: 1px solid var(--border-color); overflow-x: auto; box-shadow: 0 2px 6px rgba(0,0,0,0.02);">
+                <div style="min-width: 650px;">
+                    <div style="display: grid; grid-template-columns: 110px 1fr 130px 120px 100px 110px; padding: 10px 16px; background: var(--primary-light); font-weight: 800; font-size: 0.8rem; color: var(--primary-dark); border-bottom: 1px solid var(--border-color);">
+                        <div>📅 Date</div>
+                        <div>📌 Topic / Title</div>
+                        <div>📍 Location</div>
+                        <div>👤 Leader</div>
+                        <div>Status</div>
+                        <div style="text-align: right;">Action</div>
+                    </div>
+
+                    <div id="finder-rows-container">
+                        {% for meeting in meetings %}
+                        <div class="finder-row-item" data-search="{{ meeting.date }} {{ meeting.title|lower }} {{ meeting.location|lower }} {{ meeting.leader|lower }} {{ meeting.agenda_summary|lower }}" onclick="showSingleMeeting({{ meeting.id }})" style="display: grid; grid-template-columns: 110px 1fr 130px 120px 100px 110px; padding: 12px 16px; border-bottom: 1px solid #f1f5f9; align-items: center; cursor: pointer; transition: background 0.15s; font-size: 0.88rem;">
+                            <div style="font-weight: 700; color: var(--text-dark);">{{ meeting.date }}</div>
+                            <div style="font-weight: 800; color: var(--primary-dark);">📌 {{ meeting.title }}</div>
+                            <div style="color: var(--text-muted); font-size: 0.82rem;">{{ meeting.location }}</div>
+                            <div style="color: var(--text-muted); font-size: 0.82rem;">{{ meeting.leader }}</div>
+                            <div><span class="status-badge status-{{ meeting.status.replace(' ', '-') }}">{{ meeting.status }}</span></div>
+                            <div style="text-align: right;">
+                                <button class="btn btn-outline" style="padding: 3px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); showSingleMeeting({{ meeting.id }});">Open Notes →</button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
         </div>
 
         {% for meeting in meetings %}
-        <div class="meeting-card" id="meeting-card-{{ meeting.id }}">
+        <div class="meeting-card" id="meeting-card-{{ meeting.id }}" style="display: none;">
             <div class="meeting-card-header">
                 <h3 class="meeting-title">📌 {{ meeting.title }}</h3>
                 <div style="display: flex; gap: 8px; align-items: center;">
@@ -457,48 +481,46 @@
     }
 
     function showSingleMeeting(meetId) {
+        document.getElementById('finder-list-view').style.display = 'none';
         document.querySelectorAll('.meeting-card').forEach(el => el.style.display = 'none');
-        document.querySelectorAll('.meet-nav-btn').forEach(b => {
-            b.classList.remove('active');
-            b.style.background = 'transparent';
-            b.style.color = 'var(--primary)';
-        });
         
         let targetCard = document.getElementById('meeting-card-' + meetId);
         if (targetCard) {
             targetCard.style.display = 'block';
         }
-        let targetBtn = document.getElementById('btn-meet-' + meetId);
-        if (targetBtn) {
-            targetBtn.classList.add('active');
-            targetBtn.style.background = 'var(--primary)';
-            targetBtn.style.color = 'white';
-        }
+        let backBtn = document.getElementById('btn-back-finder');
+        if (backBtn) backBtn.style.display = 'inline-block';
     }
 
     function showAllMeetings() {
+        document.getElementById('finder-list-view').style.display = 'none';
         document.querySelectorAll('.meeting-card').forEach(el => el.style.display = 'block');
-        document.querySelectorAll('.meet-nav-btn').forEach(b => {
-            b.classList.remove('active');
-            b.style.background = 'transparent';
-            b.style.color = 'var(--primary)';
+        let backBtn = document.getElementById('btn-back-finder');
+        if (backBtn) backBtn.style.display = 'inline-block';
+    }
+
+    function backToMeetingList() {
+        document.getElementById('finder-list-view').style.display = 'block';
+        document.querySelectorAll('.meeting-card').forEach(el => el.style.display = 'none');
+        let backBtn = document.getElementById('btn-back-finder');
+        if (backBtn) backBtn.style.display = 'none';
+    }
+
+    function filterFinderMeetings() {
+        let input = document.getElementById('meetingSearchInput').value.toLowerCase();
+        let rows = document.querySelectorAll('.finder-row-item');
+        rows.forEach(row => {
+            let text = row.getAttribute('data-search');
+            if (text.includes(input)) {
+                row.style.display = 'grid';
+            } else {
+                row.style.display = 'none';
+            }
         });
-        let allBtn = document.getElementById('btn-all-meetings');
-        if (allBtn) {
-            allBtn.classList.add('active');
-            allBtn.style.background = 'var(--primary)';
-            allBtn.style.color = 'white';
-        }
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-        {% if upcoming_action_meeting %}
-        showSingleMeeting({{ upcoming_action_meeting.id }});
-        {% elif meetings %}
-        showSingleMeeting({{ meetings[0].id }});
-        {% else %}
-        showAllMeetings();
-        {% endif %}
+        backToMeetingList();
     });
 </script>
 
