@@ -269,7 +269,7 @@
             <a href="/me" class="nav-link">Me</a>
             <a href="/logout" class="nav-link" style="color:var(--danger);">Sign out</a>
             {% else %}
-            <a href="/login" class="nav-link" style="background:var(--primary);color:white;">🔑 Sign In</a>
+            <a href="/login" class="nav-link" style="background:var(--primary);color:white;">Sign In</a>
             {% endif %}
         </div>
     </div>
@@ -1664,50 +1664,32 @@
     document.addEventListener("DOMContentLoaded", function() {
         let urlParams = new URLSearchParams(window.location.search);
         let openMeetingId = urlParams.get('open_meeting');
-        if (openMeetingId) {
-            localStorage.setItem('stuco_active_subgroup', 'subgroup-meetings');
-        }
 
         if (urlParams.get('hub') === '1') {
-            localStorage.setItem('stuco_active_subgroup', 'hub-landing-view');
-            localStorage.setItem('stuco_active_subview', '');
-        }
-
-        let activeSubgroup = localStorage.getItem('stuco_active_subgroup');
-        let activeSubview = localStorage.getItem('stuco_active_subview');
-
-        if (openMeetingId) {
-            showSingleWorkspaceMeeting(openMeetingId);
-        } else {
-            backToWorkspaceMeetingList();
-        }
-
-        if (!activeSubgroup || activeSubgroup === 'hub-landing-view') {
-            // Default: show hub landing view
             document.getElementById('hub-landing-view').style.display = 'block';
             document.querySelectorAll('.subdiv-content').forEach(s => s.classList.remove('active'));
+            localStorage.setItem('stuco_active_subgroup', 'hub-landing-view');
+        } else if (openMeetingId) {
+            document.getElementById('hub-landing-view').style.display = 'none';
+            document.querySelectorAll('.subdiv-content').forEach(s => s.classList.remove('active'));
+            let meetSub = document.getElementById('subgroup-meetings');
+            if (meetSub) meetSub.classList.add('active');
+            showSingleWorkspaceMeeting(openMeetingId);
+            localStorage.setItem('stuco_active_subgroup', 'subgroup-meetings');
         } else {
-            let el = document.getElementById(activeSubgroup);
-            if (el) {
-                document.getElementById('hub-landing-view').style.display = 'none';
-                document.querySelectorAll('.subdiv-content').forEach(s => s.classList.remove('active'));
-                el.classList.add('active');
-
-                if (activeSubgroup === 'event-workspace-subdiv') {
-                    if (activeSubview === 'event-selection-view') {
-                        showEventSelection();
-                    } else {
-                        showEventDetails({{ event.id }});
-                    }
-                } else if (activeSubgroup === 'budget-plan-subdiv') {
-                    if (activeSubview && activeSubview.startsWith('exclusive-budget-view-')) {
-                        let evId = activeSubview.replace('exclusive-budget-view-', '');
-                        showExclusiveEventBudget(evId);
-                    } else {
-                        showTreasuryOverview();
-                    }
-                }
+            let activeSubgroup = localStorage.getItem('stuco_active_subgroup');
+            if (!activeSubgroup || activeSubgroup === 'hub-landing-view') {
+                activeSubgroup = 'event-workspace-subdiv';
             }
+            
+            document.getElementById('hub-landing-view').style.display = 'none';
+            document.querySelectorAll('.subdiv-content').forEach(s => s.classList.remove('active'));
+            
+            let el = document.getElementById(activeSubgroup) || document.getElementById('event-workspace-subdiv');
+            if (el) {
+                el.classList.add('active');
+            }
+            showEventDetails({{ event.id }});
         }
     });
 

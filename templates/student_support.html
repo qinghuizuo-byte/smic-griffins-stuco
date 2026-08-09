@@ -168,7 +168,7 @@
 
     <!-- Navbar Header -->
     <div class="navbar">
-        <div class="brand-title">Griffins StuCo Support</div>
+        <div class="brand-title">🦅 Griffins StuCo Support</div>
         <div class="nav-links">
             <a href="/" class="nav-link">Home</a>
             <a href="/calendar" class="nav-link">Calendar</a>
@@ -199,36 +199,31 @@
 
     <!-- Hero Header -->
     <div class="hero">
-        <h1>Student Support Hub</h1>
-        <p>Anonymous suggestion box, campus vending machine items, and CSH volunteer opportunities.</p>
+        <h1>🦅 Student Support Hub</h1>
     </div>
 
     <!-- Support Hub Landing View (3 Subcategory Cards) -->
     <div id="support-hub-landing-view" style="display: none; margin-bottom: 30px;">
         <div style="text-align: center; margin-bottom: 24px;">
             <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--primary-dark);">Student Support Center</h2>
-            <p style="font-size: 0.9rem; color: var(--text-muted);">Select a support category to submit feedback, view vending items, or sign up for volunteer opportunities.</p>
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
             <!-- Card 1: Anonymous Suggestion Box -->
-            <div class="card" onclick="switchTab('suggestions')" style="cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; border-left: 6px solid var(--primary);" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
-                <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 8px;">Anonymous Suggestion Box</h3>
-                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">Submit feedback and facility requests directly to Student Council leadership.</p>
+            <div class="card" onclick="switchTab('suggestions')" style="cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; border-left: 6px solid var(--primary); display: flex; flex-direction: column; justify-content: space-between;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
+                <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 20px;">Anonymous Suggestion Box</h3>
                 <button class="btn" style="width: 100%;">Open Suggestion Box &rarr;</button>
             </div>
 
             <!-- Card 2: Vending Machine Hub -->
-            <div class="card" onclick="switchTab('vending')" style="cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; border-left: 6px solid #10b981;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
-                <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 8px;">Vending Machine Hub</h3>
-                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">Explore campus vending items, vote on stock requests, and submit new snack ideas.</p>
+            <div class="card" onclick="switchTab('vending')" style="cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; border-left: 6px solid #10b981; display: flex; flex-direction: column; justify-content: space-between;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
+                <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 20px;">Vending Machine Hub</h3>
                 <button class="btn" style="width: 100%; background: #10b981;">Open Vending Hub &rarr;</button>
             </div>
 
             <!-- Card 3: CSH Volunteer Opportunities -->
-            <div class="card" onclick="switchTab('volunteers')" style="cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; border-left: 6px solid #7c3aed;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
-                <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 8px;">CSH Volunteer Opportunities</h3>
-                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">Earn Community Service Hours by signing up for student-led volunteer projects.</p>
+            <div class="card" onclick="switchTab('volunteers')" style="cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; border-left: 6px solid #7c3aed; display: flex; flex-direction: column; justify-content: space-between;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
+                <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 20px;">CSH Volunteer Opportunities</h3>
                 <button class="btn" style="width: 100%; background: #7c3aed;">Open CSH Opportunities &rarr;</button>
             </div>
         </div>

@@ -144,7 +144,7 @@
 
     <!-- Standard Aligned Navbar Header -->
     <div class="navbar">
-        <div class="brand-title">Griffins StuCo Meetings</div>
+        <div class="brand-title">🦅 Griffins StuCo Meetings</div>
         <div class="nav-links">
             <a href="/" class="nav-link">Home</a>
             <a href="/calendar" class="nav-link">Calendar</a>
@@ -176,7 +176,6 @@
     <div class="page-header">
         <div>
             <h1 style="font-size: 1.6rem; font-weight: 900; color: var(--primary-dark);">Stuco Executive Meeting Notes & Agendas</h1>
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 4px;">Track published agendas, meeting minutes, discussion notes, and deliverables.</p>
         </div>
         {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
         <button class="btn" onclick="openModal('addMeetingModal')">Schedule New Meeting Card</button>
