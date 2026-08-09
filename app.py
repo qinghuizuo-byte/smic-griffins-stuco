@@ -699,20 +699,39 @@ def inject_user():
 # ROUTE HANDLERS
 # ==========================================
 
+def get_sorted_events():
+    def parse_sort_date(d_str):
+        if not d_str: return "9999-99-99"
+        d_str = str(d_str).strip()
+        import re
+        from datetime import datetime
+        try: return datetime.strptime(d_str, "%Y-%m-%d").strftime("%Y-%m-%d")
+        except ValueError: pass
+        try: return datetime.strptime(d_str, "%m/%d/%Y").strftime("%Y-%m-%d")
+        except ValueError: pass
+        parts = re.split(r'[-/.]', d_str)
+        if len(parts) == 3 and all(p.isdigit() for p in parts):
+            p1, p2, p3 = int(parts[0]), int(parts[1]), int(parts[2])
+            if p1 > 1900: return f"{p1:04d}-{p2:02d}-{p3:02d}"
+            elif p3 > 1900: return f"{p3:04d}-{p1:02d}-{p2:02d}"
+        return "9999-" + d_str
+
+    return sorted(list(EVENTS.values()), key=lambda x: parse_sort_date(x.get("date")))
+
+
 # 1. Main Landing Page
 @app.route('/')
 @login_required
 def home():
-    all_events = list(EVENTS.values())
-    upcoming_events = sorted(all_events, key=lambda x: x.get('date', ''))[:2]
+    all_events = get_sorted_events()
+    upcoming_events = all_events[:2]
     return render_template('index.html', announcements=ANNOUNCEMENTS, members=STUCO_MEMBERS, upcoming_events=upcoming_events, events=all_events)
 
 
 # 2. Public Event Calendar & API — no login needed
 @app.route('/calendar')
 def public_calendar():
-    return render_template('calendar.html', events=list(EVENTS.values()))
-
+    return render_template('calendar.html', events=get_sorted_events())
 
 
 @app.route('/api/events/<int:event_id>')
@@ -831,7 +850,7 @@ def event_workspace(event_id=1):
     return render_template(
         'workspace.html',
         event=event,
-        events=list(EVENTS.values()),
+        events=get_sorted_events(),
         total_budget=total_budget,
         total_spent=total_spent,
         remaining_budget=remaining_budget,
@@ -1127,7 +1146,7 @@ def meetings_hub():
         return "9999-" + d_str
 
     meetings_sorted = sorted(MEETINGS, key=lambda x: parse_sort_date(x.get("date")))
-    return render_template('meetings.html', meetings=meetings_sorted, events=list(EVENTS.values()))
+    return render_template('meetings.html', meetings=meetings_sorted, events=get_sorted_events())
 
 
 @app.route('/meetings/add', methods=['POST'])

@@ -787,8 +787,11 @@
       "category": "Drinks",
       "suggested_by": "Sam V. (Senior)",
       "reason": "Perfect afternoon pick-me-up during AP study sessions!",
-      "votes": 44,
-      "status": "Under Review"
+      "votes": 45,
+      "status": "Approved",
+      "voted_by": [
+        "270036@bjsmicschool.com"
+      ]
     },
     {
       "id": 2,
