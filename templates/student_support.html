@@ -17,6 +17,7 @@
             --border-color: #cbd5e1;
             --danger: #ef4444;
             --success: #10b981;
+            --warning: #f59e0b;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
@@ -41,10 +42,10 @@
         /* Header Hero */
         .hero {
             background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-            color: white; border-radius: 16px; padding: 28px; margin-bottom: 24px;
+            color: white; border-radius: 16px; padding: 24px 28px; margin-bottom: 24px;
             box-shadow: 0 4px 14px rgba(0, 102, 204, 0.15);
         }
-        .hero h1 { font-size: 1.8rem; font-weight: 900; margin-bottom: 6px; }
+        .hero h1 { font-size: 1.8rem; font-weight: 900; margin-bottom: 4px; }
         .hero p { font-size: 0.95rem; opacity: 0.9; }
 
         /* Subcategory Tab Controls */
@@ -67,7 +68,11 @@
             background: white; border-radius: 14px; padding: 24px; margin-bottom: 24px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid var(--border-color);
         }
-        .card-title { font-size: 1.2rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 14px; }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+            border-bottom: 2px solid var(--primary-light); padding-bottom: 10px;
+        }
+        .card-title { font-size: 1.2rem; font-weight: 800; color: var(--primary-dark); }
 
         .btn {
             background-color: var(--primary); color: white; border: none; padding: 8px 16px;
@@ -95,22 +100,59 @@
         .status-Resolved { background: #dcfce7; color: #166534; }
         .status-Declined { background: #fee2e2; color: #991b1b; }
 
+        /* Vending Items Grid */
+        .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .item-card {
+            background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .item-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+        .item-icon { font-size: 3rem; margin-bottom: 10px; }
+        .item-name { font-size: 1.05rem; font-weight: 800; color: var(--text-dark); margin-bottom: 6px; }
+        .item-price { font-size: 1.25rem; font-weight: 900; color: var(--primary); margin-bottom: 6px; }
+
         /* Suggestion Items */
         .suggestion-card {
-            background: white; border-radius: 12px; padding: 20px; margin-bottom: 16px;
-            border: 1px solid var(--border-color); box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 12px;
+            background: #fff; display: flex; justify-content: space-between; align-items: center; gap: 12px;
         }
+
         .exec-box {
             background: var(--primary-light); border-left: 4px solid var(--primary); padding: 12px 14px;
             border-radius: 8px; margin-top: 12px; font-size: 0.88rem; line-height: 1.5;
         }
 
-        /* Grid */
-        .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
-        .item-card {
-            background: white; border-radius: 12px; padding: 18px; border: 1px solid var(--border-color);
-            display: flex; flex-direction: column; justify-content: space-between;
+        /* Volunteers */
+        .opportunities-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .op-card {
+            background: white; border-radius: 12px; padding: 22px; border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: space-between;
         }
+        .op-title { font-size: 1.2rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 10px; }
+        .op-detail { font-size: 0.85rem; color: var(--text-dark); margin-bottom: 6px; display: flex; gap: 8px; align-items: center; }
+        .badge-hours { background: #dbeafe; color: #1e40af; font-weight: 800; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; }
+        .badge-spots { background: #fef3c7; color: #92400e; font-weight: 800; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; }
+
+        .admin-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; }
+        .admin-table th { background: var(--primary-light); color: var(--primary-dark); padding: 10px; font-weight: 700; }
+        .admin-table td { padding: 10px; border-bottom: 1px solid #f1f5f9; }
+
+        /* Modals & Close Button (X) */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.45); z-index: 1000; align-items: center; justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: white; border-radius: 14px; padding: 24px; width: 100%; max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; max-height: 90vh; overflow-y: auto;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 2px solid var(--primary-light); padding-bottom: 10px; }
+        .close-btn {
+            font-size: 1.6rem; font-weight: 800; background: none; border: none; cursor: pointer; color: var(--text-muted);
+            transition: color 0.15s; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%;
+        }
+        .close-btn:hover { color: var(--danger); background: #fee2e2; }
 
         @media (max-width: 768px) {
             body { padding: 14px; }
@@ -158,7 +200,7 @@
     <!-- Hero Header -->
     <div class="hero">
         <h1>🤝 Student Support Hub</h1>
-        <p>Anonymous suggestion box, campus vending machine items, and CSH volunteer opportunities — all in one place.</p>
+        <p>Anonymous suggestion box, campus vending machine items, and CSH volunteer opportunities.</p>
     </div>
 
     <!-- Category Tabs -->
@@ -226,7 +268,7 @@
                     </div>
 
                     {% for sug in suggestions %}
-                    <div class="suggestion-card">
+                    <div class="suggestion-card" style="flex-direction: column; align-items: stretch;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
                             <div>
                                 <span class="status-badge status-{{ sug.status.replace(' ', '-') }}">{{ sug.status }}</span>
@@ -287,13 +329,13 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- TAB 2: VENDING MACHINE HUB -->
+    <!-- TAB 2: VENDING MACHINE HUB (Original Format & Functionality) -->
     <!-- ========================================== -->
     <div id="tab-vending" class="tab-content {% if active_tab == 'vending' %}active{% endif %}">
         
         <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <div class="card-title" style="margin-bottom: 0;">🍿 Vending Machine Inventory</div>
+            <div class="card-header">
+                <span class="card-title">🍿 Vending Machine Inventory</span>
                 {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
                 <button class="btn" onclick="openModal('addVendingModal')">➕ Add Vending Item</button>
                 {% endif %}
@@ -302,40 +344,69 @@
             <div class="items-grid">
                 {% for item in items %}
                 <div class="item-card">
-                    <div>
-                        <div style="font-size: 2.2rem; margin-bottom: 6px;">{{ item.icon }}</div>
-                        <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--primary-dark);">{{ item.name }}</h3>
-                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Category: {{ item.category }}</div>
-                        <div style="font-size: 1.2rem; font-weight: 900; color: var(--primary); margin-bottom: 8px;">${{ "%.2f"|format(item.price) }}</div>
+                    <div class="item-icon">{{ item.icon }}</div>
+                    <div class="item-name">{{ item.name }}</div>
+                    <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 6px;">Category: {{ item.category }}</div>
+                    <div class="item-price">${{ "%.2f"|format(item.price) }}</div>
+                    <div class="item-status">
                         <span class="status-badge status-Resolved">{{ item.status }}</span>
                     </div>
+
+                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
+                    <div style="margin-top: 10px; display: flex; gap: 6px; justify-content: center;">
+                        <button onclick='openEditVendingModal({{ item | tojson | safe }})' class="btn btn-outline" style="padding: 3px 8px; font-size: 0.72rem;">Edit</button>
+                        <form action="{{ url_for('delete_vending_item', item_id=item.id) }}" method="POST" onsubmit="return confirm('Delete vending item?');">
+                            <button type="submit" class="btn btn-danger" style="padding: 3px 8px; font-size: 0.72rem; color: white;">Del</button>
+                        </form>
+                    </div>
+                    {% endif %}
                 </div>
                 {% endfor %}
             </div>
         </div>
 
         <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <div class="card-title" style="margin-bottom: 0;">🍿 Snack & Drink Community Suggestions</div>
+            <div class="card-header">
+                <span class="card-title">🍿 Snack & Drink Community Suggestions</span>
                 <button class="btn btn-outline" onclick="openModal('addVendingSuggestionModal')">➕ Suggest New Snack</button>
             </div>
 
-            <div class="items-grid">
+            <div style="display: grid; gap: 12px;">
                 {% for sug in vending_suggestions %}
-                <div class="item-card">
-                    <div>
-                        <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--primary-dark);">{{ sug.item_name }}</h3>
-                        <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 8px;">Tag: {{ sug.category }}</div>
-                        <span class="status-badge status-{{ sug.status.replace(' ', '-') }}">{{ sug.status }}</span>
+                <div class="suggestion-card">
+                    <div style="flex: 1;">
+                        <div style="font-size: 1.05rem; font-weight: 800; color: var(--text-dark); margin-bottom: 4px;">{{ sug.item_name }}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; gap: 8px; align-items: center;">
+                            <span>Tag: {{ sug.category }}</span>
+                            <span class="status-badge status-{{ sug.status.replace(' ', '-') }}">{{ sug.status }}</span>
+                        </div>
+                        <div style="margin-top: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            {% set has_voted = (current_user.is_authenticated and current_user.email.lower() in sug.get('voted_by', [])) %}
+                            <form action="{{ url_for('vote_suggestion', suggestion_id=sug.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn {% if has_voted %}btn-outline{% else %}btn-success{% endif %}" style="padding: 3px 8px; font-size: 0.75rem;" {% if has_voted %}disabled{% endif %}>
+                                    {% if has_voted %}✅ Upvoted{% else %}👍 Upvote{% endif %}
+                                </button>
+                            </form>
+
+                            {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
+                            <form action="{{ url_for('edit_suggestion_status', s_id=sug.id) }}" method="POST" style="display:inline-flex; gap:4px; align-items:center;">
+                                <select name="status" onchange="this.form.submit()" style="font-size:0.75rem; padding:2px 4px; border-radius:4px; border:1px solid #cbd5e1;">
+                                    <option value="Under Review" {% if sug.status == 'Under Review' %}selected{% endif %}>Under Review</option>
+                                    <option value="Approved" {% if sug.status == 'Approved' %}selected{% endif %}>Approved</option>
+                                    <option value="Added to Machine" {% if sug.status == 'Added to Machine' %}selected{% endif %}>Added to Machine</option>
+                                    <option value="Rejected" {% if sug.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                                </select>
+                            </form>
+
+                            <form action="{{ url_for('delete_suggestion', s_id=sug.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this suggestion?');">
+                                <button type="submit" class="btn btn-danger" style="padding: 3px 6px; font-size: 0.72rem; color: white;">Del</button>
+                            </form>
+                            {% endif %}
+                        </div>
                     </div>
-                    <div style="margin-top: 14px; border-top: 1px solid #f1f5f9; padding-top: 10px; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 0.85rem; font-weight: 800; color: var(--primary);">👍 {{ sug.votes }} Votes</span>
-                        {% set has_voted = (current_user.is_authenticated and current_user.email.lower() in sug.get('voted_by', [])) %}
-                        <form action="{{ url_for('vote_suggestion', suggestion_id=sug.id) }}" method="POST">
-                            <button type="submit" class="btn {% if has_voted %}btn-outline{% else %}btn-success{% endif %}" style="padding: 3px 8px; font-size: 0.75rem;" {% if has_voted %}disabled{% endif %}>
-                                {% if has_voted %}✅ Upvoted{% else %}Upvote{% endif %}
-                            </button>
-                        </form>
+                    <div>
+                        <div style="font-size: 1.4rem; font-weight: 900; color: var(--primary); text-align: center;">{{ sug.votes }}</div>
+                        <div style="font-size: 0.72rem; color: var(--text-muted); text-align: center;">votes</div>
                     </div>
                 </div>
                 {% endfor %}
@@ -345,64 +416,195 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- TAB 3: CSH VOLUNTEER OPPORTUNITIES -->
+    <!-- TAB 3: CSH VOLUNTEER OPPORTUNITIES (Original Format & Functionality) -->
     <!-- ========================================== -->
     <div id="tab-volunteers" class="tab-content {% if active_tab == 'volunteers' %}active{% endif %}">
         
         <div class="card">
-            <div class="card-title">🤝 Community Service Hours (CSH) & Volunteer Projects</div>
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px;">Participate in Stuco sponsored community service projects to earn verified CSH hours.</p>
+            <div class="card-header">
+                <span class="card-title">🤝 Community Service Hours (CSH) & Volunteer Projects</span>
+                {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                <button class="btn" onclick="openModal('addOpportunityModal')">➕ Create Opportunity</button>
+                {% endif %}
+            </div>
 
-            <div class="items-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+            <div class="opportunities-grid">
                 {% for vol in volunteers %}
-                <div class="item-card">
+                <div class="op-card">
                     <div>
-                        <span class="status-badge status-In-Progress" style="margin-bottom: 8px;">{{ vol.csh_hours }} CSH Hours</span>
-                        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 6px;">{{ vol.title }}</h3>
-                        <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 12px;">{{ vol.description }}</p>
-                        <div style="font-size: 0.82rem; color: var(--text-dark); display: grid; gap: 4px; background: #f8fafc; padding: 10px; border-radius: 8px; margin-bottom: 14px;">
-                            <div>📅 <strong>Date:</strong> {{ vol.date }}</div>
-                            <div>📍 <strong>Location:</strong> {{ vol.location }}</div>
-                            <div>👤 <strong>Coordinator:</strong> {{ vol.coordinator }}</div>
+                        <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                            <span class="badge badge-hours">{{ vol.csh_hours }} CSH Hours</span>
+                            <span class="badge badge-spots">{{ vol.spots_left }} Spots Left</span>
                         </div>
+                        <div class="op-title">{{ vol.title }}</div>
+                        <div class="op-detail">📅 {{ vol.date }} ({{ vol.time }})</div>
+                        <div class="op-detail">📍 {{ vol.location }}</div>
+                        <div class="op-detail">👤 Coordinator: {{ vol.coordinator }}</div>
+                        <div class="op-desc">{{ vol.description }}</div>
                     </div>
-                    <button class="btn" style="width: 100%;">Sign Up for CSH →</button>
+
+                    <div>
+                        <!-- Volunteer Signup Form -->
+                        <form action="{{ url_for('signup_volunteer', vol_id=vol.id) }}" method="POST" style="margin-top: 12px;">
+                            <button type="submit" class="btn btn-success" style="width: 100%;">Sign Up for CSH →</button>
+                        </form>
+
+                        <!-- Registered Students List -->
+                        {% if vol.signups %}
+                        <div style="margin-top: 14px; border-top: 1px solid #f1f5f9; padding-top: 10px;">
+                            <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">Registered Students:</div>
+                            {% for su in vol.signups %}
+                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
+                                <span>👤 {{ su.name }}</span>
+                                <span class="{% if su.status == 'Approved' %}status-Resolved{% else %}status-Received{% endif %}">{{ su.status }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
                 {% endfor %}
             </div>
         </div>
+
+        <!-- CSH Hour Verification Admin Table -->
+        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher'] %}
+        <div class="card" style="border-left: 5px solid var(--primary);">
+            <div class="card-header">
+                <span class="card-title">📜 Volunteer Hours Verification Ledger</span>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Opportunity Title</th>
+                            <th>Student Name</th>
+                            <th>Email</th>
+                            <th>Hours Earned</th>
+                            <th>Verification Status</th>
+                            <th style="text-align: center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vol in volunteers %}
+                            {% for su in vol.signups %}
+                            <tr>
+                                <td><strong>{{ vol.title }}</strong></td>
+                                <td>{{ su.name }}</td>
+                                <td>{{ su.email }}</td>
+                                <td><span class="badge badge-hours">{{ vol.csh_hours }} CSH</span></td>
+                                <td>
+                                    {% if su.status == 'Approved' %}
+                                    <span class="status-badge status-Resolved">Approved</span>
+                                    {% else %}
+                                    <span class="status-badge status-Received">Pending Review</span>
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: center;">
+                                    {% if su.status != 'Approved' %}
+                                    <form action="{{ url_for('verify_volunteer_hours', vol_id=vol.id, email=su.email) }}" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-success" style="padding: 3px 8px; font-size: 0.72rem;">Confirm Hour</button>
+                                    </form>
+                                    {% else %}
+                                    <span style="color: var(--success); font-size: 0.8rem; font-weight: 700;">✓ Verified</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
 
     </div>
 
 </div>
 
 <!-- MODAL: ADD VENDING ITEM -->
-<div class="modal" id="addVendingModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
-    <div style="background:white; border-radius:12px; padding:24px; width:100%; max-width:480px;">
-        <h3 style="font-weight:800; color:var(--primary-dark); margin-bottom:14px;">Add Vending Machine Item</h3>
+<div class="modal" id="addVendingModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">➕ Add Vending Machine Item</h3>
+            <button onclick="closeModal('addVendingModal')" class="close-btn">&times;</button>
+        </div>
         <form action="{{ url_for('add_vending_item') }}" method="POST">
             <div class="form-group"><label>Item Name</label><input type="text" name="name" required></div>
             <div class="form-group"><label>Emoji Icon</label><input type="text" name="icon" value="🍿" required></div>
             <div class="form-group"><label>Price ($)</label><input type="number" step="0.01" name="price" value="1.50" required></div>
             <div class="form-group"><label>Category</label><input type="text" name="category" value="Snacks" required></div>
+            <div class="form-group"><label>Stock Status</label><input type="text" name="status" value="In Stock" required></div>
+            
             <div style="display:flex; gap:10px; margin-top:14px;">
                 <button type="submit" class="btn" style="flex:1;">Add Item</button>
-                <button type="button" onclick="document.getElementById('addVendingModal').style.display='none'" class="btn btn-outline" style="flex:1;">Cancel</button>
+                <button type="button" onclick="closeModal('addVendingModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: EDIT VENDING ITEM -->
+<div class="modal" id="editVendingModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">✏️ Edit Vending Machine Item</h3>
+            <button onclick="closeModal('editVendingModal')" class="close-btn">&times;</button>
+        </div>
+        <form id="editVendingForm" method="POST">
+            <div class="form-group"><label>Item Name</label><input type="text" name="name" id="edit_v_name" required></div>
+            <div class="form-group"><label>Emoji Icon</label><input type="text" name="icon" id="edit_v_icon" required></div>
+            <div class="form-group"><label>Price ($)</label><input type="number" step="0.01" name="price" id="edit_v_price" required></div>
+            <div class="form-group"><label>Category</label><input type="text" name="category" id="edit_v_category" required></div>
+            <div class="form-group"><label>Stock Status</label><input type="text" name="status" id="edit_v_status" required></div>
+            
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Save Changes</button>
+                <button type="button" onclick="closeModal('editVendingModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
             </div>
         </form>
     </div>
 </div>
 
 <!-- MODAL: ADD VENDING SUGGESTION -->
-<div class="modal" id="addVendingSuggestionModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
-    <div style="background:white; border-radius:12px; padding:24px; width:100%; max-width:480px;">
-        <h3 style="font-weight:800; color:var(--primary-dark); margin-bottom:14px;">Suggest Vending Snack</h3>
+<div class="modal" id="addVendingSuggestionModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">➕ Suggest Vending Snack</h3>
+            <button onclick="closeModal('addVendingSuggestionModal')" class="close-btn">&times;</button>
+        </div>
         <form action="{{ url_for('submit_vending_suggestion') }}" method="POST">
             <div class="form-group"><label>Snack / Drink Name</label><input type="text" name="item_name" required></div>
             <div class="form-group"><label>Category</label><input type="text" name="category" value="Snacks" required></div>
+            
             <div style="display:flex; gap:10px; margin-top:14px;">
                 <button type="submit" class="btn" style="flex:1;">Submit Suggestion</button>
-                <button type="button" onclick="document.getElementById('addVendingSuggestionModal').style.display='none'" class="btn btn-outline" style="flex:1;">Cancel</button>
+                <button type="button" onclick="closeModal('addVendingSuggestionModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: ADD VOLUNTEER OPPORTUNITY -->
+<div class="modal" id="addOpportunityModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">➕ Create Volunteer Opportunity</h3>
+            <button onclick="closeModal('addOpportunityModal')" class="close-btn">&times;</button>
+        </div>
+        <form action="{{ url_for('add_volunteer_opportunity') }}" method="POST">
+            <div class="form-group"><label>Opportunity Title</label><input type="text" name="title" required></div>
+            <div class="form-group"><label>CSH Hours Offered</label><input type="number" step="0.5" name="csh_hours" value="2.0" required></div>
+            <div class="form-group"><label>Available Spots</label><input type="number" name="spots_left" value="10" required></div>
+            <div class="form-group"><label>Date</label><input type="date" name="date" required></div>
+            <div class="form-group"><label>Time</label><input type="text" name="time" placeholder="e.g. 3:30 PM - 5:30 PM"></div>
+            <div class="form-group"><label>Location</label><input type="text" name="location" placeholder="e.g. Main Campus Library"></div>
+            <div class="form-group"><label>Coordinator</label><input type="text" name="coordinator" value="{{ current_user.name }}"></div>
+            <div class="form-group"><label>Description</label><textarea name="description" rows="3" required></textarea></div>
+            
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Create Opportunity</button>
+                <button type="button" onclick="closeModal('addOpportunityModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
             </div>
         </form>
     </div>
@@ -418,7 +620,21 @@
     }
 
     function openModal(id) {
-        document.getElementById(id).style.display = 'flex';
+        document.getElementById(id).classList.add('active');
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('active');
+    }
+
+    function openEditVendingModal(item) {
+        document.getElementById('edit_v_name').value = item.name;
+        document.getElementById('edit_v_icon').value = item.icon;
+        document.getElementById('edit_v_price').value = item.price;
+        document.getElementById('edit_v_category').value = item.category;
+        document.getElementById('edit_v_status').value = item.status;
+        document.getElementById('editVendingForm').action = "/vending/edit/" + item.id;
+        openModal('editVendingModal');
     }
 </script>
 </body>
