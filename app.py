@@ -2052,7 +2052,7 @@ def delete_update(ann_id):
 
 @app.route('/calendar/add', methods=['POST'])
 @login_required
-@require_role(['President', 'Vice President', 'Secretary', 'Teacher'])
+@require_role(['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'])
 def add_calendar_event():
     title = request.form.get('title', '').strip()
     date = request.form.get('date', '').strip()
@@ -2062,7 +2062,7 @@ def add_calendar_event():
     scope = request.form.get('scope', 'Entire School').strip()
     requires_booking = request.form.get('requires_booking') in ['true', 'on'] or category == 'Paid Event'
     lead = request.form.get('lead', '').strip()
-    budget = request.form.get('budget', '$0.00').strip()
+    budget = request.form.get('budget', '¥0.00').strip()
     description = request.form.get('description', '').strip()
 
     if not title or not date:
@@ -2071,7 +2071,6 @@ def add_calendar_event():
 
     new_id = max(EVENTS.keys(), default=0) + 1
     
-    # Format display date (e.g., Saturday, October 24, 2026)
     from datetime import datetime
     try:
         dt_obj = datetime.strptime(date, '%Y-%m-%d')
@@ -2098,15 +2097,20 @@ def add_calendar_event():
         "has_workspace": True,
         "schedule": [],
         "tasks": [],
-        "photos": []
+        "photos": [],
+        "purchases": []
     }
-    flash(f"Event '{title}' added to calendar!", "success")
+    save_data()
+    flash(f"New Event Workspace '{title}' created!", "success")
+    ref = request.referrer or ""
+    if 'workspace' in ref:
+        return redirect(url_for('event_workspace', event_id=new_id))
     return redirect(url_for('public_calendar'))
 
 
 @app.route('/calendar/edit/<int:event_id>', methods=['POST'])
 @login_required
-@require_role(['President', 'Vice President', 'Secretary', 'Teacher'])
+@require_role(['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'])
 def edit_calendar_event(event_id):
     event = EVENTS.get(event_id)
     if event:
@@ -2133,7 +2137,12 @@ def edit_calendar_event(event_id):
             except Exception:
                 event["display_date"] = date
 
-        flash(f"Event '{event['title']}' updated successfully!", "success")
+        save_data()
+        flash(f"Event Details for '{event['title']}' updated successfully!", "success")
+    
+    ref = request.referrer or ""
+    if 'workspace' in ref:
+        return redirect(url_for('event_workspace', event_id=event_id))
     return redirect(url_for('public_calendar'))
 
 

@@ -370,8 +370,15 @@
 
         <!-- Event Selection View: Huge Blocks for Each Event -->
         <div id="event-selection-view">
-            <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 6px;">Select Event Workspace</h2>
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px;">Click any event block below to open its specific planning sheet, expense tracker, and participant booking list.</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 4px;">Select Event Workspace</h2>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Click any event block below to open its specific planning sheet, expense tracker, and participant booking list.</p>
+                </div>
+                {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                <button class="btn" onclick="openModal('addEventWorkspaceModal')">➕ Create New Event Workspace</button>
+                {% endif %}
+            </div>
             
             <div class="hub-blocks-grid">
                 {% for ev in events %}
@@ -406,8 +413,15 @@
 
             <!-- Event Header -->
             <div class="workspace-header">
-                <h1>{{ event.title }}</h1>
-                <p>{{ event.description }}</p>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 8px;">
+                    <div>
+                        <h1>{{ event.title }}</h1>
+                        <p>{{ event.description }}</p>
+                    </div>
+                    {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                    <button class="btn btn-outline" style="padding: 6px 12px; font-size: 0.82rem;" onclick="openModal('editEventWorkspaceModal')">✏️ Edit Event Details</button>
+                    {% endif %}
+                </div>
                 <div class="event-meta">
                     <div>📅 <strong>Date:</strong> {{ event.display_date }}</div>
                     <div>📍 <strong>Venue:</strong> {{ event.location }}</div>
@@ -1005,6 +1019,86 @@
 <!-- ========================================== -->
 <!-- ALL MODALS WITH CLOSE (X) AND DISCARD BUTTONS -->
 <!-- ========================================== -->
+
+<!-- MODAL: ADD NEW EVENT WORKSPACE -->
+<div class="modal" id="addEventWorkspaceModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">➕ Create New Event Workspace</h3>
+            <button onclick="closeModal('addEventWorkspaceModal')" class="close-btn">&times;</button>
+        </div>
+        <form action="{{ url_for('add_calendar_event') }}" method="POST">
+            <div class="form-group"><label>Event Title</label><input type="text" name="title" placeholder="e.g. Winter Gala 2026" required></div>
+            <div class="form-group"><label>Event Date</label><input type="date" name="date" required></div>
+            <div class="form-group"><label>Time Slot</label><input type="text" name="time" placeholder="e.g. 6:00 PM - 9:00 PM"></div>
+            <div class="form-group"><label>Venue Location</label><input type="text" name="location" placeholder="e.g. Main Gymnasium"></div>
+            <div class="form-group">
+                <label>Category</label>
+                <select name="category">
+                    <option value="Paid Event">Paid Event (Booking Required)</option>
+                    <option value="House Game">House Game</option>
+                    <option value="Free School Event" selected>Free School Event</option>
+                    <option value="Optional Activity">Optional Activity</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Scope / Audience</label>
+                <select name="scope">
+                    <option value="Entire School">Entire School Event</option>
+                    <option value="High School">High School Event</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Event Lead Person</label><input type="text" name="lead" value="{{ current_user.name }}"></div>
+            <div class="form-group"><label>Allocated Budget (RMB ¥)</label><input type="text" name="budget" placeholder="e.g. ¥2,500.00"></div>
+            <div class="form-group"><label>Event Description</label><textarea name="description" rows="3" placeholder="Brief outline of event goals..."></textarea></div>
+            
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Create Workspace</button>
+                <button type="button" onclick="closeModal('addEventWorkspaceModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: EDIT EVENT WORKSPACE DETAILS -->
+<div class="modal" id="editEventWorkspaceModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="font-weight:800; color:var(--primary-dark);">✏️ Edit Event Workspace Details</h3>
+            <button onclick="closeModal('editEventWorkspaceModal')" class="close-btn">&times;</button>
+        </div>
+        <form action="{{ url_for('edit_calendar_event', event_id=event.id) }}" method="POST">
+            <div class="form-group"><label>Event Title</label><input type="text" name="title" value="{{ event.title }}" required></div>
+            <div class="form-group"><label>Event Date</label><input type="date" name="date" value="{{ event.date }}" required></div>
+            <div class="form-group"><label>Time Slot</label><input type="text" name="time" value="{{ event.time }}"></div>
+            <div class="form-group"><label>Venue Location</label><input type="text" name="location" value="{{ event.location }}"></div>
+            <div class="form-group">
+                <label>Category</label>
+                <select name="category">
+                    <option value="Paid Event" {% if event.category == 'Paid Event' %}selected{% endif %}>Paid Event (Booking Required)</option>
+                    <option value="House Game" {% if event.category == 'House Game' %}selected{% endif %}>House Game</option>
+                    <option value="Free School Event" {% if event.category == 'Free School Event' %}selected{% endif %}>Free School Event</option>
+                    <option value="Optional Activity" {% if event.category == 'Optional Activity' %}selected{% endif %}>Optional Activity</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Scope / Audience</label>
+                <select name="scope">
+                    <option value="Entire School" {% if event.scope == 'Entire School' %}selected{% endif %}>Entire School Event</option>
+                    <option value="High School" {% if event.scope == 'High School' %}selected{% endif %}>High School Event</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Event Lead Person</label><input type="text" name="lead" value="{{ event.lead }}"></div>
+            <div class="form-group"><label>Allocated Budget (RMB ¥)</label><input type="text" name="budget" value="{{ event.budget_allocated }}"></div>
+            <div class="form-group"><label>Event Description</label><textarea name="description" rows="3">{{ event.description }}</textarea></div>
+            
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Save Event Details</button>
+                <button type="button" onclick="closeModal('editEventWorkspaceModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <!-- MODAL: ADD MEETING -->
 <div class="modal" id="addMeetingModal">
