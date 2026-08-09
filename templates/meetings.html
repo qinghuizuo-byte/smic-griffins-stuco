@@ -144,7 +144,7 @@
 
     <!-- Standard Aligned Navbar Header -->
     <div class="navbar">
-        <div class="brand-title">🦅 Griffins StuCo Meetings</div>
+        <div class="brand-title">Griffins StuCo Meetings</div>
         <div class="nav-links">
             <a href="/" class="nav-link">Home</a>
             <a href="/calendar" class="nav-link">Calendar</a>
@@ -160,7 +160,7 @@
             <a href="/me" class="nav-link">Me</a>
             <a href="/logout" class="nav-link" style="color:var(--danger);">Sign out</a>
             {% else %}
-            <a href="/login" class="nav-link" style="background:var(--primary);color:white;">🔑 Sign In</a>
+            <a href="/login" class="nav-link" style="background:var(--primary);color:white;">Sign In</a>
             {% endif %}
         </div>
     </div>
@@ -175,11 +175,11 @@
 
     <div class="page-header">
         <div>
-            <h1 style="font-size: 1.6rem; font-weight: 900; color: var(--primary-dark);">📝 Stuco Executive Meeting Notes & Agendas</h1>
+            <h1 style="font-size: 1.6rem; font-weight: 900; color: var(--primary-dark);">Stuco Executive Meeting Notes & Agendas</h1>
             <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 4px;">Track published agendas, meeting minutes, discussion notes, and deliverables.</p>
         </div>
         {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
-        <button class="btn" onclick="openModal('addMeetingModal')">➕ Schedule New Meeting Card</button>
+        <button class="btn" onclick="openModal('addMeetingModal')">Schedule New Meeting Card</button>
         {% endif %}
     </div>
 
@@ -189,14 +189,14 @@
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
             <div>
                 <div style="font-size: 0.8rem; font-weight: 800; color: #b45309; text-transform: uppercase; letter-spacing: 0.5px;">⚠️ Upcoming Meeting Action Required</div>
-                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-dark); margin-top: 4px;">📅 {{ upcoming_action_meeting.date }} — {{ upcoming_action_meeting.title }}</h3>
+                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-dark); margin-top: 4px;">{{ upcoming_action_meeting.date }} — {{ upcoming_action_meeting.title }}</h3>
                 <div style="font-size: 0.88rem; color: #78350f; margin-top: 6px;">
                     <strong>Required Pre-Meeting Action Items:</strong>
                     <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px;">
                     {% for item in upcoming_action_meeting.action_items %}
                         {% if not item.done and item.timing_category == 'Before Meeting' %}
                         <span style="background: #fef3c7; border: 1px solid #fde68a; padding: 2px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; color: #92400e;">
-                            ⏳ {{ item.task }} (Due: {{ item.due_date or upcoming_action_meeting.date }})
+                            {{ item.task }} (Due: {{ item.due_date or upcoming_action_meeting.date }})
                         </span>
                         {% endif %}
                     {% endfor %}
@@ -212,24 +212,24 @@
         <div class="card-header" style="flex-wrap: wrap; gap: 10px;">
             <span class="card-title" style="margin-bottom: 0;">Published Agendas & Executive Minutes</span>
             <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-                <button class="btn btn-outline" id="btn-back-finder" onclick="backToMeetingList()" style="display: none;">⬅️ Back to Meeting List</button>
-                <button class="btn btn-outline" id="btn-all-meetings" onclick="showAllMeetings()">📋 View All Meetings</button>
+                <button class="btn btn-outline" id="btn-back-finder" onclick="backToMeetingList()" style="display: none;">Back to Meeting List</button>
+                <button class="btn btn-outline" id="btn-all-meetings" onclick="showAllMeetings()">View All Meetings</button>
             </div>
         </div>
 
         <!-- Finder-Style Meeting List View with Search -->
         <div id="finder-list-view" style="margin-bottom: 20px;">
             <div style="margin-bottom: 14px;">
-                <input type="text" id="meetingSearchInput" onkeyup="filterFinderMeetings()" placeholder="🔍 Search meetings by date, topic, leader, or keyword..." style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 0.9rem;">
+                <input type="text" id="meetingSearchInput" onkeyup="filterFinderMeetings()" placeholder="Search meetings by date, topic, leader, or keyword..." style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 0.9rem;">
             </div>
 
             <div style="background: white; border-radius: 10px; border: 1px solid var(--border-color); overflow-x: auto; box-shadow: 0 2px 6px rgba(0,0,0,0.02);">
                 <div style="min-width: 650px;">
                     <div style="display: grid; grid-template-columns: 110px 1fr 130px 120px 100px 110px; padding: 10px 16px; background: var(--primary-light); font-weight: 800; font-size: 0.8rem; color: var(--primary-dark); border-bottom: 1px solid var(--border-color);">
-                        <div>📅 Date</div>
-                        <div>📌 Topic / Title</div>
-                        <div>📍 Location</div>
-                        <div>👤 Leader</div>
+                        <div>Date</div>
+                        <div>Topic / Title</div>
+                        <div>Location</div>
+                        <div>Leader</div>
                         <div>Status</div>
                         <div style="text-align: right;">Action</div>
                     </div>
@@ -238,7 +238,7 @@
                         {% for meeting in meetings %}
                         <div class="finder-row-item" data-search="{{ meeting.date }} {{ meeting.title|lower }} {{ meeting.location|lower }} {{ meeting.leader|lower }} {{ meeting.agenda_summary|lower }}" onclick="showSingleMeeting({{ meeting.id }})" style="display: grid; grid-template-columns: 110px 1fr 130px 120px 100px 110px; padding: 12px 16px; border-bottom: 1px solid #f1f5f9; align-items: center; cursor: pointer; transition: background 0.15s; font-size: 0.88rem;">
                             <div style="font-weight: 700; color: var(--text-dark);">{{ meeting.date }}</div>
-                            <div style="font-weight: 800; color: var(--primary-dark);">📌 {{ meeting.title }}</div>
+                            <div style="font-weight: 800; color: var(--primary-dark);">{{ meeting.title }}</div>
                             <div style="color: var(--text-muted); font-size: 0.82rem;">{{ meeting.location }}</div>
                             <div style="color: var(--text-muted); font-size: 0.82rem;">{{ meeting.leader }}</div>
                             <div><span class="status-badge status-{{ meeting.status.replace(' ', '-') }}">{{ meeting.status }}</span></div>

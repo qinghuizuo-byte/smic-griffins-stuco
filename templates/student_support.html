@@ -168,7 +168,7 @@
 
     <!-- Navbar Header -->
     <div class="navbar">
-        <div class="brand-title">🦅 Griffins StuCo Support</div>
+        <div class="brand-title">Griffins StuCo Support</div>
         <div class="nav-links">
             <a href="/" class="nav-link">Home</a>
             <a href="/calendar" class="nav-link">Calendar</a>
@@ -184,7 +184,7 @@
             <a href="/me" class="nav-link">Me</a>
             <a href="/logout" class="nav-link" style="color:var(--danger);">Sign out</a>
             {% else %}
-            <a href="/login" class="nav-link" style="background:var(--primary);color:white;">🔑 Sign In</a>
+            <a href="/login" class="nav-link" style="background:var(--primary);color:white;">Sign In</a>
             {% endif %}
         </div>
     </div>
@@ -199,22 +199,60 @@
 
     <!-- Hero Header -->
     <div class="hero">
-        <h1>🤝 Student Support Hub</h1>
+        <h1>Student Support Hub</h1>
         <p>Anonymous suggestion box, campus vending machine items, and CSH volunteer opportunities.</p>
     </div>
 
-    <!-- Category Tabs -->
-    <div class="tabs-header">
-        <button class="tab-btn {% if active_tab == 'suggestions' %}active{% endif %}" onclick="switchTab('suggestions')">
-            📬 Anonymous Suggestion Box
-        </button>
-        <button class="tab-btn {% if active_tab == 'vending' %}active{% endif %}" onclick="switchTab('vending')">
-            🍿 Vending Machine Hub
-        </button>
-        <button class="tab-btn {% if active_tab == 'volunteers' %}active{% endif %}" onclick="switchTab('volunteers')">
-            🤝 CSH Volunteer Opportunities
-        </button>
+    <!-- Support Hub Landing View (3 Subcategory Cards) -->
+    <div id="support-hub-landing-view" style="display: none; margin-bottom: 30px;">
+        <div style="text-align: center; margin-bottom: 24px;">
+            <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--primary-dark);">Student Support Center</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">Select a support category to submit feedback, view vending items, or sign up for volunteer opportunities.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            <!-- Card 1: Anonymous Suggestion Box -->
+            <div class="card" onclick="switchTab('suggestions')" style="cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; border-left: 6px solid var(--primary);" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
+                <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 8px;">Anonymous Suggestion Box</h3>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">Submit feedback and facility requests directly to Student Council leadership.</p>
+                <button class="btn" style="width: 100%;">Open Suggestion Box &rarr;</button>
+            </div>
+
+            <!-- Card 2: Vending Machine Hub -->
+            <div class="card" onclick="switchTab('vending')" style="cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; border-left: 6px solid #10b981;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
+                <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 8px;">Vending Machine Hub</h3>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">Explore campus vending items, vote on stock requests, and submit new snack ideas.</p>
+                <button class="btn" style="width: 100%; background: #10b981;">Open Vending Hub &rarr;</button>
+            </div>
+
+            <!-- Card 3: CSH Volunteer Opportunities -->
+            <div class="card" onclick="switchTab('volunteers')" style="cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; border-left: 6px solid #7c3aed;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'">
+                <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 8px;">CSH Volunteer Opportunities</h3>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">Earn Community Service Hours by signing up for student-led volunteer projects.</p>
+                <button class="btn" style="width: 100%; background: #7c3aed;">Open CSH Opportunities &rarr;</button>
+            </div>
+        </div>
     </div>
+
+    <!-- Category Detail Container -->
+    <div id="support-detail-wrapper" style="display: none;">
+        <!-- Category Tabs -->
+        <div class="tabs-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="tab-btn" id="btn-tab-suggestions" onclick="switchTab('suggestions')">
+                    Anonymous Suggestion Box
+                </button>
+                <button class="tab-btn" id="btn-tab-vending" onclick="switchTab('vending')">
+                    Vending Machine Hub
+                </button>
+                <button class="tab-btn" id="btn-tab-volunteers" onclick="switchTab('volunteers')">
+                    CSH Volunteer Opportunities
+                </button>
+            </div>
+            <button class="btn btn-outline" onclick="showSupportHubLanding()" style="font-size: 0.82rem; padding: 6px 12px;">
+                &larr; Back to Support Hub
+            </button>
+        </div>
 
     <!-- ========================================== -->
     <!-- TAB 1: ANONYMOUS SUGGESTION BOX -->
@@ -570,12 +608,21 @@
 <div class="modal" id="addVendingSuggestionModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3 style="font-weight:800; color:var(--primary-dark);">➕ Suggest Vending Snack</h3>
+            <h3 style="font-weight:800; color:var(--primary-dark);">Suggest New Vending Item</h3>
             <button onclick="closeModal('addVendingSuggestionModal')" class="close-btn">&times;</button>
         </div>
         <form action="{{ url_for('submit_vending_suggestion') }}" method="POST">
-            <div class="form-group"><label>Snack / Drink Name</label><input type="text" name="item_name" required></div>
-            <div class="form-group"><label>Category</label><input type="text" name="category" value="Snacks" required></div>
+            <div class="form-group"><label>Item Name</label><input type="text" name="item_name" placeholder="e.g. Sparkling Water" required></div>
+            <div class="form-group">
+                <label>Category</label>
+                <select name="category">
+                    <option value="Snacks & Chips">Snacks & Chips</option>
+                    <option value="Cold Drinks & Milk Tea">Cold Drinks & Milk Tea</option>
+                    <option value="Hot Beverages">Hot Beverages</option>
+                    <option value="Stationery & Emergency Supplies">Stationery & Emergency Supplies</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Why should we add this item?</label><textarea name="reason" rows="3" required></textarea></div>
             
             <div style="display:flex; gap:10px; margin-top:14px;">
                 <button type="submit" class="btn" style="flex:1;">Submit Suggestion</button>
@@ -589,7 +636,7 @@
 <div class="modal" id="addOpportunityModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3 style="font-weight:800; color:var(--primary-dark);">➕ Create Volunteer Opportunity</h3>
+            <h3 style="font-weight:800; color:var(--primary-dark);">Create Volunteer Opportunity</h3>
             <button onclick="closeModal('addOpportunityModal')" class="close-btn">&times;</button>
         </div>
         <form action="{{ url_for('add_volunteer_opportunity') }}" method="POST">
@@ -611,12 +658,32 @@
 </div>
 
 <script>
+    function showSupportHubLanding() {
+        document.getElementById('support-hub-landing-view').style.display = 'block';
+        document.getElementById('support-detail-wrapper').style.display = 'none';
+    }
+
     function switchTab(tabId) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('support-hub-landing-view').style.display = 'none';
+        document.getElementById('support-detail-wrapper').style.display = 'block';
+
+        document.querySelectorAll('.tab-btn').forEach(b => {
+            b.classList.remove('active');
+            b.style.background = 'none';
+            b.style.color = 'var(--text-muted)';
+        });
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         
-        event.target.classList.add('active');
-        document.getElementById('tab-' + tabId).classList.add('active');
+        let targetBtn = document.getElementById('btn-tab-' + tabId);
+        if (targetBtn) {
+            targetBtn.classList.add('active');
+            targetBtn.style.background = 'var(--primary-light)';
+            targetBtn.style.color = 'var(--primary-dark)';
+        }
+        let targetTab = document.getElementById('tab-' + tabId);
+        if (targetTab) {
+            targetTab.classList.add('active');
+        }
     }
 
     function openModal(id) {
@@ -629,13 +696,23 @@
 
     function openEditVendingModal(item) {
         document.getElementById('edit_v_name').value = item.name;
-        document.getElementById('edit_v_icon').value = item.icon;
+        document.getElementById('edit_v_icon').value = item.icon || '';
         document.getElementById('edit_v_price').value = item.price;
         document.getElementById('edit_v_category').value = item.category;
         document.getElementById('edit_v_status').value = item.status;
         document.getElementById('editVendingForm').action = "/vending/edit/" + item.id;
         openModal('editVendingModal');
     }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        let urlParams = new URLSearchParams(window.location.search);
+        let paramTab = urlParams.get('tab');
+        if (paramTab && ['suggestions', 'vending', 'volunteers'].includes(paramTab)) {
+            switchTab(paramTab);
+        } else {
+            showSupportHubLanding();
+        }
+    });
 </script>
 </body>
 </html>

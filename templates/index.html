@@ -168,7 +168,7 @@
     <!-- Navbar Header (Aligned Standard) -->
     <div class="navbar">
         <div class="brand-logo">
-            🦅 Griffins StuCo
+            Griffins StuCo
         </div>
         <div class="nav-links">
             <a href="/" class="nav-link active">Home</a>
@@ -186,21 +186,21 @@
             <a href="/me" class="nav-link">Me</a>
             <a href="/logout" class="nav-link" style="color:var(--danger);">Sign out</a>
             {% else %}
-            <a href="/login" class="nav-link" style="background:var(--primary);color:white;">🔑 Sign In</a>
+            <a href="/login" class="nav-link" style="background:var(--primary);color:white;">Sign In</a>
             {% endif %}
         </div>
     </div>
 
     <!-- Section 1: 3 News & Announcement Tabs at Very Top -->
     <div class="top-news-section">
-        <div class="section-heading">📢 Latest Stuco Announcements</div>
+        <div class="section-heading">Latest Stuco Announcements</div>
         <div class="news-grid">
             {% for item in announcements[:3] %}
             <div class="news-card">
                 <div>
                     <span class="badge badge-{{ item.badge_color }}">{{ item.badge }}</span>
                     <h3 class="news-title">{{ item.title }}</h3>
-                    <div class="news-date">📅 {{ item.date }}</div>
+                    <div class="news-date">{{ item.date }}</div>
                     <p class="news-content" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; word-break: break-word; overflow-wrap: break-word;">{{ item.content }}</p>
                     
                     {% if item.qr_code %}
@@ -217,7 +217,7 @@
 
     <!-- Section 2: Griffins StuCo Hero Banner -->
     <div class="hero-card">
-        <h1 class="hero-title">🦅 Griffins StuCo</h1>
+        <h1 class="hero-title">Griffins StuCo</h1>
         <p class="hero-subtitle">Official portal for high school events, budgeting, and student body updates.</p>
     </div>
 
@@ -228,7 +228,6 @@
         <div class="nav-tile" style="border-left: 5px solid var(--primary);">
             <div>
                 <div class="tile-header">
-                    <span class="tile-icon">📅</span>
                     <span class="tile-title">Event Calendar</span>
                 </div>
                 <p class="tile-desc">Upcoming campus events and competitions.</p>
@@ -239,7 +238,7 @@
                     <div>
                         <div class="event-preview-title">{{ ev.title }}</div>
                         <div class="event-preview-meta">
-                            <span>📅 {{ ev.display_date }}</span>
+                            <span>{{ ev.display_date }}</span>
                         </div>
                     </div>
                     <a href="/workspace/{{ ev.id }}" class="btn btn-outline" style="padding: 4px 10px; font-size: 0.78rem; flex-shrink: 0; white-space: nowrap;">Details →</a>
@@ -253,7 +252,6 @@
         <div class="nav-tile" style="border-left: 5px solid #2563eb;">
             <div>
                 <div class="tile-header">
-                    <span class="tile-icon">📁</span>
                     <span class="tile-title">Stuco Workspaces</span>
                 </div>
                 <p class="tile-desc">Event timelines, budgets, and storage room inventory.</p>
@@ -261,7 +259,7 @@
                 <strong style="font-size: 0.82rem; color: var(--primary-dark); display: block; margin-bottom: 8px;">Workspaces:</strong>
                 {% for ev in events[:2] %}
                 <a href="/workspace/{{ ev.id }}" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--primary); text-decoration: none; padding: 6px 0; border-bottom: 1px dashed #cbd5e1;">
-                    📌 {{ ev.title }} →
+                    {{ ev.title }} →
                 </a>
                 {% endfor %}
             </div>
@@ -272,20 +270,19 @@
         <div class="nav-tile" style="border-left: 5px solid #10b981;">
             <div>
                 <div class="tile-header">
-                    <span class="tile-icon">🤝</span>
                     <span class="tile-title">Student Support</span>
                 </div>
                 <p class="tile-desc">Anonymous suggestions, vending items, and CSH volunteer opportunities.</p>
                 
                 <strong style="font-size: 0.82rem; color: var(--primary-dark); display: block; margin-bottom: 8px;">Support Categories:</strong>
                 <a href="/student-support?tab=suggestions" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--primary); text-decoration: none; padding: 6px 0; border-bottom: 1px dashed #cbd5e1;">
-                    📬 Anonymous Suggestion Box →
+                    Anonymous Suggestion Box →
                 </a>
                 <a href="/student-support?tab=vending" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--primary); text-decoration: none; padding: 6px 0; border-bottom: 1px dashed #cbd5e1;">
-                    🍿 Vending Machine Hub →
+                    Vending Machine Hub →
                 </a>
                 <a href="/student-support?tab=volunteers" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--primary); text-decoration: none; padding: 6px 0;">
-                    🤝 CSH Volunteer Opportunities →
+                    CSH Volunteer Opportunities →
                 </a>
             </div>
             <a href="/student-support" class="btn" style="margin-top: 14px;">Open Student Support Hub →</a>
@@ -296,7 +293,7 @@
 
     <!-- Section 4: Members Info at the Very End of Home -->
     <div class="members-section">
-        <div class="section-heading">👥 Student Council Members & Officers</div>
+        <div class="section-heading">Student Council Members & Officers</div>
         <div class="members-grid">
             {% for m in members %}
             <div class="member-card">
