@@ -772,6 +772,16 @@ def get_event_details(event_id):
     return jsonify({"error": "Event not found"}), 404
 
 
+# 2b. Public Event Detail Page — student-facing view of a single event
+@app.route('/event/<int:event_id>')
+def event_detail(event_id):
+    event = EVENTS.get(event_id)
+    if not event:
+        from flask import abort
+        abort(404)
+    return render_template('event_detail.html', event=event)
+
+
 # 3. Event Workspace — public view, login required to edit
 @app.route('/workspace')
 @app.route('/workspace/<int:event_id>')

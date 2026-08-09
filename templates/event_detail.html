@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ event.title }} — Griffins StuCo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0066CC;
+            --primary-dark: #004a99;
+            --primary-light: #e8f0fe;
+            --card-bg: #ffffff;
+            --bg: #f0f4f8;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --danger: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-dark); min-height: 100vh; }
+        .container { max-width: 900px; margin: 0 auto; padding: 24px 20px 60px; }
+
+        /* Navbar */
+        .navbar {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 102, 204, 0.08);
+            margin-bottom: 24px;
+            border-left: 6px solid var(--primary);
+        }
+        .brand-title { font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); }
+        .nav-links { display: flex; gap: 12px; align-items: center; }
+        .nav-link {
+            text-decoration: none; color: var(--text-dark); font-weight: 600; font-size: 0.88rem;
+            padding: 7px 12px; border-radius: 8px; transition: background 0.15s;
+        }
+        .nav-link:hover { background: var(--primary-light); color: var(--primary); }
+        .nav-link.active { background: var(--primary); color: white; }
+
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; align-items: flex-start; gap: 14px; padding: 14px 18px; }
+            .nav-links { flex-wrap: wrap; gap: 8px; width: 100%; }
+        }
+
+        /* Back link */
+        .back-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            color: var(--primary); font-weight: 700; font-size: 0.88rem;
+            text-decoration: none; margin-bottom: 20px;
+            padding: 8px 14px; background: var(--primary-light); border-radius: 8px;
+            transition: background 0.15s;
+        }
+        .back-link:hover { background: #dbeafe; }
+
+        /* Hero */
+        .event-hero {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white; border-radius: 16px; padding: 32px 36px; margin-bottom: 24px;
+            position: relative; overflow: hidden;
+        }
+        .event-hero::before {
+            content: ''; position: absolute; top: -60px; right: -60px;
+            width: 200px; height: 200px; border-radius: 50%;
+            background: rgba(255,255,255,0.06);
+        }
+        .event-category-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            color: white; font-size: 0.78rem; font-weight: 700; padding: 4px 12px;
+            border-radius: 20px; margin-bottom: 12px; letter-spacing: 0.5px;
+        }
+        .event-hero h1 { font-size: 2rem; font-weight: 900; margin-bottom: 16px; line-height: 1.2; }
+        .event-meta-row {
+            display: flex; flex-wrap: wrap; gap: 20px; margin-top: 8px;
+        }
+        .meta-item {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.9rem; color: rgba(255,255,255,0.9);
+        }
+        .meta-label { font-weight: 800; color: white; }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg); border-radius: 12px; padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        .card-title {
+            font-size: 1rem; font-weight: 800; color: var(--primary-dark);
+            margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid var(--primary-light);
+        }
+
+        /* Description */
+        .event-description {
+            font-size: 0.95rem; color: var(--text-dark); line-height: 1.7;
+        }
+
+        /* Schedule */
+        .schedule-list { list-style: none; }
+        .schedule-item {
+            display: flex; align-items: flex-start; gap: 16px;
+            padding: 12px 0; border-bottom: 1px solid #f1f5f9;
+        }
+        .schedule-item:last-child { border-bottom: none; }
+        .schedule-time {
+            min-width: 90px; font-size: 0.82rem; font-weight: 700;
+            color: var(--primary); background: var(--primary-light);
+            padding: 4px 8px; border-radius: 6px; text-align: center; flex-shrink: 0;
+        }
+        .schedule-activity { font-size: 0.9rem; font-weight: 600; color: var(--text-dark); padding-top: 2px; }
+
+        /* Ticket section */
+        .ticket-box {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border: 2px solid #86efac; border-radius: 12px; padding: 20px 24px;
+            margin-bottom: 20px;
+        }
+        .ticket-box.paid { background: linear-gradient(135deg, #eff6ff, #dbeafe); border-color: #93c5fd; }
+        .ticket-label { font-size: 0.78rem; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        .ticket-box.paid .ticket-label { color: var(--primary-dark); }
+        .ticket-status { font-size: 1.15rem; font-weight: 800; color: #15803d; margin-bottom: 12px; }
+        .ticket-box.paid .ticket-status { color: var(--primary); }
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--primary); color: white; border: none;
+            padding: 10px 20px; border-radius: 9px; font-size: 0.9rem;
+            font-weight: 700; cursor: pointer; text-decoration: none;
+            transition: background 0.15s, transform 0.1s;
+        }
+        .btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        .btn-green { background: #16a34a; }
+        .btn-green:hover { background: #15803d; }
+
+        /* Scope badge */
+        .scope-badge {
+            display: inline-block; font-size: 0.78rem; font-weight: 700;
+            padding: 3px 10px; border-radius: 20px;
+            background: #fef3c7; color: #92400e;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="brand-title">🦅 Griffins StuCo</div>
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/calendar" class="nav-link active">Calendar</a>
+            <a href="/student-support" class="nav-link">Student Support</a>
+            <a href="/updates" class="nav-link">Stuco Updates</a>
+            <a href="/workspace/1" class="nav-link">Stuco Workspace</a>
+            <a href="/meetings" class="nav-link">Meetings</a>
+            <a href="/stats" class="nav-link">Statistics</a>
+            {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher'] %}
+            <a href="/admin" class="nav-link">Admin</a>
+            {% endif %}
+            {% if current_user.is_authenticated %}
+            <a href="/me" class="nav-link">Me</a>
+            <a href="/logout" class="nav-link" style="color:var(--danger);">Sign out</a>
+            {% else %}
+            <a href="/login" class="nav-link" style="background:var(--primary);color:white;">Sign In</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Back link -->
+    <a href="/" class="back-link">← Back to Home</a>
+
+    <!-- Hero Banner -->
+    <div class="event-hero">
+        <div class="event-category-badge">{{ event.category }}</div>
+        <h1>{{ event.title }}</h1>
+        <div class="event-meta-row">
+            <div class="meta-item">
+                <span class="meta-label">Date:</span>
+                <span>{{ event.display_date }}</span>
+            </div>
+            {% if event.time %}
+            <div class="meta-item">
+                <span class="meta-label">Time:</span>
+                <span>{{ event.time }}</span>
+            </div>
+            {% endif %}
+            <div class="meta-item">
+                <span class="meta-label">Location:</span>
+                <span>{{ event.location }}</span>
+            </div>
+            {% if event.scope %}
+            <div class="meta-item">
+                <span class="meta-label">Open to:</span>
+                <span>{{ event.scope }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Ticket / Entry Info -->
+    {% if event.requires_booking and event.ticket_link %}
+    <div class="ticket-box paid">
+        <div class="ticket-label">Ticket Information</div>
+        <div class="ticket-status">{{ event.ticket_status }}</div>
+        <a href="{{ event.ticket_link }}" target="_blank" class="btn">Get Tickets →</a>
+    </div>
+    {% else %}
+    <div class="ticket-box">
+        <div class="ticket-label">Entry</div>
+        <div class="ticket-status">Free Entry — No Booking Required</div>
+    </div>
+    {% endif %}
+
+    <!-- Description -->
+    {% if event.description %}
+    <div class="card">
+        <div class="card-title">About This Event</div>
+        <p class="event-description">{{ event.description }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Schedule -->
+    {% if event.schedule %}
+    <div class="card">
+        <div class="card-title">Event Schedule</div>
+        <ul class="schedule-list">
+            {% for item in event.schedule %}
+            <li class="schedule-item">
+                <span class="schedule-time">{{ item.time }}</span>
+                <span class="schedule-activity">{{ item.activity }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- View Full Calendar link -->
+    <div style="text-align: center; margin-top: 12px;">
+        <a href="/calendar" class="btn" style="background: var(--primary-dark);">View Full Event Calendar →</a>
+    </div>
+
+</div>
+
+</body>
+</html>

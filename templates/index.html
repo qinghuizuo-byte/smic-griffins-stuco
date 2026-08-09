@@ -32,17 +32,17 @@
         /* Navbar Header */
         .navbar {
             background: var(--card-bg);
-            border-radius: 14px;
-            padding: 16px 28px;
+            border-radius: 12px;
+            padding: 16px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.08);
+            box-shadow: 0 2px 8px rgba(0, 102, 204, 0.08);
             margin-bottom: 24px;
             border-left: 6px solid var(--primary);
         }
 
-        .brand-logo { display: flex; align-items: center; gap: 12px; font-size: 1.3rem; font-weight: 800; color: var(--primary-dark); }
+        .brand-logo { display: flex; align-items: center; gap: 12px; font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); }
         .nav-links { display: flex; gap: 12px; align-items: center; }
 
         .nav-link {
@@ -241,7 +241,7 @@
                             <span>{{ ev.display_date }}</span>
                         </div>
                     </div>
-                    <a href="/workspace/{{ ev.id }}" class="btn btn-outline" style="padding: 4px 10px; font-size: 0.78rem; flex-shrink: 0; white-space: nowrap;">Details →</a>
+                    <a href="/event/{{ ev.id }}" class="btn btn-outline" style="padding: 4px 10px; font-size: 0.78rem; flex-shrink: 0; white-space: nowrap;">Details →</a>
                 </div>
                 {% endfor %}
             </div>
