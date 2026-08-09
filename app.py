@@ -621,6 +621,33 @@ INVENTORY = [
     }
 ]
 
+STUDENT_SUGGESTIONS = [
+    {
+        "id": 1,
+        "title": "More Water Refill Stations near West Gym",
+        "category": "Facility & Campus",
+        "content": "Can we request the school to add another cold water dispenser near the gym?",
+        "is_anonymous": True,
+        "author_email": "cellestine@bjsmic.org",
+        "author_name": "Anonymous Student",
+        "date": "2026-08-08",
+        "status": "In Progress",
+        "exec_feedback": "President & VP reviewed: We presented this proposal to campus facilities and 1 new station is scheduled for installation in September!"
+    },
+    {
+        "id": 2,
+        "title": "Extended Library Hours During Finals Week",
+        "category": "Academics & Library",
+        "content": "Requesting library to stay open until 6:00 PM during exam weeks.",
+        "is_anonymous": False,
+        "author_email": "student@bjsmic.org",
+        "author_name": "Jordan K.",
+        "date": "2026-08-05",
+        "status": "Resolved",
+        "exec_feedback": "Approved! Library administration agreed to extend study hours until 6:00 PM starting next term."
+    }
+]
+
 
 # ==========================================
 # DATA PERSISTENCE (JSON BACKING STORE)
@@ -647,7 +674,8 @@ def save_data():
             "VOLUNTEER_OPPORTUNITIES": VOLUNTEER_OPPORTUNITIES,
             "STUCO_DEBT": STUCO_DEBT,
             "STUCO_BALANCE": STUCO_BALANCE,
-            "INVENTORY": INVENTORY
+            "INVENTORY": INVENTORY,
+            "STUDENT_SUGGESTIONS": STUDENT_SUGGESTIONS
         }
         with open(DATA_FILE, 'w', encoding='utf-8') as f:
             json.dump(store, f, ensure_ascii=False, indent=2)
@@ -655,7 +683,7 @@ def save_data():
         print(f"Error saving data: {e}")
 
 def load_data():
-    global ACCOUNTS, STUCO_MEMBERS, EVENTS, MEETINGS, ANNOUNCEMENTS, BUDGET_REQUESTS, VENDING_ITEMS, VENDING_SUGGESTIONS, VOLUNTEER_OPPORTUNITIES, STUCO_DEBT, STUCO_BALANCE, INVENTORY
+    global ACCOUNTS, STUCO_MEMBERS, EVENTS, MEETINGS, ANNOUNCEMENTS, BUDGET_REQUESTS, VENDING_ITEMS, VENDING_SUGGESTIONS, VOLUNTEER_OPPORTUNITIES, STUCO_DEBT, STUCO_BALANCE, INVENTORY, STUDENT_SUGGESTIONS
     if os.path.exists(DATA_FILE):
         try:
             with open(DATA_FILE, 'r', encoding='utf-8') as f:
@@ -679,6 +707,7 @@ def load_data():
                 if "STUCO_DEBT" in store: STUCO_DEBT = store["STUCO_DEBT"]
                 if "STUCO_BALANCE" in store: STUCO_BALANCE = store["STUCO_BALANCE"]
                 if "INVENTORY" in store: INVENTORY = store["INVENTORY"]
+                if "STUDENT_SUGGESTIONS" in store: STUDENT_SUGGESTIONS = store["STUDENT_SUGGESTIONS"]
         except Exception as e:
             print(f"Error loading data: {e}")
 
@@ -1483,12 +1512,98 @@ def review_budget_request(req_id):
     return redirect(url_for('budget_portal'))
 
 
-# 6. Vending Machine Hub & Student Suggestions
+# 6. Student Support Hub (Vending Machine, CSH Volunteers & Anonymous Suggestion Box)
+@app.route('/student-support')
 @app.route('/vending')
+@app.route('/volunteers')
 @login_required
-def vending_hub():
-    sorted_sug = sorted(VENDING_SUGGESTIONS, key=lambda x: x['votes'], reverse=True)
-    return render_template('vending.html', items=VENDING_ITEMS, suggestions=sorted_sug)
+def student_support():
+    path = request.path
+    default_tab = 'suggestions'
+    if 'vending' in path:
+        default_tab = 'vending'
+    elif 'volunteers' in path:
+        default_tab = 'volunteers'
+    else:
+        default_tab = request.args.get('tab', 'suggestions')
+
+    sorted_vending_sug = sorted(VENDING_SUGGESTIONS, key=lambda x: x.get('votes', 0), reverse=True)
+    
+    user_email = current_user.email.lower()
+    is_exec = current_user.role in ['President', 'Vice President']
+    
+    if is_exec:
+        visible_suggestions = sorted(STUDENT_SUGGESTIONS, key=lambda x: x.get('id', 0), reverse=True)
+    else:
+        visible_suggestions = [
+            s for s in STUDENT_SUGGESTIONS 
+            if s.get('author_email', '').lower() == user_email or s.get('status') in ['In Progress', 'Resolved']
+        ]
+        visible_suggestions = sorted(visible_suggestions, key=lambda x: x.get('id', 0), reverse=True)
+
+    return render_template(
+        'student_support.html',
+        active_tab=default_tab,
+        items=VENDING_ITEMS,
+        vending_suggestions=sorted_vending_sug,
+        volunteers=VOLUNTEER_OPPORTUNITIES,
+        suggestions=visible_suggestions,
+        is_exec=is_exec
+    )
+
+
+@app.route('/student-support/suggest', methods=['POST'])
+@login_required
+def submit_student_suggestion():
+    title = request.form.get('title', '').strip()
+    category = request.form.get('category', 'General Campus').strip()
+    content = request.form.get('content', '').strip()
+    is_anonymous = request.form.get('is_anonymous') in ['true', 'on', '1']
+    
+    if title and content:
+        new_id = max([s.get('id', 0) for s in STUDENT_SUGGESTIONS], default=0) + 1
+        from datetime import date
+        today_str = date.today().strftime("%Y-%m-%d")
+        
+        STUDENT_SUGGESTIONS.append({
+            "id": new_id,
+            "title": title,
+            "category": category,
+            "content": content,
+            "is_anonymous": is_anonymous,
+            "author_email": current_user.email,
+            "author_name": "Anonymous Student" if is_anonymous else current_user.name,
+            "date": today_str,
+            "status": "Received",
+            "exec_feedback": ""
+        })
+        save_data()
+        flash("Your suggestion has been submitted to the President & Vice President!", "success")
+    return redirect(url_for('student_support', tab='suggestions'))
+
+
+@app.route('/student-support/suggestion/<int:s_id>/review', methods=['POST'])
+@login_required
+@require_role(['President', 'Vice President'])
+def review_student_suggestion(s_id):
+    sug = next((s for s in STUDENT_SUGGESTIONS if s.get('id') == s_id), None)
+    if sug:
+        sug['status'] = request.form.get('status', sug['status']).strip()
+        sug['exec_feedback'] = request.form.get('exec_feedback', sug.get('exec_feedback', '')).strip()
+        save_data()
+        flash(f"Feedback & status for suggestion #{s_id} updated!", "success")
+    return redirect(url_for('student_support', tab='suggestions'))
+
+
+@app.route('/student-support/suggestion/<int:s_id>/delete', methods=['POST'])
+@login_required
+@require_role(['President', 'Vice President'])
+def delete_student_suggestion(s_id):
+    global STUDENT_SUGGESTIONS
+    STUDENT_SUGGESTIONS = [s for s in STUDENT_SUGGESTIONS if s.get('id') != s_id]
+    save_data()
+    flash("Suggestion deleted.", "success")
+    return redirect(url_for('student_support', tab='suggestions'))
 
 
 @app.route('/vending/suggest', methods=['POST'])

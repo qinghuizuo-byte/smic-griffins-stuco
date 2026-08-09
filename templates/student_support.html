@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Support Hub | Stuco</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #f0f6ff;
+            --primary: #0066cc;
+            --primary-light: #e6f0fa;
+            --primary-dark: #004488;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --card-bg: #ffffff;
+            --border-color: #cbd5e1;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-dark); padding: 24px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        /* Navbar */
+        .navbar {
+            background: var(--card-bg); border-radius: 12px; padding: 16px 24px; display: flex;
+            justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0, 102, 204, 0.08);
+            margin-bottom: 24px; border-left: 6px solid var(--primary);
+        }
+        .brand-title { font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); }
+        .nav-links { display: flex; gap: 12px; align-items: center; }
+        .nav-link {
+            text-decoration: none; color: var(--text-dark); font-weight: 600; font-size: 0.88rem;
+            padding: 7px 12px; border-radius: 8px; transition: background 0.15s;
+        }
+        .nav-link:hover { background: var(--primary-light); color: var(--primary); }
+        .nav-link.active { background: var(--primary); color: white; }
+
+        /* Header Hero */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white; border-radius: 16px; padding: 28px; margin-bottom: 24px;
+            box-shadow: 0 4px 14px rgba(0, 102, 204, 0.15);
+        }
+        .hero h1 { font-size: 1.8rem; font-weight: 900; margin-bottom: 6px; }
+        .hero p { font-size: 0.95rem; opacity: 0.9; }
+
+        /* Subcategory Tab Controls */
+        .tabs-header {
+            display: flex; gap: 10px; margin-bottom: 24px; background: white; padding: 8px; border-radius: 12px;
+            border: 1px solid var(--border-color); box-shadow: 0 2px 6px rgba(0,0,0,0.02); flex-wrap: wrap;
+        }
+        .tab-btn {
+            flex: 1; min-width: 180px; padding: 12px 16px; border: none; background: transparent; border-radius: 8px;
+            font-weight: 700; font-size: 0.9rem; cursor: pointer; color: var(--text-muted); transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 8px rgba(0, 102, 204, 0.2); }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* General Card & Forms */
+        .card {
+            background: white; border-radius: 14px; padding: 24px; margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid var(--border-color);
+        }
+        .card-title { font-size: 1.2rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 14px; }
+
+        .btn {
+            background-color: var(--primary); color: white; border: none; padding: 8px 16px;
+            border-radius: 6px; font-weight: 700; cursor: pointer; transition: background 0.2s;
+            font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none;
+        }
+        .btn:hover { background-color: var(--primary-dark); }
+        .btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
+        .btn-outline:hover { background: var(--primary-light); }
+        .btn-danger { background-color: var(--danger); }
+        .btn-success { background-color: var(--success); }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 4px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 9px 12px; border: 1.5px solid var(--border-color); border-radius: 8px; font-family: inherit; font-size: 0.88rem;
+        }
+
+        .alert { padding: 12px 16px; background: #d1e7dd; color: #0f5132; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; }
+        .alert-warning { background: #fff3cd; color: #664d03; }
+
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 800; }
+        .status-Received { background: #fef3c7; color: #92400e; }
+        .status-In-Progress, .status-Advanced { background: #dbeafe; color: #1e40af; }
+        .status-Resolved { background: #dcfce7; color: #166534; }
+        .status-Declined { background: #fee2e2; color: #991b1b; }
+
+        /* Suggestion Items */
+        .suggestion-card {
+            background: white; border-radius: 12px; padding: 20px; margin-bottom: 16px;
+            border: 1px solid var(--border-color); box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+        .exec-box {
+            background: var(--primary-light); border-left: 4px solid var(--primary); padding: 12px 14px;
+            border-radius: 8px; margin-top: 12px; font-size: 0.88rem; line-height: 1.5;
+        }
+
+        /* Grid */
+        .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+        .item-card {
+            background: white; border-radius: 12px; padding: 18px; border: 1px solid var(--border-color);
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 14px; }
+            .navbar { flex-direction: column; align-items: flex-start; gap: 14px; padding: 14px 18px; }
+            .nav-links { flex-wrap: wrap; gap: 8px; width: 100%; }
+            .nav-link { font-size: 0.8rem; padding: 6px 10px; flex-grow: 1; text-align: center; }
+            .tabs-header { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Navbar Header -->
+    <div class="navbar">
+        <div class="brand-title">🤝 Student Support Hub</div>
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/workspace/1" class="nav-link">Stuco Workspace</a>
+            <a href="/meetings" class="nav-link">Meeting Notes</a>
+            <a href="/calendar" class="nav-link">Calendar</a>
+            <a href="/student-support" class="nav-link active">Student Support</a>
+            <a href="/updates" class="nav-link">Stuco Updates</a>
+            <a href="/stats" class="nav-link">Statistics</a>
+            {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher'] %}
+            <a href="/admin" class="nav-link">Admin</a>
+            {% endif %}
+            {% if current_user.is_authenticated %}
+            <a href="/me" class="nav-link">Me</a>
+            <a href="/logout" class="nav-link" style="color:var(--danger);">Sign out</a>
+            {% else %}
+            <a href="/login" class="nav-link" style="background:var(--primary);color:white;">🔑 Sign In</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert {% if category == 'warning' %}alert-warning{% endif %}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Hero Header -->
+    <div class="hero">
+        <h1>🤝 Student Support Hub</h1>
+        <p>Anonymous suggestion box, campus vending machine items, and CSH volunteer opportunities — all in one place.</p>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="tabs-header">
+        <button class="tab-btn {% if active_tab == 'suggestions' %}active{% endif %}" onclick="switchTab('suggestions')">
+            📬 Anonymous Suggestion Box
+        </button>
+        <button class="tab-btn {% if active_tab == 'vending' %}active{% endif %}" onclick="switchTab('vending')">
+            🍿 Vending Machine Hub
+        </button>
+        <button class="tab-btn {% if active_tab == 'volunteers' %}active{% endif %}" onclick="switchTab('volunteers')">
+            🤝 CSH Volunteer Opportunities
+        </button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 1: ANONYMOUS SUGGESTION BOX -->
+    <!-- ========================================== -->
+    <div id="tab-suggestions" class="tab-content {% if active_tab == 'suggestions' %}active{% endif %}">
+        
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px;">
+            <!-- Submit Form -->
+            <div>
+                <div class="card">
+                    <div class="card-title">📬 Submit Proposal / Suggestion</div>
+                    <form action="{{ url_for('submit_student_suggestion') }}" method="POST">
+                        <div class="form-group">
+                            <label>Proposal Title</label>
+                            <input type="text" name="title" placeholder="e.g. Add charging stations in study lounge" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select name="category">
+                                <option value="General Campus">General Campus</option>
+                                <option value="Facility & Equipment">Facility & Equipment</option>
+                                <option value="Academics & Library">Academics & Library</option>
+                                <option value="Student Life & Events">Student Life & Events</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Detailed Explanation</label>
+                            <textarea name="content" rows="4" placeholder="Explain your proposal and why it benefits students..." required></textarea>
+                        </div>
+                        <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" name="is_anonymous" id="anon_check" style="width: auto;" checked>
+                            <label for="anon_check" style="margin-bottom: 0; font-weight: 700; cursor: pointer;">
+                                🔒 Submit Anonymously (Hide my name & email)
+                            </label>
+                        </div>
+                        <button type="submit" class="btn" style="width: 100%; margin-top: 8px;">Submit Suggestion</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Inbox List & Feedback -->
+            <div>
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                        <div class="card-title" style="margin-bottom: 0;">
+                            📥 Suggestions & Executive Feedback
+                        </div>
+                        {% if is_exec %}
+                        <span class="status-badge status-Advanced">👑 President & VP Review Inbox</span>
+                        {% endif %}
+                    </div>
+
+                    {% for sug in suggestions %}
+                    <div class="suggestion-card">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
+                            <div>
+                                <span class="status-badge status-{{ sug.status.replace(' ', '-') }}">{{ sug.status }}</span>
+                                <span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 8px;">📅 {{ sug.date }}</span>
+                                <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--primary-dark); margin-top: 6px;">{{ sug.title }}</h3>
+                            </div>
+                            <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); background: #f1f5f9; padding: 4px 8px; border-radius: 6px;">
+                                {% if is_exec %}
+                                👤 {{ sug.author_name }} {% if sug.is_anonymous %}(Anonymous){% endif %}
+                                {% else %}
+                                👤 {% if sug.is_anonymous %}Anonymous Student{% else %}{{ sug.author_name }}{% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <p style="font-size: 0.9rem; color: var(--text-dark); margin-top: 10px; line-height: 1.5; white-space: pre-wrap;">{{ sug.content }}</p>
+
+                        {% if sug.exec_feedback %}
+                        <div class="exec-box">
+                            <strong style="color: var(--primary-dark);">💬 Executive Council Feedback:</strong>
+                            <div style="margin-top: 4px;">{{ sug.exec_feedback }}</div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Executive President & VP Controls -->
+                        {% if is_exec %}
+                        <div style="margin-top: 14px; border-top: 1px dashed var(--border-color); padding-top: 12px;">
+                            <form action="{{ url_for('review_student_suggestion', s_id=sug.id) }}" method="POST" style="display: grid; gap: 8px;">
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <label style="font-size: 0.78rem; font-weight: 700; min-width: 90px;">Update Status:</label>
+                                    <select name="status" style="font-size: 0.82rem; padding: 4px 8px; border-radius: 6px; flex: 1;">
+                                        <option value="Received" {% if sug.status == 'Received' %}selected{% endif %}>Received</option>
+                                        <option value="In Progress" {% if sug.status == 'In Progress' %}selected{% endif %}>In Progress / Advanced</option>
+                                        <option value="Resolved" {% if sug.status == 'Resolved' %}selected{% endif %}>Resolved / Approved</option>
+                                        <option value="Declined" {% if sug.status == 'Declined' %}selected{% endif %}>Declined</option>
+                                    </select>
+                                </div>
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <label style="font-size: 0.78rem; font-weight: 700; min-width: 90px;">Feedback Note:</label>
+                                    <input type="text" name="exec_feedback" value="{{ sug.exec_feedback }}" placeholder="Write official feedback to show on student account..." style="flex: 1; font-size: 0.82rem; padding: 4px 8px;">
+                                </div>
+                                <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                                    <button type="submit" class="btn btn-success" style="padding: 4px 10px; font-size: 0.78rem;">Save Response</button>
+                                </div>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    {% if not suggestions %}
+                    <p style="text-align: center; color: var(--text-muted); padding: 30px;">No suggestions submitted yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: VENDING MACHINE HUB -->
+    <!-- ========================================== -->
+    <div id="tab-vending" class="tab-content {% if active_tab == 'vending' %}active{% endif %}">
+        
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <div class="card-title" style="margin-bottom: 0;">🍿 Vending Machine Inventory</div>
+                {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
+                <button class="btn" onclick="openModal('addVendingModal')">➕ Add Vending Item</button>
+                {% endif %}
+            </div>
+
+            <div class="items-grid">
+                {% for item in items %}
+                <div class="item-card">
+                    <div>
+                        <div style="font-size: 2.2rem; margin-bottom: 6px;">{{ item.icon }}</div>
+                        <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--primary-dark);">{{ item.name }}</h3>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Category: {{ item.category }}</div>
+                        <div style="font-size: 1.2rem; font-weight: 900; color: var(--primary); margin-bottom: 8px;">${{ "%.2f"|format(item.price) }}</div>
+                        <span class="status-badge status-Resolved">{{ item.status }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <div class="card-title" style="margin-bottom: 0;">🍿 Snack & Drink Community Suggestions</div>
+                <button class="btn btn-outline" onclick="openModal('addVendingSuggestionModal')">➕ Suggest New Snack</button>
+            </div>
+
+            <div class="items-grid">
+                {% for sug in vending_suggestions %}
+                <div class="item-card">
+                    <div>
+                        <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--primary-dark);">{{ sug.item_name }}</h3>
+                        <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 8px;">Tag: {{ sug.category }}</div>
+                        <span class="status-badge status-{{ sug.status.replace(' ', '-') }}">{{ sug.status }}</span>
+                    </div>
+                    <div style="margin-top: 14px; border-top: 1px solid #f1f5f9; padding-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.85rem; font-weight: 800; color: var(--primary);">👍 {{ sug.votes }} Votes</span>
+                        {% set has_voted = (current_user.is_authenticated and current_user.email.lower() in sug.get('voted_by', [])) %}
+                        <form action="{{ url_for('vote_suggestion', suggestion_id=sug.id) }}" method="POST">
+                            <button type="submit" class="btn {% if has_voted %}btn-outline{% else %}btn-success{% endif %}" style="padding: 3px 8px; font-size: 0.75rem;" {% if has_voted %}disabled{% endif %}>
+                                {% if has_voted %}✅ Upvoted{% else %}Upvote{% endif %}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 3: CSH VOLUNTEER OPPORTUNITIES -->
+    <!-- ========================================== -->
+    <div id="tab-volunteers" class="tab-content {% if active_tab == 'volunteers' %}active{% endif %}">
+        
+        <div class="card">
+            <div class="card-title">🤝 Community Service Hours (CSH) & Volunteer Projects</div>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px;">Participate in Stuco sponsored community service projects to earn verified CSH hours.</p>
+
+            <div class="items-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+                {% for vol in volunteers %}
+                <div class="item-card">
+                    <div>
+                        <span class="status-badge status-In-Progress" style="margin-bottom: 8px;">{{ vol.csh_hours }} CSH Hours</span>
+                        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 6px;">{{ vol.title }}</h3>
+                        <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 12px;">{{ vol.description }}</p>
+                        <div style="font-size: 0.82rem; color: var(--text-dark); display: grid; gap: 4px; background: #f8fafc; padding: 10px; border-radius: 8px; margin-bottom: 14px;">
+                            <div>📅 <strong>Date:</strong> {{ vol.date }}</div>
+                            <div>📍 <strong>Location:</strong> {{ vol.location }}</div>
+                            <div>👤 <strong>Coordinator:</strong> {{ vol.coordinator }}</div>
+                        </div>
+                    </div>
+                    <button class="btn" style="width: 100%;">Sign Up for CSH →</button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- MODAL: ADD VENDING ITEM -->
+<div class="modal" id="addVendingModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:12px; padding:24px; width:100%; max-width:480px;">
+        <h3 style="font-weight:800; color:var(--primary-dark); margin-bottom:14px;">Add Vending Machine Item</h3>
+        <form action="{{ url_for('add_vending_item') }}" method="POST">
+            <div class="form-group"><label>Item Name</label><input type="text" name="name" required></div>
+            <div class="form-group"><label>Emoji Icon</label><input type="text" name="icon" value="🍿" required></div>
+            <div class="form-group"><label>Price ($)</label><input type="number" step="0.01" name="price" value="1.50" required></div>
+            <div class="form-group"><label>Category</label><input type="text" name="category" value="Snacks" required></div>
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Add Item</button>
+                <button type="button" onclick="document.getElementById('addVendingModal').style.display='none'" class="btn btn-outline" style="flex:1;">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: ADD VENDING SUGGESTION -->
+<div class="modal" id="addVendingSuggestionModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:12px; padding:24px; width:100%; max-width:480px;">
+        <h3 style="font-weight:800; color:var(--primary-dark); margin-bottom:14px;">Suggest Vending Snack</h3>
+        <form action="{{ url_for('submit_vending_suggestion') }}" method="POST">
+            <div class="form-group"><label>Snack / Drink Name</label><input type="text" name="item_name" required></div>
+            <div class="form-group"><label>Category</label><input type="text" name="category" value="Snacks" required></div>
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Submit Suggestion</button>
+                <button type="button" onclick="document.getElementById('addVendingSuggestionModal').style.display='none'" class="btn btn-outline" style="flex:1;">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        event.target.classList.add('active');
+        document.getElementById('tab-' + tabId).classList.add('active');
+    }
+
+    function openModal(id) {
+        document.getElementById(id).style.display = 'flex';
+    }
+</script>
+</body>
+</html>

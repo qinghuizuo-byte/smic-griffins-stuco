@@ -877,5 +877,31 @@
       "notes": "Dry cleaned after Homecoming 2025.",
       "picture": ""
     }
+  ],
+  "STUDENT_SUGGESTIONS": [
+    {
+      "id": 1,
+      "title": "More Water Refill Stations near West Gym",
+      "category": "Facility & Campus",
+      "content": "Can we request the school to add another cold water dispenser near the gym?",
+      "is_anonymous": true,
+      "author_email": "cellestine@bjsmic.org",
+      "author_name": "Anonymous Student",
+      "date": "2026-08-08",
+      "status": "In Progress",
+      "exec_feedback": "President & VP reviewed: We presented this proposal to campus facilities and 1 new station is scheduled for installation in September!"
+    },
+    {
+      "id": 2,
+      "title": "Extended Library Hours During Finals Week",
+      "category": "Academics & Library",
+      "content": "Requesting library to stay open until 6:00 PM during exam weeks.",
+      "is_anonymous": false,
+      "author_email": "student@bjsmic.org",
+      "author_name": "Jordan K.",
+      "date": "2026-08-05",
+      "status": "Resolved",
+      "exec_feedback": "Approved! Library administration agreed to extend study hours until 6:00 PM starting next term."
+    }
   ]
 }
