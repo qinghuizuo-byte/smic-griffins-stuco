@@ -370,15 +370,20 @@
 
     <!-- Navbar -->
     <div class="navbar">
-        <div class="brand">🦅 Stuco Statistics</div>
+        <div class="brand">🦅 Griffins StuCo Statistics</div>
         <div class="nav-links">
             <a href="/" class="nav-link">Home</a>
             <a href="/calendar" class="nav-link">Calendar</a>
+            <a href="/student-support" class="nav-link">Student Support</a>
+            <a href="/updates" class="nav-link">Stuco Updates</a>
+            <a href="/workspace/1" class="nav-link">Stuco Workspace</a>
             <a href="/meetings" class="nav-link">Meetings</a>
-            <a href="/budget" class="nav-link">Budget</a>
-            <a href="/volunteers" class="nav-link">Volunteers</a>
             <a href="/stats" class="nav-link active">Statistics</a>
+            {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher'] %}
+            <a href="/admin" class="nav-link">Admin</a>
+            {% endif %}
             {% if current_user.is_authenticated %}
+            <a href="/me" class="nav-link">Me</a>
             <a href="/logout" class="nav-link" style="color:#dc2626;">Sign out</a>
             {% else %}
             <a href="/login" class="nav-link" style="background:var(--primary);color:white;">🔑 Sign In</a>

@@ -253,14 +253,14 @@
 
     <!-- Standard Aligned Navbar Header -->
     <div class="navbar">
-        <div class="brand-title">🦅 Stuco Workspace</div>
+        <div class="brand-title">🦅 Griffins StuCo Workspace</div>
         <div class="nav-links">
             <a href="/" class="nav-link">Home</a>
-            <a href="/workspace/1" class="nav-link active">Stuco Workspace</a>
-            <a href="/meetings" class="nav-link">Meeting Notes</a>
             <a href="/calendar" class="nav-link">Calendar</a>
             <a href="/student-support" class="nav-link">Student Support</a>
             <a href="/updates" class="nav-link">Stuco Updates</a>
+            <a href="/workspace/1" class="nav-link active">Stuco Workspace</a>
+            <a href="/meetings" class="nav-link">Meetings</a>
             <a href="/stats" class="nav-link">Statistics</a>
             {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher'] %}
             <a href="/admin" class="nav-link">Admin</a>

@@ -168,15 +168,15 @@
     <!-- Navbar Header (Aligned Standard) -->
     <div class="navbar">
         <div class="brand-logo">
-            🦅 HS Student Council
+            🦅 Griffins StuCo
         </div>
         <div class="nav-links">
             <a href="/" class="nav-link active">Home</a>
-            <a href="/workspace/1" class="nav-link">Stuco Workspace</a>
-            <a href="/meetings" class="nav-link">Meeting Notes</a>
             <a href="/calendar" class="nav-link">Calendar</a>
             <a href="/student-support" class="nav-link">Student Support</a>
             <a href="/updates" class="nav-link">Stuco Updates</a>
+            <a href="/workspace/1" class="nav-link">Stuco Workspace</a>
+            <a href="/meetings" class="nav-link">Meetings</a>
             <a href="/stats" class="nav-link">Statistics</a>
             {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher'] %}
             <a href="/admin" class="nav-link">Admin</a>
@@ -201,7 +201,7 @@
                     <span class="badge badge-{{ item.badge_color }}">{{ item.badge }}</span>
                     <h3 class="news-title">{{ item.title }}</h3>
                     <div class="news-date">📅 {{ item.date }}</div>
-                    <p class="news-content" style="white-space: pre-wrap; word-break: break-word; overflow-wrap: break-word; max-height: 220px; overflow-y: auto;">{{ item.content }}</p>
+                    <p class="news-content" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; word-break: break-word; overflow-wrap: break-word;">{{ item.content }}</p>
                     
                     {% if item.qr_code %}
                     <div style="margin-top: 10px; margin-bottom: 10px; text-align: center;">
@@ -215,13 +215,13 @@
         </div>
     </div>
 
-    <!-- Section 2: HS Student Council Hero Banner -->
+    <!-- Section 2: Griffins StuCo Hero Banner -->
     <div class="hero-card">
-        <h1 class="hero-title">🦅 HS Student Council</h1>
+        <h1 class="hero-title">🦅 Griffins StuCo</h1>
         <p class="hero-subtitle">Official portal for high school events, budgeting, and student body updates.</p>
     </div>
 
-    <!-- Section 3: Navigation Grid (Expanded Calendar & Stuco Workspaces) -->
+    <!-- Section 3: Navigation Grid (Expanded Calendar, Stuco Workspaces & Student Support) -->
     <div class="nav-grid">
         
         <!-- Expanded Calendar Tile (2 Most Recent Upcoming Events) -->
@@ -268,16 +268,27 @@
             <a href="/workspace/1?hub=1" class="btn btn-outline" style="margin-top: 14px;">Browse Workspace Hub →</a>
         </div>
 
-        <!-- Vending Hub Quick Tile -->
+        <!-- Student Support Tile -->
         <div class="nav-tile" style="border-left: 5px solid #10b981;">
             <div>
                 <div class="tile-header">
-                    <span class="tile-icon">🥤</span>
-                    <span class="tile-title">Vending Machine</span>
+                    <span class="tile-icon">🤝</span>
+                    <span class="tile-title">Student Support</span>
                 </div>
-                <p class="tile-desc">Vending items and snack suggestions.</p>
+                <p class="tile-desc">Anonymous suggestions, vending items, and CSH volunteer opportunities.</p>
+                
+                <strong style="font-size: 0.82rem; color: var(--primary-dark); display: block; margin-bottom: 8px;">Support Categories:</strong>
+                <a href="/student-support?tab=suggestions" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--primary); text-decoration: none; padding: 6px 0; border-bottom: 1px dashed #cbd5e1;">
+                    📬 Anonymous Suggestion Box →
+                </a>
+                <a href="/student-support?tab=vending" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--primary); text-decoration: none; padding: 6px 0; border-bottom: 1px dashed #cbd5e1;">
+                    🍿 Vending Machine Hub →
+                </a>
+                <a href="/student-support?tab=volunteers" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--primary); text-decoration: none; padding: 6px 0;">
+                    🤝 CSH Volunteer Opportunities →
+                </a>
             </div>
-            <a href="/vending" class="btn" style="margin-top: 14px;">Open Vending Hub →</a>
+            <a href="/student-support" class="btn" style="margin-top: 14px;">Open Student Support Hub →</a>
         </div>
         </div>
 
