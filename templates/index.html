@@ -218,11 +218,8 @@
 
     <!-- Section 2: HS Student Council Hero Banner -->
     <div class="hero-card">
-        <h1 class="hero-title">🦅 HS Student Council Hub</h1>
-        <p class="hero-subtitle">
-            Welcome to the High School Student Council official portal. Transparent budgeting, campus event scheduling, 
-            vending machine suggestions, meeting deliverables, and student body voice — all integrated in one place.
-        </p>
+        <h1 class="hero-title">🦅 HS Student Council</h1>
+        <p class="hero-subtitle">Official portal for high school events, budgeting, and student body updates.</p>
     </div>
 
     <!-- Section 3: Navigation Grid (Expanded Calendar & Stuco Workspaces) -->
@@ -235,16 +232,15 @@
                     <span class="tile-icon">📅</span>
                     <span class="tile-title">Event Calendar</span>
                 </div>
-                <p class="tile-desc">View upcoming high school events, ticket bookings, and house competitions.</p>
+                <p class="tile-desc">Upcoming campus events and competitions.</p>
                 
-                <strong style="font-size: 0.82rem; color: var(--primary-dark); display: block; margin-bottom: 8px;">Upcoming Events (Next 2):</strong>
+                <strong style="font-size: 0.82rem; color: var(--primary-dark); display: block; margin-bottom: 8px;">Next Events:</strong>
                 {% for ev in upcoming_events %}
                 <div class="event-preview-card" style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
                     <div>
                         <div class="event-preview-title">{{ ev.title }}</div>
                         <div class="event-preview-meta">
                             <span>📅 {{ ev.display_date }}</span>
-                            <span style="font-weight: 700; color: var(--primary); margin-left: 6px;">{{ ev.category }}</span>
                         </div>
                     </div>
                     <a href="/workspace/{{ ev.id }}" class="btn btn-outline" style="padding: 4px 10px; font-size: 0.78rem; flex-shrink: 0; white-space: nowrap;">Details →</a>
@@ -261,16 +257,16 @@
                     <span class="tile-icon">📁</span>
                     <span class="tile-title">Stuco Workspaces</span>
                 </div>
-                <p class="tile-desc">Access event planning timelines, budget plan ledgers, and student booking lists.</p>
+                <p class="tile-desc">Event timelines, budgets, and storage room inventory.</p>
                 
-                <strong style="font-size: 0.82rem; color: var(--primary-dark); display: block; margin-bottom: 8px;">Active Workspaces:</strong>
+                <strong style="font-size: 0.82rem; color: var(--primary-dark); display: block; margin-bottom: 8px;">Workspaces:</strong>
                 {% for ev in events[:2] %}
                 <a href="/workspace/{{ ev.id }}" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--primary); text-decoration: none; padding: 6px 0; border-bottom: 1px dashed #cbd5e1;">
                     📌 {{ ev.title }} →
                 </a>
                 {% endfor %}
             </div>
-            <a href="/workspace/1" class="btn btn-outline" style="margin-top: 14px;">Browse Workspaces →</a>
+            <a href="/workspace/1?hub=1" class="btn btn-outline" style="margin-top: 14px;">Browse Workspace Hub →</a>
         </div>
 
         <!-- Vending Hub Quick Tile -->
@@ -278,11 +274,12 @@
             <div>
                 <div class="tile-header">
                     <span class="tile-icon">🥤</span>
-                    <span class="tile-title">Vending Machine Hub</span>
+                    <span class="tile-title">Vending Machine</span>
                 </div>
-                <p class="tile-desc">Explore main campus vending machine items and submit anonymous snack suggestions.</p>
+                <p class="tile-desc">Vending items and snack suggestions.</p>
             </div>
-            <a href="/vending" class="btn" style="margin-top: 14px;">Vending Machine Hub →</a>
+            <a href="/vending" class="btn" style="margin-top: 14px;">Open Vending Hub →</a>
+        </div>
         </div>
 
     </div>

@@ -581,14 +581,6 @@
           "due_date": "2026-08-14"
         },
         {
-          "task": "hu",
-          "assignee": "",
-          "event_id": 1,
-          "event_title": "Homecoming Dance 2026",
-          "done": false,
-          "id": 3
-        },
-        {
           "id": 4,
           "task": "31231",
           "assignee": "",
@@ -843,9 +835,9 @@
           "approved": true
         },
         {
-          "email": "270013@bjsmicschool.com",
-          "name": "Jerry Li",
-          "approved": true
+          "email": "volunteer_test@bjsmicschool.com",
+          "name": "Alex Volunteer",
+          "approved": false
         }
       ]
     },
@@ -858,13 +850,7 @@
       "hours_given": 1.5,
       "spots_needed": 5,
       "task_description": "Pass out free popsicles to students entering the Central Courtyard during class competitions.",
-      "signups": [
-        {
-          "email": "270013@bjsmicschool.com",
-          "name": "Jerry Li",
-          "approved": true
-        }
-      ]
+      "signups": []
     }
   ],
   "STUCO_DEBT": "¥0.00",
