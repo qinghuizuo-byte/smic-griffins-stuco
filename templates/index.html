@@ -218,7 +218,6 @@
     <!-- Section 2: Griffins StuCo Hero Banner -->
     <div class="hero-card">
         <h1 class="hero-title">🦅 Griffins StuCo</h1>
-        <p class="hero-subtitle">Official portal for high school events, budgeting, and student body updates.</p>
     </div>
 
     <!-- Section 3: Navigation Grid (Expanded Calendar, Stuco Workspaces & Student Support) -->
@@ -230,7 +229,6 @@
                 <div class="tile-header">
                     <span class="tile-title">Event Calendar</span>
                 </div>
-                <p class="tile-desc">Upcoming campus events and competitions.</p>
                 
                 <strong style="font-size: 0.82rem; color: var(--primary-dark); display: block; margin-bottom: 8px;">Next Events:</strong>
                 {% for ev in upcoming_events %}
@@ -254,7 +252,6 @@
                 <div class="tile-header">
                     <span class="tile-title">Stuco Workspaces</span>
                 </div>
-                <p class="tile-desc">Event timelines, budgets, and storage room inventory.</p>
                 
                 <strong style="font-size: 0.82rem; color: var(--primary-dark); display: block; margin-bottom: 8px;">Workspaces:</strong>
                 {% for ev in events[:2] %}
@@ -272,16 +269,15 @@
                 <div class="tile-header">
                     <span class="tile-title">Student Support</span>
                 </div>
-                <p class="tile-desc">Anonymous suggestions, vending items, and CSH volunteer opportunities.</p>
                 
                 <strong style="font-size: 0.82rem; color: var(--primary-dark); display: block; margin-bottom: 8px;">Support Categories:</strong>
-                <a href="/student-support?tab=suggestions" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--primary); text-decoration: none; padding: 6px 0; border-bottom: 1px dashed #cbd5e1;">
+                <a href="/student-support" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--primary); text-decoration: none; padding: 6px 0; border-bottom: 1px dashed #cbd5e1;">
                     Anonymous Suggestion Box →
                 </a>
-                <a href="/student-support?tab=vending" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--primary); text-decoration: none; padding: 6px 0; border-bottom: 1px dashed #cbd5e1;">
+                <a href="/student-support" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--primary); text-decoration: none; padding: 6px 0; border-bottom: 1px dashed #cbd5e1;">
                     Vending Machine Hub →
                 </a>
-                <a href="/student-support?tab=volunteers" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--primary); text-decoration: none; padding: 6px 0;">
+                <a href="/student-support" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--primary); text-decoration: none; padding: 6px 0;">
                     CSH Volunteer Opportunities →
                 </a>
             </div>

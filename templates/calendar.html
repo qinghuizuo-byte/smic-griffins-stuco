@@ -251,10 +251,9 @@
     <div class="page-header">
         <div>
             <h1>Upcoming Main Campus Events</h1>
-            <p>Explore upcoming dances, pep rallies, and fairs. Click any card to view schedules or manage details.</p>
         </div>
         {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher'] %}
-        <button class="btn" onclick="openAddEventModal()">➕ Add Calendar Event</button>
+        <button class="btn" onclick="openAddEventModal()">Add Calendar Event</button>
         {% endif %}
     </div>
 
@@ -278,19 +277,23 @@
                 <div class="event-info">📅 {{ event.display_date }}</div>
                 <div class="event-info">⏰ {{ event.time }}</div>
                 <div class="event-info">📍 {{ event.location }}</div>
-                <p style="font-size:0.82rem;color:var(--text-muted);margin-top:8px;">{{ event.description[:100] }}...</p>
             </div>
             
             <div style="margin-top: 16px; border-top: 1px solid var(--border-color); padding-top: 14px; display: flex; flex-direction: column; gap: 8px;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <span style="font-size: 0.8rem; font-weight: 700; color: var(--primary);">{{ event.ticket_status }}</span>
-                    <a href="/workspace/{{ event.id }}" class="btn btn-outline" style="padding: 4px 10px; font-size: 0.8rem;">Details →</a>
+                    <div style="display: flex; gap: 6px;">
+                        <a href="/event/{{ event.id }}" class="btn btn-outline" style="padding: 4px 10px; font-size: 0.8rem;">Details →</a>
+                        {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+                        <a href="/workspace/{{ event.id }}" class="btn btn-outline" style="padding: 4px 10px; font-size: 0.8rem; border-color: #7c3aed; color: #7c3aed;">Workspace →</a>
+                        {% endif %}
+                    </div>
                 </div>
                 
                 {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher'] %}
                 <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px;">
                     <button onclick='openEditBookingModal({{ event | tojson | safe }})' class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem; border-color:var(--accent-green); color:var(--accent-green);">
-                        🎫 Ticket Link
+                        Ticket Link
                     </button>
                     <button onclick='openEditEventModal({{ event | tojson | safe }})' class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem;">
                         Edit Info
@@ -508,7 +511,10 @@
         <!-- Action Links: Tickets & Stuco Workspace -->
         <div class="modal-actions">
             <a href="#" id="modalTicketBtn" class="btn" target="_blank">Book Tickets / RSVP</a>
-            <a href="#" id="modalWorkspaceBtn" class="btn btn-outline">Enter Stuco Workspace</a>
+            <a href="#" id="modalDetailBtn" class="btn btn-outline">View Full Event Details</a>
+            {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
+            <a href="#" id="modalWorkspaceBtn" class="btn btn-outline" style="border-color:#7c3aed;color:#7c3aed;">Enter Stuco Workspace</a>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -537,13 +543,21 @@
                     ticketBtn.style.display = 'inline-block';
                 }
 
-                // Handle Stuco Workspace Button Link
+                // View Full Event Details Button
+                const detailBtn = document.getElementById('modalDetailBtn');
+                if (detailBtn) {
+                    detailBtn.href = `/event/${data.id}`;
+                }
+
+                // Handle Stuco Workspace Button (role check already done server-side in HTML)
                 const workspaceBtn = document.getElementById('modalWorkspaceBtn');
-                if (data.has_workspace) {
-                    workspaceBtn.href = `/workspace/${data.id}`;
-                    workspaceBtn.style.display = 'inline-block';
-                } else {
-                    workspaceBtn.style.display = 'none';
+                if (workspaceBtn) {
+                    if (data.has_workspace) {
+                        workspaceBtn.href = `/workspace/${data.id}`;
+                        workspaceBtn.style.display = 'inline-block';
+                    } else {
+                        workspaceBtn.style.display = 'none';
+                    }
                 }
 
                 document.getElementById('eventModalOverlay').style.display = 'flex';

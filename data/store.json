@@ -541,18 +541,7 @@
       "agenda_summary": "",
       "agenda_file": "",
       "notes": "blablabla",
-      "action_items": [
-        {
-          "id": 1,
-          "task": "123",
-          "assignee": "123",
-          "timing_category": "Before Meeting",
-          "due_date": "2026-08-15",
-          "event_id": null,
-          "event_title": null,
-          "done": false
-        }
-      ]
+      "action_items": []
     },
     {
       "id": 1,
@@ -579,16 +568,6 @@
           "id": 2,
           "timing_category": "After Meeting",
           "due_date": "2026-08-14"
-        },
-        {
-          "id": 4,
-          "task": "31231",
-          "assignee": "",
-          "timing_category": "After Meeting",
-          "due_date": "2026-08-22",
-          "event_id": 4,
-          "event_title": "123123123123123123123123213123",
-          "done": false
         },
         {
           "id": 5,
