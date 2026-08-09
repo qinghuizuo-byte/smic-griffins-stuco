@@ -770,6 +770,31 @@ def event_workspace(event_id=1):
         })
 
     # All tasks arranged by due date
+    def parse_sort_date(d_str):
+        if not d_str:
+            return "9999-99-99"
+        d_str = str(d_str).strip()
+        import re
+        from datetime import datetime
+        try:
+            dt = datetime.strptime(d_str, "%Y-%m-%d")
+            return dt.strftime("%Y-%m-%d")
+        except ValueError:
+            pass
+        try:
+            dt = datetime.strptime(d_str, "%m/%d/%Y")
+            return dt.strftime("%Y-%m-%d")
+        except ValueError:
+            pass
+        parts = re.split(r'[-/.]', d_str)
+        if len(parts) == 3 and all(p.isdigit() for p in parts):
+            p1, p2, p3 = int(parts[0]), int(parts[1]), int(parts[2])
+            if p1 > 1900:
+                return f"{p1:04d}-{p2:02d}-{p3:02d}"
+            elif p3 > 1900:
+                return f"{p3:04d}-{p1:02d}-{p2:02d}"
+        return "9999-" + d_str
+
     all_tasks = []
     for eid, ev in EVENTS.items():
         for t in ev.get("tasks", []):
@@ -785,7 +810,7 @@ def event_workspace(event_id=1):
     for m in MEETINGS:
         for item in m.get("action_items", []):
             all_tasks.append({
-                "date": m.get("date", "9999-99-99"),
+                "date": item.get("due_date") or m.get("date", "9999-99-99"),
                 "task": item.get("task"),
                 "assignee": item.get("assignee", "Unassigned"),
                 "event_title": item.get("event_title") or f"Meeting: {m.get('title')}",
@@ -794,7 +819,7 @@ def event_workspace(event_id=1):
                 "notes": "Action item from meeting"
             })
             
-    all_tasks_sorted = sorted(all_tasks, key=lambda x: x.get("date", "9999-99-99"))
+    all_tasks_sorted = sorted(all_tasks, key=lambda x: parse_sort_date(x.get("date")))
 
     return render_template(
         'workspace.html',

@@ -173,12 +173,12 @@
     "1": {
       "id": 1,
       "title": "Homecoming Dance 2026",
-      "date": "2026-10-24",
-      "display_date": "Saturday, October 24, 2026",
+      "date": "2026-10-29",
+      "display_date": "Thursday, October 29, 2026",
       "time": "7:00 PM - 10:30 PM",
       "location": "Main Gymnasium & Courtyard",
-      "category": "Paid Event",
-      "scope": "Entire School",
+      "category": "Optional Activity",
+      "scope": "High School",
       "requires_booking": true,
       "participants": [
         {
@@ -194,10 +194,17 @@
           "grade": "12",
           "email": "270013@bjsmicschool.com",
           "status": "Pending"
+        },
+        {
+          "id": 3,
+          "name": "a'd",
+          "grade": "11",
+          "email": "1@1",
+          "status": "Signed Up"
         }
       ],
       "lead": "Cellestine (Stuco President)",
-      "budget_allocated": "$2,500.00",
+      "budget_allocated": "¥2500.00",
       "description": "Annual homecoming dance setup on the main campus. Theme and decor layout pending final approval.",
       "ticket_link": "https://schooltickets.example.com/homecoming",
       "ticket_status": "Tickets Available ($15)",
@@ -251,14 +258,20 @@
         {
           "id": 104,
           "date": "2026-08-12",
-          "task": "hu",
+          "task": "hu1",
           "assignee": "",
           "details": "From Meeting: Main Campus Venue Logistics & Transition",
           "notes": "Action item created in meeting on 2026-08-12",
           "status": "To Do"
         }
       ],
-      "photos": [],
+      "photos": [
+        {
+          "filename": "2021-Novitec-Ferrari-F8-Tributo-N-Largo-001-2160.jpg",
+          "caption": "",
+          "category": "Venue"
+        }
+      ],
       "purchases": []
     },
     "2": {
@@ -270,7 +283,7 @@
       "location": "Central Courtyard",
       "category": "Free School Event",
       "scope": "Entire School",
-      "requires_booking": false,
+      "requires_booking": true,
       "participants": [],
       "lead": "Jordan K. (Logistics Lead)",
       "budget_allocated": "$350.00",
@@ -355,9 +368,192 @@
       ],
       "photos": [],
       "purchases": []
+    },
+    "4": {
+      "id": 4,
+      "title": "123123123123123123123123213123",
+      "date": "2026-08-21",
+      "display_date": "Friday, August 21, 2026",
+      "time": "TBD",
+      "location": "Main Campus",
+      "category": "Paid Event",
+      "scope": "Entire School",
+      "requires_booking": true,
+      "participants": [],
+      "lead": "Jerry Li",
+      "budget_allocated": "",
+      "description": "",
+      "ticket_link": "",
+      "ticket_status": "Free Entry",
+      "has_workspace": true,
+      "schedule": [],
+      "tasks": [
+        {
+          "id": 101,
+          "date": "2026-08-22",
+          "task": "31231",
+          "assignee": "",
+          "details": "[After Meeting] From Meeting: Main Campus Venue Logistics & Transition",
+          "notes": "Meeting task due 2026-08-22",
+          "status": "To Do"
+        },
+        {
+          "id": 102,
+          "date": "2026-08-22",
+          "task": "31231",
+          "assignee": "",
+          "details": "[After Meeting] From Meeting: Main Campus Venue Logistics & Transition",
+          "notes": "Meeting task due 2026-08-22",
+          "status": "To Do"
+        }
+      ],
+      "photos": [],
+      "purchases": []
+    },
+    "5": {
+      "id": 5,
+      "title": "123",
+      "date": "2026-08-23",
+      "display_date": "Sunday, August 23, 2026",
+      "time": "TBD",
+      "location": "Main Campus",
+      "category": "Paid Event",
+      "scope": "Entire School",
+      "requires_booking": true,
+      "participants": [],
+      "lead": "Jerry Li",
+      "budget_allocated": "",
+      "description": "",
+      "ticket_link": "",
+      "ticket_status": "Free Entry",
+      "has_workspace": true,
+      "schedule": [],
+      "tasks": [],
+      "photos": []
+    },
+    "6": {
+      "id": 6,
+      "title": "1234",
+      "date": "2026-08-21",
+      "display_date": "Friday, August 21, 2026",
+      "time": "TBD",
+      "location": "Main Campus",
+      "category": "Paid Event",
+      "scope": "Entire School",
+      "requires_booking": true,
+      "participants": [],
+      "lead": "Jerry Li",
+      "budget_allocated": "",
+      "description": "",
+      "ticket_link": "",
+      "ticket_status": "Free Entry",
+      "has_workspace": true,
+      "schedule": [],
+      "tasks": [],
+      "photos": []
+    },
+    "7": {
+      "id": 7,
+      "title": "1233123",
+      "date": "2026-08-27",
+      "display_date": "Thursday, August 27, 2026",
+      "time": "TBD",
+      "location": "Main Campus",
+      "category": "Paid Event",
+      "scope": "Entire School",
+      "requires_booking": true,
+      "participants": [],
+      "lead": "Jerry Li",
+      "budget_allocated": "",
+      "description": "",
+      "ticket_link": "",
+      "ticket_status": "Free Entry",
+      "has_workspace": true,
+      "schedule": [],
+      "tasks": [],
+      "photos": []
+    },
+    "8": {
+      "id": 8,
+      "title": "1233123",
+      "date": "2026-08-28",
+      "display_date": "Friday, August 28, 2026",
+      "time": "TBD",
+      "location": "Main Campus",
+      "category": "Paid Event",
+      "scope": "Entire School",
+      "requires_booking": true,
+      "participants": [],
+      "lead": "Jerry Li",
+      "budget_allocated": "",
+      "description": "",
+      "ticket_link": "",
+      "ticket_status": "Free Entry",
+      "has_workspace": true,
+      "schedule": [],
+      "tasks": [],
+      "photos": []
+    },
+    "9": {
+      "id": 9,
+      "title": "123213213",
+      "date": "2026-08-28",
+      "display_date": "Friday, August 28, 2026",
+      "time": "TBD",
+      "location": "Main Campus",
+      "category": "Paid Event",
+      "scope": "Entire School",
+      "requires_booking": true,
+      "participants": [],
+      "lead": "Jerry Li",
+      "budget_allocated": "",
+      "description": "",
+      "ticket_link": "",
+      "ticket_status": "Free Entry",
+      "has_workspace": true,
+      "schedule": [],
+      "tasks": [],
+      "photos": []
     }
   },
   "MEETINGS": [
+    {
+      "id": 4,
+      "title": "12332",
+      "date": "2026-08-11",
+      "time": "",
+      "location": "",
+      "status": "Upcoming",
+      "leader": "Jerry Li",
+      "agenda_summary": "",
+      "agenda_file": "",
+      "notes": "",
+      "action_items": []
+    },
+    {
+      "id": 3,
+      "title": "1231",
+      "date": "2026-08-10",
+      "time": "",
+      "location": "",
+      "status": "Upcoming",
+      "leader": "Jerry Li",
+      "agenda_summary": "",
+      "agenda_file": "",
+      "notes": "",
+      "action_items": [
+        {
+          "id": 1,
+          "task": "123",
+          "assignee": "123",
+          "timing_category": "Before Meeting",
+          "due_date": "2026-08-15",
+          "event_id": null,
+          "event_title": null,
+          "done": false
+        }
+      ]
+    },
     {
       "id": 1,
       "title": "Main Campus Venue Logistics & Transition",
@@ -380,7 +576,9 @@
           "task": "Confirm Griffin Mascot performer schedule",
           "assignee": "Taylor S.",
           "done": false,
-          "id": 2
+          "id": 2,
+          "timing_category": "After Meeting",
+          "due_date": "2026-08-14"
         },
         {
           "task": "hu",
@@ -389,20 +587,40 @@
           "event_title": "Homecoming Dance 2026",
           "done": false,
           "id": 3
+        },
+        {
+          "id": 4,
+          "task": "31231",
+          "assignee": "",
+          "timing_category": "After Meeting",
+          "due_date": "2026-08-22",
+          "event_id": 4,
+          "event_title": "123123123123123123123123213123",
+          "done": false
+        },
+        {
+          "id": 5,
+          "task": "31231",
+          "assignee": "",
+          "timing_category": "After Meeting",
+          "due_date": "2026-08-22",
+          "event_id": 4,
+          "event_title": "123123123123123123123123213123",
+          "done": false
         }
       ]
     },
     {
       "id": 2,
       "title": "Executive Council Orientation & Fall Calendar",
-      "date": "2026-08-01",
+      "date": "2026-08-",
       "time": "2:00 PM - 3:30 PM",
       "location": "Student Center Conference Room",
       "status": "Archived",
       "leader": "Cellestine (President)",
       "agenda_summary": "Finalize fall semester goal priorities, committee budget limits, and main campus transition strategy.",
       "agenda_file": "",
-      "notes": "1. Approved $2,500 baseline budget for Homecoming 2026.\n2. Vending machine suggestion portal approved for Stuco site.\n3. Weekly meetings set for Wednesdays at 3:30 PM.",
+      "notes": "1. Approved $2,500 baseline budget for Homecoming 2026.\r\n2. Vending machine suggestion portal approved for Stuco site.\r\n3. Weekly meetings set for Wednesdays at 3:30 PM.",
       "action_items": [
         {
           "task": "Set up Python Stuco Web Portal",
@@ -420,6 +638,48 @@
     }
   ],
   "ANNOUNCEMENTS": [
+    {
+      "id": 8,
+      "title": "📋 Survey: Student Feedback Survey",
+      "date": "Today",
+      "badge": "Student Voice",
+      "badge_color": "priority",
+      "content": "Please complete our Microsoft Forms survey for 'Student Feedback Survey'.",
+      "qr_code": "",
+      "link": "/survey",
+      "link_text": "Take Microsoft Forms Survey →"
+    },
+    {
+      "id": 7,
+      "title": "📋 Survey: Student Feedback Survey",
+      "date": "Today",
+      "badge": "Student Voice",
+      "badge_color": "priority",
+      "content": "Please complete our Microsoft Forms survey for 'Student Feedback Survey'.",
+      "qr_code": "",
+      "link": "/survey",
+      "link_text": "Take Microsoft Forms Survey →"
+    },
+    {
+      "id": 6,
+      "title": "asds",
+      "date": "August 09, 2026",
+      "badge": "Important Update",
+      "badge_color": "priority",
+      "content": "sjdhioalndasnlnjldasnljdjldasiodijasidiasiodijoajiosdjioasjiodasjiojiodjiasidjasjioidjasijdijasidijoasjiodajiosdjiosjiadjisajidijasiojdjioasjiodsjidijajidsijdasijajiasidiajsidjaijdsaijdijasijodsajijidasjidsjijiasijdasijdsa\r\ndjkajsjdasd\r\nas\r\ndas\r\nd\r\nas\r\ndas\r\nd\r\nasd\r\nas\r\nda\r\nsd\r\nas\r\nd\r\na\r\nd\r\nas\r\nd\r\nasd\r\n\r\nda",
+      "link": "",
+      "link_text": "Learn More →"
+    },
+    {
+      "id": 5,
+      "title": "lknlkkln",
+      "date": "August 09, 2026",
+      "badge": "Tickets & RSVPs",
+      "badge_color": "priority",
+      "content": "lnklnkl",
+      "link": "",
+      "link_text": "Learn More →"
+    },
     {
       "id": 4,
       "title": "📋 Survey: Student Feedback Survey",
@@ -535,7 +795,34 @@
       "category": "Drinks",
       "suggested_by": "Sam V. (Senior)",
       "reason": "Perfect afternoon pick-me-up during AP study sessions!",
-      "votes": 42,
+      "votes": 44,
+      "status": "Under Review"
+    },
+    {
+      "id": 2,
+      "item_name": "hjghjj",
+      "category": "Healthy Options",
+      "suggested_by": "Anonymous",
+      "reason": "",
+      "votes": 1,
+      "status": "Under Review"
+    },
+    {
+      "id": 3,
+      "item_name": "123",
+      "category": "Snacks",
+      "suggested_by": "Anonymous",
+      "reason": "",
+      "votes": 1,
+      "status": "Under Review"
+    },
+    {
+      "id": 4,
+      "item_name": "123",
+      "category": "Snacks",
+      "suggested_by": "Anonymous",
+      "reason": "",
+      "votes": 1,
       "status": "Under Review"
     }
   ],
@@ -556,9 +843,9 @@
           "approved": true
         },
         {
-          "email": "volunteer_test@bjsmicschool.com",
-          "name": "Alex Volunteer",
-          "approved": false
+          "email": "270013@bjsmicschool.com",
+          "name": "Jerry Li",
+          "approved": true
         }
       ]
     },
@@ -571,7 +858,13 @@
       "hours_given": 1.5,
       "spots_needed": 5,
       "task_description": "Pass out free popsicles to students entering the Central Courtyard during class competitions.",
-      "signups": []
+      "signups": [
+        {
+          "email": "270013@bjsmicschool.com",
+          "name": "Jerry Li",
+          "approved": true
+        }
+      ]
     }
   ],
   "STUCO_DEBT": "¥0.00",
@@ -593,15 +886,6 @@
       "location": "Main Closet",
       "condition": "Excellent",
       "notes": "Dry cleaned after Homecoming 2025.",
-      "picture": ""
-    },
-    {
-      "id": 3,
-      "name": "Blue & Gold Drape Fabrics",
-      "quantity": 15,
-      "location": "Shelf B - Box 1",
-      "condition": "Good",
-      "notes": "For stage background decoration.",
       "picture": ""
     }
   ]

@@ -285,7 +285,7 @@
             <div style="margin-top: 16px; border-top: 1px solid var(--border-color); padding-top: 14px; display: flex; flex-direction: column; gap: 8px;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <span style="font-size: 0.8rem; font-weight: 700; color: var(--primary);">{{ event.ticket_status }}</span>
-                    <button onclick="openEventModal({{ event.id }})" class="btn btn-outline" style="padding: 4px 10px; font-size: 0.8rem;">Details</button>
+                    <a href="/workspace/{{ event.id }}" class="btn btn-outline" style="padding: 4px 10px; font-size: 0.8rem;">Details →</a>
                 </div>
                 
                 {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher'] %}

@@ -239,12 +239,15 @@
                 
                 <strong style="font-size: 0.82rem; color: var(--primary-dark); display: block; margin-bottom: 8px;">Upcoming Events (Next 2):</strong>
                 {% for ev in upcoming_events %}
-                <div class="event-preview-card">
-                    <div class="event-preview-title">{{ ev.title }}</div>
-                    <div class="event-preview-meta">
-                        <span>📅 {{ ev.display_date }}</span>
-                        <span style="font-weight: 700; color: var(--primary);">{{ ev.category }}</span>
+                <div class="event-preview-card" style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                    <div>
+                        <div class="event-preview-title">{{ ev.title }}</div>
+                        <div class="event-preview-meta">
+                            <span>📅 {{ ev.display_date }}</span>
+                            <span style="font-weight: 700; color: var(--primary); margin-left: 6px;">{{ ev.category }}</span>
+                        </div>
                     </div>
+                    <a href="/workspace/{{ ev.id }}" class="btn btn-outline" style="padding: 4px 10px; font-size: 0.78rem; flex-shrink: 0; white-space: nowrap;">Details →</a>
                 </div>
                 {% endfor %}
             </div>
