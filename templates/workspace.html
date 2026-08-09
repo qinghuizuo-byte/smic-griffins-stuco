@@ -287,8 +287,8 @@
     <!-- ========================================== -->
     <div id="hub-landing-view">
         <div style="margin-bottom: 20px;">
+        <div class="hub-header" style="margin-bottom: 20px;">
             <h1 style="font-size: 1.8rem; font-weight: 900; color: var(--primary-dark);">🦅 Stuco Workspace Hub</h1>
-            <p style="font-size: 0.95rem; color: var(--text-muted); margin-top: 4px;">Select a workspace section below to open its specific management tools.</p>
         </div>
 
         <div class="hub-blocks-grid">
@@ -300,7 +300,6 @@
                         <span class="hub-block-icon">📁</span>
                         <div class="hub-block-title">Event Workspaces</div>
                     </div>
-                    <p class="hub-block-desc">Access event-specific planning timelines, expense ledgers, and student booking lists.</p>
                 </div>
                 <button class="btn hub-block-btn">Open Event Workspaces →</button>
             </div>
@@ -312,7 +311,6 @@
                         <span class="hub-block-icon">📦</span>
                         <div class="hub-block-title">Storage Room Inventory</div>
                     </div>
-                    <p class="hub-block-desc">View and edit equipment notes, quantities, box locations, and photos stored in HQ.</p>
                 </div>
                 <button class="btn hub-block-btn">Open Storage Inventory →</button>
             </div>
@@ -324,7 +322,6 @@
                         <span class="hub-block-icon">💳</span>
                         <div class="hub-block-title">Budget Plan & Treasury</div>
                     </div>
-                    <p class="hub-block-desc">Track total Stuco treasury balance, active debts, and exclusive event budget ledgers.</p>
                 </div>
                 <button class="btn hub-block-btn">Open Budget Plan →</button>
             </div>
@@ -336,7 +333,6 @@
                         <span class="hub-block-icon">📅</span>
                         <div class="hub-block-title">All Tasks (By Due Date)</div>
                     </div>
-                    <p class="hub-block-desc">Master list of all action items and tasks arranged chronologically by due date.</p>
                 </div>
                 <button class="btn hub-block-btn">Open Master Task List →</button>
             </div>
@@ -348,7 +344,6 @@
                         <span class="hub-block-icon">📝</span>
                         <div class="hub-block-title">Meeting Notes & Agendas</div>
                     </div>
-                    <p class="hub-block-desc">View published meeting agendas, executive notes, action items (before/after meeting), and due dates.</p>
                 </div>
                 <button class="btn hub-block-btn">Open Meeting Notes →</button>
             </div>
@@ -372,7 +367,6 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
                 <div>
                     <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 4px;">Select Event Workspace</h2>
-                    <p style="font-size: 0.9rem; color: var(--text-muted);">Click any event block below to open its specific planning sheet, expense tracker, and participant booking list.</p>
                 </div>
                 {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
                 <button class="btn" onclick="openModal('addEventWorkspaceModal')">➕ Create New Event Workspace</button>
@@ -900,13 +894,53 @@
         </div>
         {% endif %}
 
+        <!-- Upcoming Meeting Action Required Alert Banner -->
+        {% if upcoming_action_meeting %}
+        <div class="card" style="border-left: 6px solid #f59e0b; background: #fffbeb; padding: 20px 24px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <div>
+                    <div style="font-size: 0.8rem; font-weight: 800; color: #b45309; text-transform: uppercase; letter-spacing: 0.5px;">⚠️ Upcoming Meeting Action Required</div>
+                    <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-dark); margin-top: 4px;">📅 {{ upcoming_action_meeting.date }} — {{ upcoming_action_meeting.title }}</h3>
+                    <div style="font-size: 0.88rem; color: #78350f; margin-top: 6px;">
+                        <strong>Required Pre-Meeting Action Items:</strong>
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px;">
+                        {% for item in upcoming_action_meeting.action_items %}
+                            {% if not item.done and item.timing_category == 'Before Meeting' %}
+                            <span style="background: #fef3c7; border: 1px solid #fde68a; padding: 2px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; color: #92400e;">
+                                ⏳ {{ item.task }} (Due: {{ item.due_date or upcoming_action_meeting.date }})
+                            </span>
+                            {% endif %}
+                        {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <button class="btn" style="background: #b45309; border: none;" onclick="showSingleWorkspaceMeeting({{ upcoming_action_meeting.id }})">Open Meeting Notes →</button>
+            </div>
+        </div>
+        {% endif %}
+
         <div class="card">
-            <div class="card-header">
-                <span class="card-title">📝 Meeting Agendas, Minutes & Action Deliverables</span>
+            <div class="card-header" style="flex-wrap: wrap; gap: 10px;">
+                <span class="card-title" style="margin-bottom: 0;">📝 Meeting Agendas, Minutes & Action Deliverables</span>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                    <button class="btn btn-outline ws-meet-btn" id="ws-btn-all-meetings" onclick="showAllWorkspaceMeetings()">📋 View All Meetings</button>
+                </div>
+            </div>
+
+            <!-- Date & Topic Selection Buttons -->
+            <div style="margin-bottom: 20px; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
+                <div style="font-size: 0.82rem; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">📅 Select Meeting by Date & Topic:</div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    {% for meeting in meetings %}
+                    <button class="btn btn-outline ws-meet-btn" id="ws-btn-meet-{{ meeting.id }}" onclick="showSingleWorkspaceMeeting({{ meeting.id }})" style="font-size: 0.82rem; padding: 6px 12px;">
+                        📅 {{ meeting.date }} — {{ meeting.title }}
+                    </button>
+                    {% endfor %}
+                </div>
             </div>
 
             {% for meeting in meetings %}
-            <div class="meeting-card">
+            <div class="meeting-card ws-meeting-card" id="ws-meeting-card-{{ meeting.id }}">
                 <div class="meeting-card-header">
                     <h3 class="meeting-title">📌 {{ meeting.title }}</h3>
                     <div style="display: flex; gap: 8px; align-items: center;">
@@ -1562,8 +1596,51 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    /* Meeting Views */
+    function showSingleWorkspaceMeeting(meetId) {
+        document.querySelectorAll('.ws-meeting-card').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.ws-meet-btn').forEach(b => {
+            b.classList.remove('active');
+            b.style.background = 'transparent';
+            b.style.color = 'var(--primary)';
+        });
+        
+        let targetCard = document.getElementById('ws-meeting-card-' + meetId);
+        if (targetCard) {
+            targetCard.style.display = 'block';
+        }
+        let targetBtn = document.getElementById('ws-btn-meet-' + meetId);
+        if (targetBtn) {
+            targetBtn.classList.add('active');
+            targetBtn.style.background = 'var(--primary)';
+            targetBtn.style.color = 'white';
+        }
+    }
+
+    function showAllWorkspaceMeetings() {
+        document.querySelectorAll('.ws-meeting-card').forEach(el => el.style.display = 'block');
+        document.querySelectorAll('.ws-meet-btn').forEach(b => {
+            b.classList.remove('active');
+            b.style.background = 'transparent';
+            b.style.color = 'var(--primary)';
+        });
+        let allBtn = document.getElementById('ws-btn-all-meetings');
+        if (allBtn) {
+            allBtn.classList.add('active');
+            allBtn.style.background = 'var(--primary)';
+            allBtn.style.color = 'white';
+        }
+    }
+
     /* Restore Active Subgroup and View on Page Load */
     document.addEventListener("DOMContentLoaded", function() {
+        {% if upcoming_action_meeting %}
+        showSingleWorkspaceMeeting({{ upcoming_action_meeting.id }});
+        {% elif meetings %}
+        showSingleWorkspaceMeeting({{ meetings[0].id }});
+        {% else %}
+        showAllWorkspaceMeetings();
+        {% endif %}
         let urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('hub') === '1') {
             localStorage.setItem('stuco_active_subgroup', 'hub-landing-view');

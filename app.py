@@ -876,6 +876,12 @@ def event_workspace(event_id=1):
     all_tasks_sorted = sorted(all_tasks, key=lambda x: parse_sort_date(x.get("date")))
     meetings_sorted = sorted(MEETINGS, key=lambda x: parse_sort_date(x.get("date")))
 
+    upcoming_action_meeting = None
+    for m in meetings_sorted:
+        if m.get("status") == "Upcoming" and any(it.get("timing_category") == "Before Meeting" or not it.get("done") for it in m.get("action_items", [])):
+            upcoming_action_meeting = m
+            break
+
     return render_template(
         'workspace.html',
         event=event,
@@ -891,7 +897,8 @@ def event_workspace(event_id=1):
         stuco_balance=STUCO_BALANCE,
         all_tasks_sorted=all_tasks_sorted,
         inventory=INVENTORY,
-        meetings=meetings_sorted
+        meetings=meetings_sorted,
+        upcoming_action_meeting=upcoming_action_meeting
     )
 
 
@@ -1175,7 +1182,14 @@ def meetings_hub():
         return "9999-" + d_str
 
     meetings_sorted = sorted(MEETINGS, key=lambda x: parse_sort_date(x.get("date")))
-    return render_template('meetings.html', meetings=meetings_sorted, events=get_sorted_events())
+    
+    upcoming_action_meeting = None
+    for m in meetings_sorted:
+        if m.get("status") == "Upcoming" and any(it.get("timing_category") == "Before Meeting" or not it.get("done") for it in m.get("action_items", [])):
+            upcoming_action_meeting = m
+            break
+
+    return render_template('meetings.html', meetings=meetings_sorted, events=get_sorted_events(), upcoming_action_meeting=upcoming_action_meeting)
 
 
 @app.route('/meetings/add', methods=['POST'])
@@ -2446,7 +2460,7 @@ def signup_volunteer(op_id):
                 "approved": False
             })
             flash("Successfully signed up! Wait for President or Vice President approval.", "success")
-    return redirect(url_for('volunteers_page'))
+    return redirect(url_for('student_support', tab='volunteers'))
 
 
 @app.route('/volunteers/approve/<int:op_id>/<string:email>', methods=['POST'])
@@ -2460,7 +2474,7 @@ def approve_volunteer(op_id, email):
                 s["approved"] = True
                 flash(f"Approved volunteer signup for {s['name']}!", "success")
                 break
-    return redirect(url_for('volunteers_page'))
+    return redirect(url_for('student_support', tab='volunteers'))
 
 
 @app.route('/volunteers/decline/<int:op_id>/<string:email>', methods=['POST'])
@@ -2471,7 +2485,7 @@ def decline_volunteer(op_id, email):
     if op:
         op["signups"] = [s for s in op["signups"] if s["email"].lower() != email.lower()]
         flash(f"Declined volunteer signup for {email}.", "success")
-    return redirect(url_for('volunteers_page'))
+    return redirect(url_for('student_support', tab='volunteers'))
 
 
 # ==========================================

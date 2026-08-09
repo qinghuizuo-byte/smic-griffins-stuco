@@ -445,7 +445,7 @@
 
                     <div>
                         <!-- Volunteer Signup Form -->
-                        <form action="{{ url_for('signup_volunteer', vol_id=vol.id) }}" method="POST" style="margin-top: 12px;">
+                        <form action="{{ url_for('signup_volunteer', op_id=vol.id) }}" method="POST" style="margin-top: 12px;">
                             <button type="submit" class="btn btn-success" style="width: 100%;">Sign Up for CSH →</button>
                         </form>
 
@@ -455,8 +455,8 @@
                             <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">Registered Students:</div>
                             {% for su in vol.signups %}
                             <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
-                                <span>👤 {{ su.name }}</span>
-                                <span class="{% if su.status == 'Approved' %}status-Resolved{% else %}status-Received{% endif %}">{{ su.status }}</span>
+                                <span>👤 {{ su.name or su.email }}</span>
+                                <span class="{% if su.approved or su.status == 'Approved' %}status-Resolved{% else %}status-Received{% endif %}">{% if su.approved or su.status == 'Approved' %}Approved{% else %}Pending Review{% endif %}</span>
                             </div>
                             {% endfor %}
                         </div>
@@ -490,19 +490,19 @@
                             {% for su in vol.signups %}
                             <tr>
                                 <td><strong>{{ vol.title }}</strong></td>
-                                <td>{{ su.name }}</td>
+                                <td>{{ su.name or 'Student' }}</td>
                                 <td>{{ su.email }}</td>
-                                <td><span class="badge badge-hours">{{ vol.csh_hours }} CSH</span></td>
+                                <td><span class="badge badge-hours">{{ vol.csh_hours or vol.hours_given }} CSH</span></td>
                                 <td>
-                                    {% if su.status == 'Approved' %}
+                                    {% if su.approved or su.status == 'Approved' %}
                                     <span class="status-badge status-Resolved">Approved</span>
                                     {% else %}
                                     <span class="status-badge status-Received">Pending Review</span>
                                     {% endif %}
                                 </td>
                                 <td style="text-align: center;">
-                                    {% if su.status != 'Approved' %}
-                                    <form action="{{ url_for('verify_volunteer_hours', vol_id=vol.id, email=su.email) }}" method="POST" style="display:inline;">
+                                    {% if not su.approved and su.status != 'Approved' %}
+                                    <form action="{{ url_for('approve_volunteer', op_id=vol.id, email=su.email) }}" method="POST" style="display:inline;">
                                         <button type="submit" class="btn btn-success" style="padding: 3px 8px; font-size: 0.72rem;">Confirm Hour</button>
                                     </form>
                                     {% else %}
