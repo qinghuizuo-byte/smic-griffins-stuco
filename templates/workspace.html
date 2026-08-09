@@ -1483,19 +1483,33 @@
 
 <script>
     function openSubgroup(subdivId) {
+        localStorage.setItem('stuco_active_subgroup', subdivId);
         document.getElementById('hub-landing-view').style.display = 'none';
         document.querySelectorAll('.subdiv-content').forEach(el => el.classList.remove('active'));
         document.getElementById(subdivId).classList.add('active');
         
         if (subdivId === 'event-workspace-subdiv') {
-            showEventSelection();
+            let subview = localStorage.getItem('stuco_active_subview');
+            if (subview === 'event-details-view') {
+                showEventDetails({{ event.id }});
+            } else {
+                showEventSelection();
+            }
         } else if (subdivId === 'budget-plan-subdiv') {
-            showTreasuryOverview();
+            let subview = localStorage.getItem('stuco_active_subview');
+            if (subview && subview.startsWith('exclusive-budget-view-')) {
+                let targetEvId = subview.replace('exclusive-budget-view-', '');
+                showExclusiveEventBudget(targetEvId);
+            } else {
+                showTreasuryOverview();
+            }
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function backToHubLanding() {
+        localStorage.setItem('stuco_active_subgroup', 'hub-landing-view');
+        localStorage.setItem('stuco_active_subview', '');
         document.querySelectorAll('.subdiv-content').forEach(el => el.classList.remove('active'));
         document.getElementById('hub-landing-view').style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1503,11 +1517,15 @@
 
     /* Event Subgroup Views */
     function showEventSelection() {
+        localStorage.setItem('stuco_active_subgroup', 'event-workspace-subdiv');
+        localStorage.setItem('stuco_active_subview', 'event-selection-view');
         document.getElementById('event-selection-view').style.display = 'block';
         document.getElementById('event-details-view').style.display = 'none';
     }
 
     function showEventDetails(eventId) {
+        localStorage.setItem('stuco_active_subgroup', 'event-workspace-subdiv');
+        localStorage.setItem('stuco_active_subview', 'event-details-view');
         if (eventId === {{ event.id }}) {
             document.getElementById('event-selection-view').style.display = 'none';
             document.getElementById('event-details-view').style.display = 'block';
@@ -1523,19 +1541,59 @@
 
     /* Budget Plan Views */
     function showTreasuryOverview() {
+        localStorage.setItem('stuco_active_subgroup', 'budget-plan-subdiv');
+        localStorage.setItem('stuco_active_subview', 'treasury-overview-view');
         document.getElementById('treasury-overview-view').style.display = 'block';
         document.querySelectorAll('.exclusive-budget-panel').forEach(el => el.style.display = 'none');
     }
 
     function showExclusiveEventBudget(eventId) {
+        localStorage.setItem('stuco_active_subgroup', 'budget-plan-subdiv');
+        localStorage.setItem('stuco_active_subview', 'exclusive-budget-view-' + eventId);
         document.getElementById('treasury-overview-view').style.display = 'none';
         document.querySelectorAll('.exclusive-budget-panel').forEach(el => el.style.display = 'none');
         let targetView = document.getElementById('exclusive-budget-view-' + eventId);
         if (targetView) {
             targetView.style.display = 'block';
+        } else {
+            document.getElementById('treasury-overview-view').style.display = 'block';
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
+    /* Restore Active Subgroup and View on Page Load */
+    document.addEventListener("DOMContentLoaded", function() {
+        let activeSubgroup = localStorage.getItem('stuco_active_subgroup');
+        let activeSubview = localStorage.getItem('stuco_active_subview');
+
+        if (!activeSubgroup || activeSubgroup === 'hub-landing-view') {
+            // Default: show hub landing view
+            document.getElementById('hub-landing-view').style.display = 'block';
+            document.querySelectorAll('.subdiv-content').forEach(s => s.classList.remove('active'));
+        } else {
+            let el = document.getElementById(activeSubgroup);
+            if (el) {
+                document.getElementById('hub-landing-view').style.display = 'none';
+                document.querySelectorAll('.subdiv-content').forEach(s => s.classList.remove('active'));
+                el.classList.add('active');
+
+                if (activeSubgroup === 'event-workspace-subdiv') {
+                    if (activeSubview === 'event-selection-view') {
+                        showEventSelection();
+                    } else {
+                        showEventDetails({{ event.id }});
+                    }
+                } else if (activeSubgroup === 'budget-plan-subdiv') {
+                    if (activeSubview && activeSubview.startsWith('exclusive-budget-view-')) {
+                        let evId = activeSubview.replace('exclusive-budget-view-', '');
+                        showExclusiveEventBudget(evId);
+                    } else {
+                        showTreasuryOverview();
+                    }
+                }
+            }
+        }
+    });
 
     /* Modal Controls */
     function openModal(modalId) {
