@@ -202,7 +202,7 @@
                     <span class="badge badge-{{ item.badge_color }}">{{ item.badge }}</span>
                     <h3 class="news-title">{{ item.title }}</h3>
                     <div class="news-date">📅 {{ item.date }}</div>
-                    <p class="news-content">{{ item.content }}</p>
+                    <p class="news-content" style="white-space: pre-wrap; word-break: break-word; overflow-wrap: break-word; max-height: 220px; overflow-y: auto;">{{ item.content }}</p>
                     
                     {% if item.qr_code %}
                     <div style="margin-top: 10px; margin-bottom: 10px; text-align: center;">

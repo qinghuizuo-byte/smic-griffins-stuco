@@ -197,6 +197,9 @@
                     <span class="status-badge status-{{ meeting.status.replace(' ', '-') }}">{{ meeting.status }}</span>
                     {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'] %}
                     <button class="btn btn-outline" style="padding: 4px 10px; font-size: 0.78rem;" onclick='openEditMeetingModal({{ meeting | tojson | safe }})'>✏️ Edit Notes & Minutes</button>
+                    <form action="{{ url_for('delete_meeting', meeting_id=meeting.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this meeting and all its agenda notes?');">
+                        <button type="submit" class="btn btn-danger" style="padding: 4px 10px; font-size: 0.78rem; color: white;">🗑️ Delete Meeting</button>
+                    </form>
                     {% endif %}
                 </div>
             </div>

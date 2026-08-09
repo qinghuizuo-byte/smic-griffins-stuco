@@ -293,15 +293,34 @@
                 {% for sug in suggestions %}
                 <div class="suggestion-card">
                     <div style="flex: 1;">
-                        <div class="suggestion-name">{{ sug.item_name }}</div>
+                        <div class="suggestion-title">{{ sug.item_name }}</div>
                         <div class="suggestion-meta">
-                            {{ sug.category }}
-                            &nbsp;•&nbsp;
+                            <span>Tag: {{ sug.category }}</span>
                             <span class="status-badge status-{{ sug.status.replace(' ', '-') }}">{{ sug.status }}</span>
                         </div>
-                        <form action="{{ url_for('vote_suggestion', suggestion_id=sug.id) }}" method="POST" style="margin-top: 8px;">
-                            <button type="submit" class="btn btn-outline btn-sm">👍 Upvote</button>
-                        </form>
+                        <div style="margin-top: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                            {% set has_voted = (current_user.is_authenticated and current_user.email.lower() in sug.get('voted_by', [])) %}
+                            <form action="{{ url_for('vote_suggestion', suggestion_id=sug.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn {% if has_voted %}btn-outline{% else %}btn-success{% endif %}" style="padding: 3px 8px; font-size: 0.75rem;" {% if has_voted %}disabled{% endif %}>
+                                    {% if has_voted %}✅ Upvoted{% else %}👍 Upvote{% endif %}
+                                </button>
+                            </form>
+
+                            {% if current_user.is_authenticated and current_user.role in ['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'] %}
+                            <form action="{{ url_for('edit_suggestion_status', s_id=sug.id) }}" method="POST" style="display:inline-flex; gap:4px; align-items:center;">
+                                <select name="status" onchange="this.form.submit()" style="font-size:0.75rem; padding:2px 4px; border-radius:4px; border:1px solid #cbd5e1;">
+                                    <option value="Under Review" {% if sug.status == 'Under Review' %}selected{% endif %}>Under Review</option>
+                                    <option value="Approved" {% if sug.status == 'Approved' %}selected{% endif %}>Approved</option>
+                                    <option value="Added to Machine" {% if sug.status == 'Added to Machine' %}selected{% endif %}>Added to Machine</option>
+                                    <option value="Rejected" {% if sug.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                                </select>
+                            </form>
+
+                            <form action="{{ url_for('delete_suggestion', s_id=sug.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this suggestion?');">
+                                <button type="submit" class="btn btn-danger" style="padding: 3px 6px; font-size: 0.72rem; color: white;">Del</button>
+                            </form>
+                            {% endif %}
+                        </div>
                     </div>
                     <div>
                         <div class="vote-count">{{ sug.votes }}</div>

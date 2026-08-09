@@ -809,6 +809,12 @@ def event_workspace(event_id=1):
             })
     for m in MEETINGS:
         for item in m.get("action_items", []):
+            # Skip duplicate task counting if synced to event workspace
+            if item.get("event_id"):
+                target_ev = EVENTS.get(item.get("event_id"))
+                if target_ev:
+                    if any(et.get("task") == item.get("task") for et in target_ev.get("tasks", [])):
+                        continue
             all_tasks.append({
                 "date": item.get("due_date") or m.get("date", "9999-99-99"),
                 "task": item.get("task"),
@@ -816,10 +822,11 @@ def event_workspace(event_id=1):
                 "event_title": item.get("event_title") or f"Meeting: {m.get('title')}",
                 "event_id": item.get("event_id") or 1,
                 "status": "Completed" if item.get("done") else "To Do",
-                "notes": "Action item from meeting"
+                "notes": f"[{item.get('timing_category', 'After Meeting')}] Meeting task"
             })
             
     all_tasks_sorted = sorted(all_tasks, key=lambda x: parse_sort_date(x.get("date")))
+    meetings_sorted = sorted(MEETINGS, key=lambda x: parse_sort_date(x.get("date")))
 
     return render_template(
         'workspace.html',
@@ -836,7 +843,7 @@ def event_workspace(event_id=1):
         stuco_balance=STUCO_BALANCE,
         all_tasks_sorted=all_tasks_sorted,
         inventory=INVENTORY,
-        meetings=MEETINGS
+        meetings=meetings_sorted
     )
 
 
@@ -1103,7 +1110,24 @@ def upload_photo(event_id):
 # 4. Meetings Hub — public view, login required to edit
 @app.route('/meetings')
 def meetings_hub():
-    return render_template('meetings.html', meetings=MEETINGS, events=list(EVENTS.values()))
+    def parse_sort_date(d_str):
+        if not d_str: return "9999-99-99"
+        d_str = str(d_str).strip()
+        import re
+        from datetime import datetime
+        try: return datetime.strptime(d_str, "%Y-%m-%d").strftime("%Y-%m-%d")
+        except ValueError: pass
+        try: return datetime.strptime(d_str, "%m/%d/%Y").strftime("%Y-%m-%d")
+        except ValueError: pass
+        parts = re.split(r'[-/.]', d_str)
+        if len(parts) == 3 and all(p.isdigit() for p in parts):
+            p1, p2, p3 = int(parts[0]), int(parts[1]), int(parts[2])
+            if p1 > 1900: return f"{p1:04d}-{p2:02d}-{p3:02d}"
+            elif p3 > 1900: return f"{p3:04d}-{p1:02d}-{p2:02d}"
+        return "9999-" + d_str
+
+    meetings_sorted = sorted(MEETINGS, key=lambda x: parse_sort_date(x.get("date")))
+    return render_template('meetings.html', meetings=meetings_sorted, events=list(EVENTS.values()))
 
 
 @app.route('/meetings/add', methods=['POST'])
@@ -1217,6 +1241,20 @@ def update_meeting_notes(meeting_id):
     return redirect(url_for('meetings_hub'))
 
 
+@app.route('/meetings/delete/<int:meeting_id>', methods=['POST'])
+@login_required
+@require_role(['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'])
+def delete_meeting(meeting_id):
+    global MEETINGS
+    MEETINGS = [m for m in MEETINGS if m['id'] != meeting_id]
+    save_data()
+    flash("Meeting and its agenda notes deleted.", "success")
+    ref = request.referrer or ""
+    if 'workspace' in ref:
+        return redirect(url_for('event_workspace', event_id=1))
+    return redirect(url_for('meetings_hub'))
+
+
 @app.route('/meetings/<int:meeting_id>/tasks/add', methods=['POST'])
 @login_required
 @require_role(['President', 'Vice President', 'Secretary', 'Teacher', 'Stuco Member'])
@@ -1280,12 +1318,22 @@ def edit_meeting_task(meeting_id, task_id):
     if meeting:
         for t in meeting.get("action_items", []):
             if t.get("id") == task_id:
+                old_title = t.get("task")
                 t["task"] = request.form.get('task', t["task"]).strip()
                 t["assignee"] = request.form.get('assignee', t["assignee"]).strip()
                 t["timing_category"] = request.form.get('timing_category', t.get("timing_category", "After Meeting")).strip()
                 t["due_date"] = request.form.get('due_date', t.get("due_date", "")).strip()
                 done_val = request.form.get('done', '')
                 t["done"] = (done_val.lower() == 'true' or done_val == '1')
+                
+                # Also update synced event task if present
+                if t.get("event_id") and t.get("event_id") in EVENTS:
+                    target_event = EVENTS[t["event_id"]]
+                    for et in target_event.get("tasks", []):
+                        if et.get("task") == old_title:
+                            et["task"] = t["task"]
+                            et["assignee"] = t["assignee"]
+                            et["date"] = t["due_date"]
                 flash(f"Meeting task updated successfully!", "success")
                 break
         save_data()
@@ -1427,18 +1475,24 @@ def vending_hub():
 @app.route('/vending/suggest', methods=['POST'])
 @login_required
 def submit_vending_suggestion():
-    item_name = request.form.get('item_name')
+    item_name = request.form.get('item_name', '').strip()
     if item_name:
+        if any(s.get('item_name', '').strip().lower() == item_name.lower() for s in VENDING_SUGGESTIONS):
+            flash(f"Suggestion '{item_name}' already exists in the community list! You can upvote it below.", "warning")
+            return redirect(url_for('vending_hub'))
+
         new_id = max([s['id'] for s in VENDING_SUGGESTIONS], default=0) + 1
         VENDING_SUGGESTIONS.append({
             "id": new_id,
             "item_name": item_name,
             "category": request.form.get('category', 'Snacks'),
-            "suggested_by": "Anonymous",
+            "suggested_by": current_user.name or "Anonymous",
             "reason": "",
             "votes": 1,
+            "voted_by": [current_user.email.lower()],
             "status": "Under Review"
         })
+        save_data()
         flash("Snack suggestion submitted!", "success")
     return redirect(url_for('vending_hub'))
 
@@ -1448,8 +1502,40 @@ def submit_vending_suggestion():
 def vote_suggestion(suggestion_id):
     sug = next((s for s in VENDING_SUGGESTIONS if s['id'] == suggestion_id), None)
     if sug:
-        sug['votes'] += 1
-        flash(f"Voted for {sug['item_name']}!", "success")
+        if "voted_by" not in sug:
+            sug["voted_by"] = []
+        user_key = current_user.email.lower()
+        if user_key in sug["voted_by"]:
+            flash(f"You have already upvoted '{sug['item_name']}'. (1 vote per account allowed)", "warning")
+        else:
+            sug["voted_by"].append(user_key)
+            sug['votes'] += 1
+            save_data()
+            flash(f"Upvoted '{sug['item_name']}'!", "success")
+    return redirect(url_for('vending_hub'))
+
+
+@app.route('/vending/suggestion/<int:s_id>/status', methods=['POST'])
+@login_required
+@require_role(['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'])
+def edit_suggestion_status(s_id):
+    sug = next((s for s in VENDING_SUGGESTIONS if s['id'] == s_id), None)
+    if sug:
+        new_status = request.form.get('status', sug['status'])
+        sug['status'] = new_status
+        save_data()
+        flash(f"Suggestion '{sug['item_name']}' status updated to '{new_status}'!", "success")
+    return redirect(url_for('vending_hub'))
+
+
+@app.route('/vending/suggestion/<int:s_id>/delete', methods=['POST'])
+@login_required
+@require_role(['President', 'Vice President', 'Secretary', 'Treasurer', 'Teacher', 'Stuco Member'])
+def delete_suggestion(s_id):
+    global VENDING_SUGGESTIONS
+    VENDING_SUGGESTIONS = [s for s in VENDING_SUGGESTIONS if s['id'] != s_id]
+    save_data()
+    flash("Suggestion removed.", "success")
     return redirect(url_for('vending_hub'))
 
 
