@@ -1666,31 +1666,28 @@
         let urlParams = new URLSearchParams(window.location.search);
         let openMeetingId = urlParams.get('open_meeting');
 
+        // Always hide all panels first
+        document.getElementById('hub-landing-view').style.display = 'none';
+        document.querySelectorAll('.subdiv-content').forEach(s => s.classList.remove('active'));
+
         if (urlParams.get('hub') === '1') {
+            // Show hub landing view
             document.getElementById('hub-landing-view').style.display = 'block';
-            document.querySelectorAll('.subdiv-content').forEach(s => s.classList.remove('active'));
             localStorage.setItem('stuco_active_subgroup', 'hub-landing-view');
+
         } else if (openMeetingId) {
-            document.getElementById('hub-landing-view').style.display = 'none';
-            document.querySelectorAll('.subdiv-content').forEach(s => s.classList.remove('active'));
+            // Show a specific meeting
             let meetSub = document.getElementById('subgroup-meetings');
             if (meetSub) meetSub.classList.add('active');
             showSingleWorkspaceMeeting(openMeetingId);
             localStorage.setItem('stuco_active_subgroup', 'subgroup-meetings');
+
         } else {
-            let activeSubgroup = localStorage.getItem('stuco_active_subgroup');
-            if (!activeSubgroup || activeSubgroup === 'hub-landing-view') {
-                activeSubgroup = 'event-workspace-subdiv';
-            }
-            
-            document.getElementById('hub-landing-view').style.display = 'none';
-            document.querySelectorAll('.subdiv-content').forEach(s => s.classList.remove('active'));
-            
-            let el = document.getElementById(activeSubgroup) || document.getElementById('event-workspace-subdiv');
-            if (el) {
-                el.classList.add('active');
-            }
+            // Default: always open event workspace and show event details
+            let eventSubdiv = document.getElementById('event-workspace-subdiv');
+            if (eventSubdiv) eventSubdiv.classList.add('active');
             showEventDetails({{ event.id }});
+            localStorage.setItem('stuco_active_subgroup', 'event-workspace-subdiv');
         }
     });
 
