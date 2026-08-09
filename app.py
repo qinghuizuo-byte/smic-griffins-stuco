@@ -1299,8 +1299,8 @@ def update_meeting_notes(meeting_id):
         
     ref = request.referrer or ""
     if 'workspace' in ref:
-        return redirect(url_for('event_workspace', event_id=1))
-    return redirect(url_for('meetings_hub'))
+        return redirect(url_for('event_workspace', event_id=1, open_meeting=meeting_id))
+    return redirect(url_for('meetings_hub', open_meeting=meeting_id))
 
 
 @app.route('/meetings/delete/<int:meeting_id>', methods=['POST'])
@@ -1368,8 +1368,8 @@ def add_meeting_task(meeting_id):
 
     ref = request.referrer or ""
     if 'workspace' in ref:
-        return redirect(url_for('event_workspace', event_id=1))
-    return redirect(url_for('meetings_hub'))
+        return redirect(url_for('event_workspace', event_id=1, open_meeting=meeting_id))
+    return redirect(url_for('meetings_hub', open_meeting=meeting_id))
 
 
 @app.route('/meetings/<int:meeting_id>/tasks/<int:task_id>/edit', methods=['POST'])
@@ -1402,8 +1402,8 @@ def edit_meeting_task(meeting_id, task_id):
 
     ref = request.referrer or ""
     if 'workspace' in ref:
-        return redirect(url_for('event_workspace', event_id=1))
-    return redirect(url_for('meetings_hub'))
+        return redirect(url_for('event_workspace', event_id=1, open_meeting=meeting_id))
+    return redirect(url_for('meetings_hub', open_meeting=meeting_id))
 
 
 @app.route('/meetings/<int:meeting_id>/tasks/<int:task_id>/delete', methods=['POST'])
@@ -1418,8 +1418,8 @@ def delete_meeting_task(meeting_id, task_id):
 
     ref = request.referrer or ""
     if 'workspace' in ref:
-        return redirect(url_for('event_workspace', event_id=1))
-    return redirect(url_for('meetings_hub'))
+        return redirect(url_for('event_workspace', event_id=1, open_meeting=meeting_id))
+    return redirect(url_for('meetings_hub', open_meeting=meeting_id))
 
 
 # 5. Budget Plan (Treasurer Portal) — Event-Specific Budget Overview & Stuco Finances
@@ -1530,7 +1530,6 @@ def review_budget_request(req_id):
 @app.route('/student-support')
 @app.route('/vending')
 @app.route('/volunteers')
-@login_required
 def student_support():
     path = request.path
     default_tab = 'suggestions'
@@ -1543,8 +1542,8 @@ def student_support():
 
     sorted_vending_sug = sorted(VENDING_SUGGESTIONS, key=lambda x: x.get('votes', 0), reverse=True)
     
-    user_email = current_user.email.lower()
-    is_exec = current_user.role in ['President', 'Vice President']
+    user_email = current_user.email.lower() if current_user.is_authenticated else ""
+    is_exec = current_user.is_authenticated and current_user.role in ['President', 'Vice President']
     
     if is_exec:
         visible_suggestions = sorted(STUDENT_SUGGESTIONS, key=lambda x: x.get('id', 0), reverse=True)
@@ -2438,8 +2437,40 @@ VOLUNTEER_OPPORTUNITIES = [
 ]
 
 
-@app.route('/volunteers')
+@app.route('/volunteers/add', methods=['POST'])
 @login_required
+@require_role(['President', 'Vice President', 'Secretary', 'Teacher'])
+def add_volunteer_opportunity():
+    title = request.form.get('title', '').strip()
+    if title:
+        new_id = max([op.get('id', 0) for op in VOLUNTEER_OPPORTUNITIES], default=0) + 1
+        csh_hours = float(request.form.get('csh_hours', 2.0))
+        spots_left = int(request.form.get('spots_left', 10))
+        date = request.form.get('date', '')
+        time = request.form.get('time', '')
+        location = request.form.get('location', '')
+        coordinator = request.form.get('coordinator', current_user.name)
+        description = request.form.get('description', '')
+        
+        VOLUNTEER_OPPORTUNITIES.append({
+            "id": new_id,
+            "title": title,
+            "csh_hours": csh_hours,
+            "spots_left": spots_left,
+            "date": date,
+            "time": time,
+            "location": location,
+            "coordinator": coordinator,
+            "description": description,
+            "status": "Open",
+            "signups": []
+        })
+        save_data()
+        flash(f"Volunteer opportunity '{title}' created successfully!", "success")
+    return redirect(url_for('student_support', tab='volunteers'))
+
+
+@app.route('/volunteers-legacy')
 def volunteers_page():
     return render_template('volunteers.html', opportunities=VOLUNTEER_OPPORTUNITIES)
 

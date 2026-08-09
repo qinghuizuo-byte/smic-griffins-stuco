@@ -458,6 +458,49 @@
     </div>
 </div>
 
+<!-- Modal: Edit Meeting Task -->
+<div class="modal" id="editMeetingTaskModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>✏️ Edit Action Item Task</h3>
+            <button onclick="closeModal('editMeetingTaskModal')" class="close-btn">&times;</button>
+        </div>
+        <form id="editMeetingTaskForm" method="POST">
+            <div class="form-group">
+                <label>Task Deliverable</label>
+                <input type="text" name="task" id="edit_task_name" required>
+            </div>
+            <div class="form-group">
+                <label>Assigned Lead</label>
+                <input type="text" name="assignee" id="edit_task_assignee">
+            </div>
+            <div class="form-group">
+                <label>Timing Category</label>
+                <select name="timing_category" id="edit_task_timing">
+                    <option value="Before Meeting">Before Meeting (Preparation)</option>
+                    <option value="In Meeting">In Meeting (Discussion/Vote)</option>
+                    <option value="After Meeting">After Meeting (Follow-up)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Due Date</label>
+                <input type="date" name="due_date" id="edit_task_due_date">
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select name="done" id="edit_task_status">
+                    <option value="false">⏳ In Progress / Pending</option>
+                    <option value="true">✅ Completed</option>
+                </select>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button type="submit" class="btn" style="flex:1;">Save Task Changes</button>
+                <button type="button" onclick="closeModal('editMeetingTaskModal')" class="btn btn-outline" style="flex:1;">Discard / Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     function openModal(modalId) {
         document.getElementById(modalId).classList.add('active');
@@ -478,6 +521,16 @@
         document.getElementById('edit_meet_notes').value = meeting.notes || '';
         document.getElementById('editMeetingForm').action = "/meetings/" + meeting.id + "/update_notes";
         openModal('editMeetingModal');
+    }
+
+    function openEditMeetingTaskModal(meetingId, task) {
+        document.getElementById('edit_task_name').value = task.task || '';
+        document.getElementById('edit_task_assignee').value = task.assignee || '';
+        document.getElementById('edit_task_timing').value = task.timing_category || 'After Meeting';
+        document.getElementById('edit_task_due_date').value = task.due_date || '';
+        document.getElementById('edit_task_status').value = task.done ? 'true' : 'false';
+        document.getElementById('editMeetingTaskForm').action = "/meetings/" + meetingId + "/tasks/" + task.id + "/edit";
+        openModal('editMeetingTaskModal');
     }
 
     function showSingleMeeting(meetId) {
@@ -520,7 +573,13 @@
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-        backToMeetingList();
+        let urlParams = new URLSearchParams(window.location.search);
+        let openMeetingId = urlParams.get('open_meeting');
+        if (openMeetingId) {
+            showSingleMeeting(openMeetingId);
+        } else {
+            backToMeetingList();
+        }
     });
 </script>
 
